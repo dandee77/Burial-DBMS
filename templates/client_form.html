@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Create Client</title>
+</head>
+<body>
+    <h2>Create New Client</h2>
+    <form action="/submit-client" method="post">
+        <label>Username:</label><br>
+        <input type="text" name="username" required><br>
+
+        <label>Contact Number:</label><br>
+        <input type="text" name="contact_number"><br>
+
+        <label>Email:</label><br>
+        <input type="email" name="email" required><br>
+
+        <label>First Name:</label><br>
+        <input type="text" name="first_name" required><br>
+
+        <label>Middle Name:</label><br>
+        <input type="text" name="middle_name"><br>
+
+        <label>Last Name:</label><br>
+        <input type="text" name="last_name" required><br>
+
+        <label>Gender:</label><br>
+        <select name="gender" required>
+            <option value="male">Male</option>
+            <option value="female">Female</option>
+            <option value="other">Other</option>
+        </select><br>
+
+        <label>Password:</label><br>
+        <input type="password" name="password" required><br><br>
+
+        <button type="submit">Submit</button>
+    </form>
+</body>
+</html>
