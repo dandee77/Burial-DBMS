@@ -17,4 +17,4 @@ SessionLocal = sessionmaker(
 Base = declarative_base()
 
 
-from models import Client, Admin, Block, Slot, Plot, Mausoleum, Deceased, Purchase, Reservation
+from models import Client, Admin, Slot, Plot, Mausoleum, Deceased, Purchase, Reservation

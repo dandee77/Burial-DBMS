@@ -55,19 +55,6 @@ class AdminOut(AdminBase):
     class Config:
         orm_mode = True
 
-# Block
-class BlockBase(BaseModel):
-    pass
-
-class BlockCreate(BlockBase):
-    pass
-
-class BlockOut(BlockBase):
-    block_id: int
-
-    class Config:
-        orm_mode = True
-
 # Slot
 class SlotBase(BaseModel):
     slot_type: SlotTypeEnum
@@ -77,7 +64,6 @@ class SlotBase(BaseModel):
     request_maintenance: Optional[bool] = False
     password: str
     client_id: Optional[int]
-    block_id: Optional[int]
 
 class SlotCreate(SlotBase):
     pass

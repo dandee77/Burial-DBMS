@@ -43,7 +43,7 @@
     <div class="image-container">
         <img src="../static/assets/arial-view-of-kilmihil-graveyard-january-2019.jpg" alt="Aerial view of Kilmihil Graveyard" usemap="#image-map" id="responsive-image">
 
-        <!-- Overlay divs for highlights will be created dynamically -->
+
     </div>
 
     <map name="image-map">
@@ -80,7 +80,7 @@
     </map>
 
     <script>
-        // Store all polygon data
+
         const polygons = [
             { coords: [168,52,160,61,157,84,195,98,202,75,204,64] },
             { coords: [215,55,210,62,210,82,241,90,249,70,245,61] },
@@ -114,7 +114,7 @@
             { coords: [759,344,752,370,780,376,793,362,786,348] }
         ];
 
-        // Create highlight elements for each polygon
+
         function createHighlights() {
             const container = document.querySelector('.image-container');
             
@@ -130,24 +130,24 @@
             });
         }
 
-        // Resize the image map and highlights
+
         function resizeImageMap() {
             const img = document.getElementById('responsive-image');
-            if (!img.naturalWidth) return; // Image not loaded yet
+            if (!img.naturalWidth) return;
             
             const widthRatio = img.clientWidth / img.naturalWidth;
             const heightRatio = img.clientHeight / img.naturalHeight;
 
-            // Update map areas
+     
             const mapAreas = document.querySelectorAll("area");
             
             polygons.forEach((polygon, index) => {
-                // Update the map area coordinates
+            
                 const newCoords = [];
                 for (let i = 0; i < polygon.coords.length; i++) {
-                    if (i % 2 === 0) { // x coordinate
+                    if (i % 2 === 0) {
                         newCoords.push(Math.round(polygon.coords[i] * widthRatio));
-                    } else { // y coordinate
+                    } else { 
                         newCoords.push(Math.round(polygon.coords[i] * heightRatio));
                     }
                 }
@@ -155,10 +155,10 @@
                     mapAreas[index].coords = newCoords.join(",");
                 }
 
-                // Update the highlight element
+         
                 const highlight = document.getElementById(`polygon-${index}`);
                 if (highlight) {
-                    // Create the clip-path polygon string
+                    
                     const polygonPoints = [];
                     for (let i = 0; i < newCoords.length; i += 2) {
                         const x = newCoords[i];
@@ -167,7 +167,7 @@
                     }
                     highlight.style.clipPath = `polygon(${polygonPoints.join(', ')})`;
                     
-                    // Position and size the highlight div to cover the entire image container
+                  
                     highlight.style.left = '0';
                     highlight.style.top = '0';
                     highlight.style.width = '100%';
@@ -176,11 +176,10 @@
             });
         }
 
-        // Initialize the page
+
         window.onload = function() {
             createHighlights();
-            
-            // Wait for image to load if natural dimensions aren't available immediately
+   
             const img = document.getElementById('responsive-image');
             if (img.naturalWidth === 0) {
                 img.onload = function() {

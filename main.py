@@ -4,7 +4,7 @@ from fastapi.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
 from fastapi.staticfiles import StaticFiles
 from database import engine, Base, SessionLocal
-from models import Client, Admin, Block, Slot, Plot, Mausoleum, Deceased, Purchase, Reservation
+from models import Client, Admin, Slot, Plot, Mausoleum, Deceased, Purchase, Reservation
 from datetime import datetime
 import uvicorn
 
