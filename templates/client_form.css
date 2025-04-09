@@ -1,7 +1,7 @@
-*{
-    margin:0;
-    padding:0;
-    box-sizing:border-box;
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
     font-family: 'Poppins', sans-serif;
 }
 
@@ -10,7 +10,7 @@ body {
     justify-content: center;
     align-items: center;
     min-height: 100vh;
-    background-image: url('../assets/login_bg.jpg');
+    background-image: url("../static/assets/login_bg.jpg");
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
@@ -26,19 +26,13 @@ body::before {
     left: 0;
     height: 100%;
     width: 100%;
-    background-color: rgba(0, 0, 0, 0.2); /* Adjust brightness */
+    background-color: rgba(0, 0, 0, 0.2);
     z-index: 0;
 }
 
-.login-box {
+.signup-box {
     position: relative;
     width: 450px;
-    height: 500px;
-    background: blueviolet;
-    border-radius: 20px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
     padding: 40px;
     background: rgba(255, 255, 255, 0.1);
     border-radius: 10px;
@@ -48,24 +42,23 @@ body::before {
     z-index: 1;
 }
 
-h1 {
+h2 {
     font-size: 2em;
     color: #fff;
     text-align: center;
+    margin-bottom: 20px;
 }
 
-h2 {
-    font-size: 1em;
-    color: #fff;
-    margin-top: 10px;
-    text-align: center;
+form {
+    display: flex;
+    flex-direction: column;
 }
 
 .input-box {
     position: relative;
-    width: 310px;
-    margin: 30px 0;
-    border-bottom: 2px solid #fff;
+    width: 100%;
+    margin: 20px 0;
+    border-bottom: 2px solid white;
 }
 
 .input-box label {
@@ -76,64 +69,33 @@ h2 {
     font-size: 1em;
     color: #fff;
     pointer-events: none;
-    transition: 0.5s;
+    transition: 0.3s ease;
 }
 
-.input-box input {
+.input-box input, .input-box select {
     width: 100%;
-    height: 50px;
+    height: 40px;
     background: transparent;
     border: none;
     outline: none;
     font-size: 1em;
-    color: #fff;
-    padding: 0 35px 0 5px;
+    color: white;
+    padding: 0 5px 0 5px;
 }
 
-.input-box input:focus~label,
-.input-box input:valid~label {
-    top: 5px;
+.input-box input:focus ~ label,
+.input-box input:valid ~ label,
+.input-box select:focus ~ label {
+    top: -10px;
+    font-size: 0.8em;
+    color: white; 
 }
 
-.input-box .input-icon {
-    position: absolute;
-    top: 50%;
-    right: 10px;
-    transform: translateY(-50%);
-    width: 20px;
-    height: 20px;
-    opacity: 0.8;
-    filter: invert(100%) grayscale(100%) brightness(100%);
-}
-
-.remember-forgot {
-    margin: -15px 0 15px;
-    font-size: .9em;
-    color: #fff;
-    display: flex;
-    justify-content: space-between;
-}
-
-.remember-forgot label input {
-    margin-right: 3px;
-}
-
-.remember-forgot a {
-    color: #fff;
-    text-decoration: none;
-}
-
-.remember-forgot a:hover {
-    text-decoration: underline;
-    color: darkgray;
-}
-
-button {
+button[type="submit"] {
     width: 100%;
     height: 40px;
     background: #fff;
     border: none;
-    outline: none;
     border-radius: 10px;
     cursor: pointer;
     font-size: 1em;
@@ -142,20 +104,34 @@ button {
     font-weight: 550;
 }
 
-.sign-up {
-    font-size: .9em;
+.sign-in {
+    font-size: 0.9em;
     color: darkgray;
     text-align: center;
     margin: 25px 0 10px;
 }
 
-.sign-up p a {
+.sign-in p a {
     color: #fff;
     text-decoration: none;
     font-weight: 600;
 }
 
-.sign-up p a:hover {
+.sign-in p a:hover {
     text-decoration: underline;
     color: darkgray;
+}
+
+select {
+    margin-top: 11px;
+    border-radius: 15px;
+    border: 3px solid white; 
+    width: 370px;
+    height: 40px;
+    background: transparent;
+    color: white;
+}
+select option {
+    color: black; 
+    background-color: #fff; 
 }
