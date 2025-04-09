@@ -32,9 +32,9 @@ def home():
 # ---------------------
 # CLIENT CREATION
 # ---------------------
-@app.get("/client-form", response_class=HTMLResponse) # TODO: CHANGE TO SIGN UP (SHARE A PAGE WITH LOGIN)
+@app.get("/signup", response_class=HTMLResponse) # TODO: CHANGE TO SIGN UP (SHARE A PAGE WITH LOGIN)
 def client_form(request: Request):
-    return templates.TemplateResponse("client_form.html", {"request": request})
+    return templates.TemplateResponse("signup.html", {"request": request})
 
 @app.post("/submit-client") # TODO: CHANGE TO SIGN UP (SHARE A PAGE WITH LOGIN)
 def submit_client(

@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login</title>
     <!-- Serve CSS through FastAPI -->
-    <link rel="stylesheet" href="login.css">
+    <link rel="stylesheet" href="{{ url_for('static', path='css/login.css') }}">
 </head>
 <body>
     <div class="login-box">
@@ -33,7 +33,7 @@
             <button type="submit">Sign in</button>
 
             <div class="sign-up">
-                <p>Don't have an account? <a href="client_form.html">Sign Up</a></p>
+                <p>Don't have an account? <a href="/signup">Sign Up</a></p>
             </div>
         </form>
     </div>
