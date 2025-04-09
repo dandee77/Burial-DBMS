@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Polygonal Image Map</title>
+    <style>
+        body {
+            text-align: center;
+            margin: 0;
+            padding: 20px;
+            font-family: Arial, sans-serif;
+        }
+
+        .image-container {
+            position: relative;
+            display: inline-block;
+            max-width: 100%;
+        }
+
+        img {
+            width: 100%;
+            height: auto;
+            display: block;
+        }
+
+        .highlight {
+            position: absolute;
+            background-color: rgba(255, 255, 0, 0.5);
+            opacity: 0;
+            transition: opacity 0.2s ease-in-out;
+            pointer-events: auto;
+        }
+
+        .highlight:hover {
+            opacity: 1;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="image-container">
+        <img src="../static/assets/arial-view-of-kilmihil-graveyard-january-2019.jpg" alt="Aerial view of Kilmihil Graveyard" usemap="#image-map" id="responsive-image">
+
+        <!-- Overlay divs for highlights will be created dynamically -->
+    </div>
+
+    <map name="image-map">
+        <area target="" alt="" title="" href="#" coords="168,52,160,61,157,84,195,98,202,75,204,64" shape="poly">
+        <area target="" alt="" title="" href="#" coords="215,55,210,62,210,82,241,90,249,70,245,61" shape="poly">
+        <area target="" alt="" title="" href="#" coords="114,42,106,49,108,65,113,72,143,73,149,55,143,46" shape="poly">
+        <area target="" alt="" title="" href="#" coords="65,40,58,52,61,68,93,75,100,51,91,44" shape="poly">
+        <area target="" alt="" title="" href="#" coords="61,70,55,81,58,95,89,102,91,76" shape="poly">
+        <area target="" alt="" title="" href="#" coords="105,75,100,86,102,102,133,105,137,85,132,78" shape="poly">
+        <area target="" alt="" title="" href="#" coords="57,99,50,110,54,126,87,132,91,108,83,102" shape="poly">
+        <area target="" alt="" title="" href="#" coords="102,106,97,114,102,133,133,138,137,114,129,108" shape="poly">
+        <area target="" alt="" title="" href="#" coords="53,128,47,140,50,157,82,161,87,133" shape="poly">
+        <area target="" alt="" title="" href="#" coords="183,141,175,151,176,165,207,178,212,151" shape="poly">
+        <area target="" alt="" title="" href="#" coords="133,192,126,203,126,219,163,226,167,200" shape="poly">
+        <area target="" alt="" title="" href="#" coords="211,196,204,207,204,222,238,230,242,204" shape="poly">
+        <area target="" alt="" title="" href="#" coords="515,94,538,87,546,95,544,121,512,120" shape="poly">
+        <area target="" alt="" title="" href="#" coords="701,47,703,73,735,70,742,51,731,43" shape="poly">
+        <area target="" alt="" title="" href="#" coords="727,73,728,99,757,94,765,78,755,67" shape="poly">
+        <area target="" alt="" title="" href="#" coords="749,99,749,121,778,120,783,105,773,97" shape="poly">
+        <area target="" alt="" title="" href="#" coords="749,126,754,152,779,148,789,133,779,124" shape="poly">
+        <area target="" alt="" title="" href="#" coords="757,178,755,203,789,202,794,187,783,176" shape="poly">
+        <area target="" alt="" title="" href="#" coords="746,293,740,316,769,324,782,312,777,298" shape="poly">
+        <area target="" alt="" title="" href="#" coords="169,266,165,279,168,293,200,295,202,269" shape="poly">
+        <area target="" alt="" title="" href="#" coords="204,286,198,298,199,312,234,316,234,287" shape="poly">
+        <area target="" alt="" title="" href="#" coords="161,297,155,309,156,322,192,328,195,301" shape="poly">
+        <area target="" alt="" title="" href="#" coords="214,332,208,349,211,365,241,367,245,336" shape="poly">
+        <area target="" alt="" title="" href="#" coords="38,344,28,361,38,371,69,371,67,347" shape="poly">
+        <area target="" alt="" title="" href="#" coords="102,330,97,345,102,359,130,359,130,332" shape="poly">
+        <area target="" alt="" title="" href="#" coords="183,372,177,387,181,401,215,403,215,373" shape="poly">
+        <area target="" alt="" title="" href="#" coords="477,359,477,383,503,386,509,372,507,359" shape="poly">
+        <area target="" alt="" title="" href="#" coords="628,371,629,396,660,398,667,386,661,371" shape="poly">
+        <area target="" alt="" title="" href="#" coords="668,367,667,391,697,394,706,385,700,369" shape="poly">
+        <area target="" alt="" title="" href="#" coords="759,344,752,370,780,376,793,362,786,348" shape="poly">
+    </map>
+
+    <script>
+        // Store all polygon data
+        const polygons = [
+            { coords: [168,52,160,61,157,84,195,98,202,75,204,64] },
+            { coords: [215,55,210,62,210,82,241,90,249,70,245,61] },
+            { coords: [114,42,106,49,108,65,113,72,143,73,149,55,143,46] },
+            { coords: [65,40,58,52,61,68,93,75,100,51,91,44] },
+            { coords: [61,70,55,81,58,95,89,102,91,76] },
+            { coords: [105,75,100,86,102,102,133,105,137,85,132,78] },
+            { coords: [57,99,50,110,54,126,87,132,91,108,83,102] },
+            { coords: [102,106,97,114,102,133,133,138,137,114,129,108] },
+            { coords: [53,128,47,140,50,157,82,161,87,133] },
+            { coords: [183,141,175,151,176,165,207,178,212,151] },
+            { coords: [133,192,126,203,126,219,163,226,167,200] },
+            { coords: [211,196,204,207,204,222,238,230,242,204] },
+            { coords: [515,94,538,87,546,95,544,121,512,120] },
+            { coords: [701,47,703,73,735,70,742,51,731,43] },
+            { coords: [727,73,728,99,757,94,765,78,755,67] },
+            { coords: [749,99,749,121,778,120,783,105,773,97] },
+            { coords: [749,126,754,152,779,148,789,133,779,124] },
+            { coords: [757,178,755,203,789,202,794,187,783,176] },
+            { coords: [746,293,740,316,769,324,782,312,777,298] },
+            { coords: [169,266,165,279,168,293,200,295,202,269] },
+            { coords: [204,286,198,298,199,312,234,316,234,287] },
+            { coords: [161,297,155,309,156,322,192,328,195,301] },
+            { coords: [214,332,208,349,211,365,241,367,245,336] },
+            { coords: [38,344,28,361,38,371,69,371,67,347] },
+            { coords: [102,330,97,345,102,359,130,359,130,332] },
+            { coords: [183,372,177,387,181,401,215,403,215,373] },
+            { coords: [477,359,477,383,503,386,509,372,507,359] },
+            { coords: [628,371,629,396,660,398,667,386,661,371] },
+            { coords: [668,367,667,391,697,394,706,385,700,369] },
+            { coords: [759,344,752,370,780,376,793,362,786,348] }
+        ];
+
+        // Create highlight elements for each polygon
+        function createHighlights() {
+            const container = document.querySelector('.image-container');
+            
+            polygons.forEach((polygon, index) => {
+                const highlight = document.createElement('div');
+                highlight.className = 'highlight';
+                highlight.id = `polygon-${index}`;
+                highlight.onclick = function(e) {
+                    e.stopPropagation();
+                    alert(`You clicked polygon ${index + 1}`);
+                };
+                container.appendChild(highlight);
+            });
+        }
+
+        // Resize the image map and highlights
+        function resizeImageMap() {
+            const img = document.getElementById('responsive-image');
+            if (!img.naturalWidth) return; // Image not loaded yet
+            
+            const widthRatio = img.clientWidth / img.naturalWidth;
+            const heightRatio = img.clientHeight / img.naturalHeight;
+
+            // Update map areas
+            const mapAreas = document.querySelectorAll("area");
+            
+            polygons.forEach((polygon, index) => {
+                // Update the map area coordinates
+                const newCoords = [];
+                for (let i = 0; i < polygon.coords.length; i++) {
+                    if (i % 2 === 0) { // x coordinate
+                        newCoords.push(Math.round(polygon.coords[i] * widthRatio));
+                    } else { // y coordinate
+                        newCoords.push(Math.round(polygon.coords[i] * heightRatio));
+                    }
+                }
+                if (mapAreas[index]) {
+                    mapAreas[index].coords = newCoords.join(",");
+                }
+
+                // Update the highlight element
+                const highlight = document.getElementById(`polygon-${index}`);
+                if (highlight) {
+                    // Create the clip-path polygon string
+                    const polygonPoints = [];
+                    for (let i = 0; i < newCoords.length; i += 2) {
+                        const x = newCoords[i];
+                        const y = newCoords[i + 1];
+                        polygonPoints.push(`${(x / img.clientWidth * 100)}% ${(y / img.clientHeight * 100)}%`);
+                    }
+                    highlight.style.clipPath = `polygon(${polygonPoints.join(', ')})`;
+                    
+                    // Position and size the highlight div to cover the entire image container
+                    highlight.style.left = '0';
+                    highlight.style.top = '0';
+                    highlight.style.width = '100%';
+                    highlight.style.height = '100%';
+                }
+            });
+        }
+
+        // Initialize the page
+        window.onload = function() {
+            createHighlights();
+            
+            // Wait for image to load if natural dimensions aren't available immediately
+            const img = document.getElementById('responsive-image');
+            if (img.naturalWidth === 0) {
+                img.onload = function() {
+                    resizeImageMap();
+                };
+            } else {
+                resizeImageMap();
+            }
+        };
+        
+        window.onresize = resizeImageMap;
+    </script>
+    
+</body>
+</html>
