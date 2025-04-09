@@ -1,4 +1,5 @@
 .venv
+.env
 cemetery.db
 __pycache__/
 *.pyc
