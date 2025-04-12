@@ -10,13 +10,13 @@ body {
     justify-content: center;
     align-items: center;
     min-height: 100vh;
-    background-image: linear-gradient(rgba(5, 15, 30, 0.85)), url("../assets/login_bg.jpg");
+    background-image: linear-gradient(rgba(5, 15, 30, 0.85)), url("../assets/login_bg.webp");
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
     position: relative;
     z-index: 0;
-    /* backdrop-filter: blur(2px); */
+    backdrop-filter: blur(2px);
 }
 
 body::before {

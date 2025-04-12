@@ -10,7 +10,7 @@ body {
     justify-content: center;
     align-items: center;
     min-height: 100vh;
-    background-image: linear-gradient(rgba(5, 15, 30, 0.85)), url("../assets/login_bg.jpg");
+    background-image: linear-gradient(rgba(5, 15, 30, 0.85)), url("../assets/login_bg.webp");
     background-size: cover;
     background-size: cover;
     background-position: center;
