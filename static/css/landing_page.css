@@ -84,9 +84,10 @@ section:nth-child(odd){/*change color of the odd part of section*/
 #home {
     min-height: 100vh;
     width: 100%;
-    background-image: linear-gradient(rgba(5, 15, 30, 0.85)), url(main_pic1.jpg);
+    background-image: linear-gradient(rgba(5, 15, 30, 0.85)), url("../assets/login_bg.jpg");
     background-position: center;
     background-size: cover;
+    background-repeat: no-repeat;
     display: flex;              
     flex-direction: column;    
     justify-content: center;   

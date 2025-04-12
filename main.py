@@ -12,21 +12,21 @@ from dotenv import load_dotenv
 from loguru import logger
 from os import getenv
 
-load_dotenv()
+# load_dotenv()
 
-NGROK_AUTH_TOKEN = getenv("NGROK_AUTH_TOKEN", "NGROK_AUTH_TOKEN")
+# NGROK_AUTH_TOKEN = getenv("NGROK_AUTH_TOKEN", "NGROK_AUTH_TOKEN")
 APPLICATION_PORT = 80 
-NGROK_DOMAIN = "foal-engaged-regularly.ngrok-free.app"
+# NGROK_DOMAIN = "foal-engaged-regularly.ngrok-free.app"
 
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    ngrok.set_auth_token(NGROK_AUTH_TOKEN)
-    public_url = ngrok.connect(
-        addr=APPLICATION_PORT,
-        domain=NGROK_DOMAIN, 
-        proto="http"
-    )
+    # ngrok.set_auth_token(NGROK_AUTH_TOKEN)
+    # public_url = ngrok.connect(
+    #     addr=APPLICATION_PORT,
+    #     domain=NGROK_DOMAIN, 
+    #     proto="http"
+    # )
     print("Creating tables...")
     Base.metadata.create_all(bind=engine)
     engine.dispose()
