@@ -5,11 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>MemorialDB</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
-    <link rel = "stylesheet" href = "style.css">
+    <link rel = "stylesheet" href = "{{ url_for('static', path='css/landing_page.css') }}">
     
 </head>
 <body>
-    <script src = "script.js"></script> 
+    <script src = "{{ url_for('static', path='script/landing_page.js') }}"></script> 
     <header>
         <a href = "index.html" class = "logo"> MemorialDB</a>
         <nav> <!-- navigation bar / menu -->
@@ -21,8 +21,8 @@
         </nav>
        
         <div class="auth-buttons"> <!-- buttons for log in & sign up -->
-            <button class="log-in">Login</button>
-            <button class="sign-up">Sign Up</button>
+            <button class="log-in" onclick="location.href='/login'">Login</button>
+            <button class="sign-up" onclick="location.href='/signup'">Sign Up</button>
         </div>
     </header>
     
@@ -191,7 +191,7 @@
     
     <div class="custom-option">
         <p>Need a custom solution? Contact our sales team for personalized pricing.</p>
-        <button class="contact-btn">Contact Us for Custom Options</button>
+        <button class="contact-btn" onclick="location.href='#contact'">Contact Us for Custom Options</button>
     </div>
 </section>
 

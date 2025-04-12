@@ -40,9 +40,13 @@ app.mount("/static", StaticFiles(directory="static"), name="static")
 templates = Jinja2Templates(directory="templates")
 
 
-@app.get("/")
-def home():
-    return {"message": "Cemetery Management System"}
+# ---------------------
+# LANDING PAGE
+# ---------------------
+@app.get("/", response_class=HTMLResponse)
+def home(request: Request):
+    return templates.TemplateResponse("landing_page.html", {"request": request})
+
 
 # ---------------------
 # CLIENT CREATION
