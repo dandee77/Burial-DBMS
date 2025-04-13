@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <link rel="stylesheet" href="{{ url_for('static', path='css/signup.css') }}">
+    <title>Create Client</title>
+</head>
+<body>
+    <div class="signup-box">
+        <h2>Register Account</h2>
+        <form action="/submit-client" method="post">
+            <div class="input-box">
+                <input type="text" id="username" name="username" required>
+                <label for="username">Username:</label>
+            </div>
+    
+            <div class="input-box">
+                <input type="text" id="contact_number" name="contact_number" required>
+                <label for="contact_number">Contact Number:</label>
+            </div>
+    
+            <div class="input-box">
+                <input type="email" id="email" name="email" required>
+                <label for="email">Email:</label>
+            </div>
+    
+            <div class="input-box">
+                <input type="text" id="first_name" name="first_name" required>
+                <label for="first_name">First Name:</label>
+            </div>
+    
+            <div class="input-box">
+                <input type="text" id="middle_name" name="middle_name" required>
+                <label for="middle_name">Middle Name:</label>
+            </div>
+    
+            <div class="input-box">
+                <input type="text" id="last_name" name="last_name" required>
+                <label for="last_name">Last Name:</label>
+            </div>
+            <label for="gender">Gender:</label>
+        
+                <select name="gender" id="gender" required>
+                    <option value="male">Male</option>
+                    <option value="female">Female</option>
+                    <option value="other">Other</option>
+                </select>
+    
+            <div class="input-box">
+                <input type="password" id="password" name="password" required>
+                <label for="password">Password:</label>
+            </div>
+    
+            <button type="submit">Create account</button>
+    
+            <div class="sign-in">
+                <p>Already have an account? <a href="/login">Sign In</a></p>
+            </div>
+        </form>
+    </div>
+    
+</body>
+</html>

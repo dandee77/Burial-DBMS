@@ -1,0 +1,1 @@
+Dito lalagay mga raw html & css (yung mga hindi pa connected sa backend)

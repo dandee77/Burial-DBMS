@@ -1,0 +1,595 @@
+
+*{ /*global styles*/
+    margin: 0; /*remove default spaces*/
+    padding: 0; /*same as padding*/
+    box-sizing: border-box;
+    scroll-behavior: smooth; /*smooth scroll*/
+    font-family: 'Poppins', sans-serif; /*chosen font*/
+}
+section{ 
+    min-height: 100vh; 
+    padding: 80px 0 60px; /*top padding (80), left and right(0), bottom (60px)*/
+    display: flex;
+    flex-direction: column; /*like columns, stack vertically)*/
+    justify-content: flex-start; /*align at the top (so start from the top)*/
+    align-items: center; /*elements are centered*/
+    background: #ffffff; 
+    overflow-y: auto; /*vertical scrolling only for sections*/
+}
+
+header { /*for header*/
+    position: fixed; /*stay at the top, kahit scroll*/
+    top: 0;
+    left: 0;
+    width: 100%;
+    padding: 20px 120px; /*20px top bottom, 120px left right*/
+    background: #ffffff;
+    display: flex; /*horizontal layout for nav-bar*/
+    justify-content: space-between; /*proper spacing logo (left), button (hard right side, other (even spaces between))*/
+    align-items: center; /*ni-gitna lang*/
+    z-index: 100; /*making sure lang na mas angat yung header even scrolling*/
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); /* since the header is also white, i add subtle shadow para mas madali makita / distinguish yung header*/
+    transition: box-shadow 0.3s ease; /*animation*/
+}
+.logo { /*logo / the memorialdb sa header*/
+    font-size: 25px;
+    color: #1e2837;
+    text-decoration: none; /*remove any decoration such as underline*/
+    font-weight: 800; /*how thick*/
+}
+nav a{
+    font-size: 16px;
+    font-weight: 800;
+    color: #1e2837;
+    text-decoration: none;
+    font-weight: 100;
+    margin-left: 30px; /*add 30px to the left*/
+    transition: .3s;  
+}
+nav a:hover, nav a.active{ /*when you move mouse to the link, causes to change color*/
+    color: #808080;
+}
+section:nth-child(odd){/*change color of the odd part of section*/
+    background: #fcfbfb;
+}
+/* buttons log in sign up*/
+.auth-buttons {
+    display: flex; /*side by side*(magkatabi)*/
+    gap: 15px; /*space between*/
+}
+.auth-buttons button {
+    padding: 8px 20px; /*top and bottom(8), left right (20px)*/
+    border: none; /*remove border*/
+    border-radius: 10px; /*round edges for the button*/
+    cursor: pointer; 
+    font-size: 14px;
+    font-weight: 500; 
+}
+.auth-buttons .log-in {/*color lang to*/
+    background-color: #eaeaea;
+    color: #1e2837;
+}
+.auth-buttons .sign-up { /*same as log in button, just diff color*/
+    background-color: #1e2837;
+    color: #ffffff;
+}
+/*effects*/
+.auth-buttons .log-in:hover {
+    background-color: #d6d6d6;
+}
+.auth-buttons .sign-up:hover {
+    background-color: #3b4a65;
+}
+/* home */
+#home {
+    min-height: 100vh;
+    width: 100%;
+    background-image: linear-gradient(rgba(5, 15, 30, 0.85)), url("../assets/login_bg.webp");
+    background-position: center;
+    background-size: cover;
+    background-repeat: no-repeat;
+    display: flex;              
+    flex-direction: column;    
+    justify-content: center;   
+    align-items: center;        
+}
+.home-container {
+    max-width: 800px;
+    width: 100%;
+}
+.section-titlehome {
+    font-size: 3.5rem;
+    color: #ffffff;
+    margin-bottom: 0;           
+    line-height: 1.3;
+    text-align: center;  
+}
+.subtitle-home {
+    display: flex;
+    justify-content: center;
+    width: 100%;
+    margin-top: 50px; /*Adjust top margin to control gap */
+}
+.subtitle-home p {
+    font-size: 1.2rem;
+    color: #ffffff;
+    line-height: 1.6; /*vertical spacing*/
+    max-width: 600px;
+    margin: 0 auto;  /*top & bottom are 0 and horizontal centers elements (right and left set to auto)*/
+    text-align: center; 
+    padding: 0 20px; /* 0 vertical & horizontal, 20px left and right*/
+}
+/*about*/
+#about {
+    background-color: #ffffff;
+}
+.about-container {
+    display: flex;
+    justify-content: center; 
+    align-items: flex-start; 
+    width: 90%;
+    max-width: 1200px;
+    margin: 0 auto; 
+    gap: 40px;
+    padding: 40px 0;
+}
+.about-text {
+    width: 50%;
+    max-width: 600px;
+    padding: 0 20px;
+}
+.about-text h3 {
+    font-size: 28px;
+    font-weight: 600;
+    margin-bottom: 25px;
+    color: #1e2837;
+}
+.about-text p {
+    font-size: 16px;
+    line-height: 1.7;
+    color: #4a5568;
+    margin-bottom: 25px;
+}
+/* about cards*/
+.abt-cards-container {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 25px;
+    width: 450%;
+    max-width: 500px;
+}
+
+.about-card {
+    background: #f8f7f7;
+    padding: 25px;
+    border-radius: 10px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.10);
+    transition: transform 0.3s ease;
+}
+
+.about-card p {
+    font-size: 15.5px;  
+    line-height: 1.5; 
+    margin-top: 8px;  
+    color: #4a5568;
+}
+.section-title {
+    text-align: center;
+    font-size: 45px;
+    font-weight: 600;
+    margin-top: 30px;
+    margin-bottom: 30px;
+    color: #1e2837;
+    
+}
+
+.section-title::after { /*proper spacing & underline design*/ 
+    content: "";
+    justify-content: center;
+    display: block;
+    width: 150px; 
+    height: 2px; 
+    background: #1e2837;
+    margin: 10px auto 0; 
+}
+
+/* testimonials*/
+.subtitle {
+    justify-content: center;
+    font-size: 15px;
+    text-align: center;
+    max-width: 700px;
+    margin: 0 auto 40px;
+    color: #4a5568;
+}
+
+.testimonial-grid {
+    display: flex;
+    justify-content: center;
+    gap: 30px;
+    width: 100%;
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 20px 0;
+}
+
+.testimonial-card {
+    background: white;
+    padding: 40px;
+    border-radius: 10px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.16);
+    flex: 0 0 300px;
+}
+
+.stars {
+    color: #f59e0b;
+    font-size: 20px;
+    margin-bottom: 15px;
+    letter-spacing: 2px;
+    line-height: 1;
+}
+
+.star_empty {
+    color: #c1c5cc; 
+    display: inline-block;
+    vertical-align: top;
+  }
+
+blockquote {
+    font-style: italic;
+    justify-content: left;
+    margin-bottom: 20px;
+    color: #4a5568;
+}
+
+.name {
+    font-weight: 600;
+}
+
+.name span {
+    display: block;
+    font-weight: 400;
+    font-size: 14px;
+    color: #718096;
+    margin-top: 5px;
+}
+
+/*pricing*/
+#pricing {
+    background: #ffffff;
+    padding: 20px 20px 40px;
+    text-align: center;
+}
+
+.section_title {
+    font-size: 32px;
+    color: #333;
+    margin-bottom: 10px;
+}
+
+.subtitle p {
+    color: #666;
+    font-size: 18px;
+    max-width: 700px;
+    margin: 0 auto 10px;
+}
+
+.pricing-container {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 25px;
+    margin: 20px auto;
+    max-width: 1600px;
+}
+
+.pricing-card {
+    background: #fdfdfd;
+    border-radius: 8px;
+    padding: 35px 40px;
+    width: 450px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+    transition: transform 0.3s ease;
+    min-height: 500px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.pricing-card:hover {
+    transform: translateY(-10px);
+}
+
+.pricing-card.featured {
+    background: #f0f7ff;
+    border: 2px solid #1e2837;
+}
+
+.pricing-card.featured {
+    background: white;
+    border-top: 4px solid #1e2837; 
+    box-shadow: 0 3px 15px rgba(30, 40, 55, 0.15);
+    position: relative;
+}
+
+.pricing-card.featured::before {
+    display: inline-block;
+    background: #1e2837;
+    color: white;
+    padding: 4px 12px;
+    font-size: 12px;
+    font-weight: bold;
+    border-radius: 4px;
+    margin-bottom: 15px;
+    text-transform: uppercase;
+}
+.pricing-card h3 {
+    font-size: 24px;
+    color: #333;
+    margin-bottom: 20px;
+}
+
+.price {
+    font-size: 36px;
+    font-weight: bold;
+    color: #1e2837;
+    margin-bottom: 20px;
+}
+
+.features {
+    list-style: none;
+    padding: 0;
+    margin-bottom: 20px;
+    text-align: left;
+}
+
+.features li {
+    padding: 8px 0;
+    color: #555;
+    position: relative;
+    padding-left: 25px;
+}
+
+.features li:before {
+    content: "🗸";
+    color: #72e284;
+    font-weight: bold;
+    position: absolute;
+    left: 0;
+}
+
+.learn-more {
+    background: #1e2837;
+    color: white;
+    border: none;
+    padding: 12px 25px;
+    border-radius: 5px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background 0.3s ease;
+}
+
+.learn-more:hover {
+    background: #1e2837;
+}
+
+.custom-option {
+    margin-top: 10px;
+    padding: 10px;
+    max-width: 800px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.custom-option p {
+    color: #555;
+    font-size: 15px;
+    margin-bottom: 30px;
+    font-weight: 500;
+}
+
+.contact-btn {
+    background: transparent;
+    color: #1e2837;
+    border: 2px solid #1e2837;
+    padding: 12px 25px;
+    border-radius: 5px;
+    font-size: 15px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-weight: 600;
+}
+
+.contact-btn:hover {
+    background: #1e2837;
+    color: white;
+}
+/* contact us */
+#contact {
+    background: #fcfbfb;
+}
+
+.contact-container {
+    display: grid;
+    grid-template-columns: 1.2fr 1fr;
+    gap: 30px;
+    margin-top: 30px;
+}
+
+/* Contact form styling */
+.contact-form {
+    background: #fff;
+    padding: 20px 30px;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    height: fit-content;
+}
+
+.contact-form h3 {
+    margin-bottom: 15px;
+    font-size: 18px;
+}
+
+.form-group {
+    margin-bottom: 12px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 500;
+}
+
+.form-group input,
+.form-group textarea {
+    width: 100%;
+    padding: 8px 12px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 13px;
+    height: 40px;
+}
+
+.form-group textarea {
+    min-height: 80px;
+    max-height: 100px;
+    resize: vertical;
+}
+
+.submit_btn {
+    background: #1e2837;
+    color: white;
+    border: none;
+    padding: 12px 24px;
+    border-radius: 4px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background 0.3s;
+}
+
+.submit_btn:hover {
+    background: #3b4a65;
+}
+ 
+/* Contact info styling */
+.contact-info {
+    padding: 20px;
+}
+
+/* Location item container */
+.location-container {
+    margin-bottom: 15px;
+}
+
+/* Header with icon and title */
+.location-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 5px;
+}
+
+/* Address text positioning */
+.contact-infos {
+    margin: 0;
+    padding-left: 35px; 
+    line-height: 1.6;
+    font-size: 14px;
+}
+
+.location-header h4 {
+    font-weight: normal; 
+    margin: 0;
+    font-size: 16px;
+}
+
+/*footer*/
+.memorial_footer {
+    background-color: #1e2837;
+    padding: 1rem 1rem;
+    color: #fcfbfb;
+    
+}
+.footer_container {
+    justify-content: flex-start; 
+    padding-left: 20px; 
+}
+.footer_header {
+    margin-bottom: 1rem;
+    width: 100%;
+    padding-left: 100px;
+    padding-top: 30px;
+}
+
+.footer_header h1 {
+    margin: 0 0 0.5rem 0;
+    font-size: 1.5rem;
+    color: #fcfbfb;
+}
+
+.footer_tagline {
+    margin: 0;
+    color: #c1c5cc;
+    font-size: 0.9rem;
+    line-height: 1.5;
+    max-width: 400px;
+}
+
+.footer-links-container {
+    display: flex;
+    position: relative;
+    top: -45px;
+    justify-content: flex-end;
+    width: 100%;
+    padding-right: 30%;
+    font-size: 0.rem;
+}
+
+.footer-links-group {
+    display: flex;
+    gap: 12rem;
+    margin-right: -120px;
+    margin-top: -45px;
+}
+
+.footer-links {
+    min-width: 150px;
+}
+
+.footer-links h3 {
+    margin: 0 0 1rem 0;
+    font-size: 1rem;
+    color: #fcfbfb;
+}
+
+.footer-links ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.footer-links li {
+    margin-bottom: 0.5rem;
+    font-size: 0.89rem;
+}
+
+.footer-links a {
+    color: #c1c5cc;
+    text-decoration: none;
+    transition: color 0.2s ease;
+}
+
+.footer-links a:hover {
+    color: #808080;
+    text-decoration: underline;
+}
+
+.footer-copyright {
+    text-align: center;
+    padding-top: 1.5rem;
+    margin-top: 2rem;
+    border-top: 1px solid #ddd;
+    color:#c1c5cc;
+    font-size: 0.8rem;
+    width: 100%;
+}

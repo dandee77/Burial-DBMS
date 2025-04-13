@@ -1,1 +1,10 @@
 .venv
+.env
+cemetery.db
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+db.sqlite3
+*.log

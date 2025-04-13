@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MemorialDB</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+    <link rel = "stylesheet" href = "{{ url_for('static', path='css/landing_page.css') }}">
+    
+</head>
+<body>
+    <script src = "{{ url_for('static', path='script/landing_page.js') }}"></script> 
+    <header>
+        <a href = "index.html" class = "logo"> MemorialDB</a>
+        <nav> <!-- navigation bar / menu -->
+            <a href = "#home" class = "active">Home</a>
+            <a href = "#about">About Us</a>
+            <a href = "#testimonials">Testimonials</a>
+            <a href = "#pricing">Pricing</a>
+            <a href = "#contact">Contact Us</a>
+        </nav>
+       
+        <div class="auth-buttons"> <!-- buttons for log in & sign up -->
+            <button class="log-in" onclick="location.href='/login'">Login</button>
+            <button class="sign-up" onclick="location.href='/signup'">Sign Up</button>
+        </div>
+    </header>
+    
+    <section id = "home"><!-- placeholder -->
+        <div class = "home-container">
+            <h1 class = "section-titlehome"> Preserving Memories for Generations</h1>
+            <div class = "subtitle-home">
+                <p>
+                A comprehensive burial database management system that honors the past while preserving the present 
+                </p>
+            </div>
+        </div>
+    </section> 
+
+    <section id="about">
+        <!-- title -->
+        <h2 class="section-title">About Our Service</h2><br> 
+        <!-- about (contents (text  & features)) -->
+        <div class="about-container">
+            <div class="about-text">
+                <h3>Our Mission</h3>
+                <p>MemorialDB was founded with a clear purpose: to provide a dignified, accurate, and accessible system for managing burial records. 
+                    We understand the importance of preserving this information for families, historians, and future generations.</p><br>
+                <p>Our team combines expertise in genealogy, cemetery management, and technology to create a solution that respects the solemnity of burial records while making them accessible through modern digital tools.</p><br>
+                <p>With over 15 years of experience serving cemeteries, historical societies, and religious institutions, we've developed a deep understanding of the unique challenges and requirements in this specialized field.</p>
+        </div>
+
+            <div class="abt-cards-container"> <!-- cards / boxes -->
+                <div class="about-card">
+                    <i class="icon"></i> <!-- svg icons  -->
+                    <svg xmlns="http://www.w3.org/2000/svg" width="35" height="35" fill="currentColor" class="bi bi-database" viewBox="0 0 16 16">
+                        <path d="M4.318 2.687C5.234 2.271 6.536 2 8 2s2.766.27 3.682.687C12.644 3.125 13 3.627 13 4c0 .374-.356.875-1.318 1.313C10.766 5.729 9.464 6 8 6s-2.766-.27-3.682-.687C3.356 4.875 3 4.373 3 4c0-.374.356-.875 1.318-1.313M13 5.698V7c0 .374-.356.875-1.318 1.313C10.766 8.729 9.464 9 8 9s-2.766-.27-3.682-.687C3.356 7.875 3 7.373 3 7V5.698c.271.202.58.378.904.525C4.978 6.711 6.427 7 8 7s3.022-.289 4.096-.777A5 5 0 0 0 13 5.698M14 4c0-1.007-.875-1.755-1.904-2.223C11.022 1.289 9.573 1 8 1s-3.022.289-4.096.777C2.875 2.245 2 2.993 2 4v9c0 1.007.875 1.755 1.904 2.223C4.978 15.71 6.427 16 8 16s3.022-.289 4.096-.777C13.125 14.755 14 14.007 14 13zm-1 4.698V10c0 .374-.356.875-1.318 1.313C10.766 11.729 9.464 12 8 12s-2.766-.27-3.682-.687C3.356 10.875 3 10.373 3 10V8.698c.271.202.58.378.904.525C4.978 9.71 6.427 10 8 10s3.022-.289 4.096-.777A5 5 0 0 0 13 8.698m0 3V13c0 .374-.356.875-1.318 1.313C10.766 14.729 9.464 15 8 15s-2.766-.27-3.682-.687C3.356 13.875 3 13.373 3 13v-1.302c.271.202.58.378.904.525C4.978 12.71 6.427 13 8 13s3.022-.289 4.096-.777c.324-.147.633-.323.904-.525"/>
+                      </svg>
+                    <h4>Secure Database</h4>
+                    <p>Military-grade encryption and regular backups ensure your records are safe and preserved.</p>
+                </div>
+                <div class="about-card">
+                    <i class="icon"></i>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="35" height="35" fill="currentColor" class="bi bi-shield" viewBox="0 0 16 16">
+                        <path d="M5.338 1.59a61 61 0 0 0-2.837.856.48.48 0 0 0-.328.39c-.554 4.157.726 7.19 2.253 9.188a10.7 10.7 0 0 0 2.287 2.233c.346.244.652.42.893.533q.18.085.293.118a1 1 0 0 0 .101.025 1 1 0 0 0 .1-.025q.114-.034.294-.118c.24-.113.547-.29.893-.533a10.7 10.7 0 0 0 2.287-2.233c1.527-1.997 2.807-5.031 2.253-9.188a.48.48 0 0 0-.328-.39c-.651-.213-1.75-.56-2.837-.855C9.552 1.29 8.531 1.067 8 1.067c-.53 0-1.552.223-2.662.524zM5.072.56C6.157.265 7.31 0 8 0s1.843.265 2.928.56c1.11.3 2.229.655 2.887.87a1.54 1.54 0 0 1 1.044 1.262c.596 4.477-.787 7.795-2.465 9.99a11.8 11.8 0 0 1-2.517 2.453 7 7 0 0 1-1.048.625c-.28.132-.581.24-.829.24s-.548-.108-.829-.24a7 7 0 0 1-1.048-.625 11.8 11.8 0 0 1-2.517-2.453C1.928 10.487.545 7.169 1.141 2.692A1.54 1.54 0 0 1 2.185 1.43 63 63 0 0 1 5.072.56"/>
+                      </svg>
+                    <h4>Privacy Focused</h4>
+                    <p>Customizable privacy settings to control who can access sensitive information.</p>
+                </div>
+                <div class="about-card">
+                    <i class="icon"></i>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="35" height="35" fill="currentColor" class="bi bi-people" viewBox="0 0 16 16">
+                        <path d="M15 14s1 0 1-1-1-4-5-4-5 3-5 4 1 1 1 1zm-7.978-1L7 12.996c.001-.264.167-1.03.76-1.72C8.312 10.629 9.282 10 11 10c1.717 0 2.687.63 3.24 1.276.593.69.758 1.457.76 1.72l-.008.002-.014.002zM11 7a2 2 0 1 0 0-4 2 2 0 0 0 0 4m3-2a3 3 0 1 1-6 0 3 3 0 0 1 6 0M6.936 9.28a6 6 0 0 0-1.23-.247A7 7 0 0 0 5 9c-4 0-5 3-5 4q0 1 1 1h4.216A2.24 2.24 0 0 1 5 13c0-1.01.377-2.042 1.09-2.904.243-.294.526-.569.846-.816M4.92 10A5.5 5.5 0 0 0 4 13H1c0-.26.164-1.03.76-1.724.545-.636 1.492-1.256 3.16-1.275ZM1.5 5.5a3 3 0 1 1 6 0 3 3 0 0 1-6 0m3-2a2 2 0 1 0 0 4 2 2 0 0 0 0-4"/>
+                      </svg>
+                    <h4>Family Access</h4>
+                    <p>Provide controlled access to family members for viewing and contributing.</p>
+                </div>
+                <div class="about-card">
+                    <i class="icon"></i>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="35" height="35" fill="currentColor" class="bi bi-database" viewBox="0 0 16 16">
+                        <path d="M4.318 2.687C5.234 2.271 6.536 2 8 2s2.766.27 3.682.687C12.644 3.125 13 3.627 13 4c0 .374-.356.875-1.318 1.313C10.766 5.729 9.464 6 8 6s-2.766-.27-3.682-.687C3.356 4.875 3 4.373 3 4c0-.374.356-.875 1.318-1.313M13 5.698V7c0 .374-.356.875-1.318 1.313C10.766 8.729 9.464 9 8 9s-2.766-.27-3.682-.687C3.356 7.875 3 7.373 3 7V5.698c.271.202.58.378.904.525C4.978 6.711 6.427 7 8 7s3.022-.289 4.096-.777A5 5 0 0 0 13 5.698M14 4c0-1.007-.875-1.755-1.904-2.223C11.022 1.289 9.573 1 8 1s-3.022.289-4.096.777C2.875 2.245 2 2.993 2 4v9c0 1.007.875 1.755 1.904 2.223C4.978 15.71 6.427 16 8 16s3.022-.289 4.096-.777C13.125 14.755 14 14.007 14 13zm-1 4.698V10c0 .374-.356.875-1.318 1.313C10.766 11.729 9.464 12 8 12s-2.766-.27-3.682-.687C3.356 10.875 3 10.373 3 10V8.698c.271.202.58.378.904.525C4.978 9.71 6.427 10 8 10s3.022-.289 4.096-.777A5 5 0 0 0 13 8.698m0 3V13c0 .374-.356.875-1.318 1.313C10.766 14.729 9.464 15 8 15s-2.766-.27-3.682-.687C3.356 13.875 3 13.373 3 13v-1.302c.271.202.58.378.904.525C4.978 12.71 6.427 13 8 13s3.022-.289 4.096-.777c.324-.147.633-.323.904-.525"/>
+                      </svg>
+                    <h4>Historical Preservation</h4>
+                    <p>Tools designed specifically for historical documentation and preservation.</p>
+                </div>
+            </div>
+    </div>
+</section>
+                  
+    <section id = "testimonials">
+    <h2 class="section-title">What Our Users Say</h2><br>
+    <div class = "subtitle">
+        <p> Hear from professionals who use our burial database management system to serve families and preserve important historical records</p>
+        <br><br><br>
+        <div class="testimonial-grid">
+            <div class="testimonial-card">
+                <div class="stars">★★★★★</div><br>
+                 <!-- the stars are text characters (i just copy & paste them :>) -->
+                <blockquote> 
+                    <!-- better than <p>  because it is a testimonial-->
+                    MemorialDB has transformed how we manage our records. The system is intuitive and has saved our staff countless hours of work while providing better service to families.
+                </blockquote>
+                <div class="name">
+                    <strong><br><br>Sarah Johnson</strong><br> <!-- make the letters bold -->
+                    <span>Cemetery Administrator</span>
+                </div>
+            </div>
+            
+            <div class="testimonial-card">
+                <div class="stars">★★★★★</div><br>
+                <blockquote>
+                    As a historical society, preserving accurate, burial records is essential to our mission. This system has helped us digitize centuries of records while maintaining their integrity.
+                </blockquote>
+                <div class="name">
+                <strong><br>Michael Chen</strong> <br>
+                <span>Historical Society Director</span>
+                </div>
+            </div>
+            
+            <div class="testimonial-card">
+                <div class="stars">★★★★<span class = "star_empty"> ★</span></div><br>
+                <blockquote>
+                    The respectful approach and attention to detail make the system perfect for our church cemetery. Family members appreciate the easy access to information during difficult times. 
+                </blockquote>
+                <div class="name">
+                    <strong><br>Reverend Thomas Williams</strong>  
+                    <span>Church Administrator</span>
+                    </div>
+                </div>
+
+            <div class="testimonial-card">
+                <div class="stars">★★★★★</div><br>
+                <blockquote>
+                    The search capabilities and data organization are outstanding. I've been able to connect family histories that were previously impossible to link due to scattered records.
+                </blockquote>
+                <div class="name">
+                    <strong><br>Dr. Elizabeth Rodriguez</strong>  
+                    <span>Genealogical Researcher</span>
+                    </div>
+                </div>
+    </div>  
+    </section>
+
+    <section id = "pricing">
+    <h2 class="section-title"><br>Simple, Transparent Pricing</h2><br>
+    <div class = "subtitle">
+        <p>Choose the plan that fits your organization's needs All plans include our core database functionality.</p>
+    </div>
+
+    <div class="pricing-container">
+        <div class="pricing-card">
+            <h3>Basic Plan</h3>
+            <div class="price">₱3,500</div>
+            <ul class="features">
+                <li>Single user license</li>
+                <li>Basic database functionality</li>
+                <li>Email support</li>
+                <li>Standard maintenance</li>
+            </ul>
+            <button class="learn-more">Learn More</button>
+        </div>
+        <!-- most popular plan -->
+        <div class="pricing-card featured">
+            <div class = "popular"> Most Popular</div>
+            <h3>Family Plan</h3>
+            <div class="price">₱7,200</div>
+            <ul class="features">
+                <li>Up to 5 user licenses</li>
+                <li>Advanced database features</li>
+                <li>Priority email and phone support</li>
+                <li>Enhanced maintenance</li>
+                <li>Flower placement service (4x yearly)</li>
+            </ul>
+            <button class="learn-more">Learn More</button>
+        </div>
+        
+        <div class="pricing-card">
+            <h3>Enterprise Plan</h3>
+            <div class="price">₱12,800</div>
+            <ul class="features">
+                <li>Unlimited user licenses</li>
+                <li>All premium database features</li>
+                <li>24/7 dedicated support</li>
+                <li>Custom maintenance plan</li>
+                <li>Monthly consulting</li>
+                <li>Custom integration options</li>
+            </ul>
+            <button class="learn-more">Learn More</button>
+        </div>
+    </div>
+    
+    <div class="custom-option">
+        <p>Need a custom solution? Contact our sales team for personalized pricing.</p>
+        <button class="contact-btn" onclick="location.href='#contact'">Contact Us for Custom Options</button>
+    </div>
+</section>
+
+<section id="contact">
+    <h2 class="section-title">Contact Us</h2>
+    <div class="subtitle"><br>
+        <p>Have questions about our services? Reach out to our team for assistance.</p>
+    </div>
+
+    <div class="contact-container">
+        <!-- Message Form -->
+        <div class="contact-form">
+            <h3>Send Us a Message</h3>
+            <form>
+                <div class="form-group">
+                    <label for="name">Your name</label>
+                    <input type="text" id="name" name="name" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="email">Your email</label>
+                    <input type="email" id="email" name="email" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="subject">Message subject</label>
+                    <input type="text" id="subject" name="subject" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="message">Message</label>
+                    <textarea id="message" name="message" rows="5" required></textarea>
+                </div>
+                <button type="submit" class="submit_btn">Send Message</button>
+            </form>
+        </div>
+
+        <!-- Contact Info -->
+        <div class="contact-info">
+            <h3>Contact Information</h3><br>
+            
+            <!-- Location -->
+            <div class="location-container">
+                <div class="location-header">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="currentColor" viewBox="0 0 16 16" aria-hidden="true">
+                        <path d="M12.166 8.94c-.524 1.062-1.234 2.12-1.96 3.07A32 32 0 0 1 8 14.58a32 32 0 0 1-2.206-2.57c-.726-.95-1.436-2.008-1.96-3.07C3.304 7.867 3 6.862 3 6a5 5 0 0 1 10 0c0 .862-.305 1.867-.834 2.94M8 16s6-5.686 6-10A6 6 0 0 0 2 6c0 4.314 6 10 6 10"/>
+                        <path d="M8 8a2 2 0 1 1 0-4 2 2 0 0 1 0 4m0 1a3 3 0 1 0 0-6 3 3 0 0 0 0 6"/>
+                    </svg>
+                    <h4>Our Location</h4>
+                </div>
+                    <p class="contact-infos">123 Memorial Avenue<br>Suite 600<br>Malolos, Bulacan 02110</p>
+            </div><br>
+            
+            <!-- Phone Number -->
+            <div class="location-container">
+                <div class="location-header">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="currentColor" viewBox="0 0 16 16" aria-hidden="true">
+                        <path d="M3.654 1.328a.678.678 0 0 0-1.015-.063L1.605 2.3c-.483.484-.661 1.169-.45 1.77a17.6 17.6 0 0 0 4.168 6.608 17.6 17.6 0 0 0 6.608 4.168c.601.211 1.286.033 1.77-.45l1.034-1.034a.678.678 0 0 0-.063-1.015l-2.307-1.794a.68.68 0 0 0-.58-.122l-2.19.547a1.75 1.75 0 0 1-1.657-.459L5.482 8.062a1.75 1.75 0 0 1-.46-1.657l.548-2.19a.68.68 0 0 0-.122-.58zM1.884.511a1.745 1.745 0 0 1 2.612.163L6.29 2.98c.329.423.445.974.315 1.494l-.547 2.19a.68.68 0 0 0 .178.643l2.457 2.457a.68.68 0 0 0 .644.178l2.189-.547a1.75 1.75 0 0 1 1.494.315l2.306 1.794c.829.645.905 1.87.163 2.611l-1.034 1.034c-.74.74-1.846 1.065-2.877.702a18.6 18.6 0 0 1-7.01-4.42 18.6 18.6 0 0 1-4.42-7.009c-.362-1.03-.037-2.137.703-2.877z"/>
+                    </svg>
+                    <h4>Phone Number</h4>
+                </div>
+                    <p class="contact-infos">(555) 123-4567</p>
+            </div><br>
+            
+            <!-- Email -->
+            <div class="location-container">
+                <div class="location-header">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="currentColor" class="bi bi-envelope" viewBox="0 0 16 16">
+                        <path d="M0 4a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2zm2-1a1 1 0 0 0-1 1v.217l7 4.2 7-4.2V4a1 1 0 0 0-1-1zm13 2.383-4.708 2.825L15 11.105zm-.034 6.876-5.64-3.471L8 9.583l-1.326-.795-5.64 3.47A1 1 0 0 0 2 13h12a1 1 0 0 0 .966-.741M1 11.105l4.708-2.897L1 5.383z"/>
+                    </svg>
+                    <h4>Email Address</h4>
+                </div> 
+                <div class="contact-infos">
+                    <p class="location_address">info@memorialdb.com</p> 
+                </div>
+            </div><br>
+            
+            <!-- Business Hours -->
+            <div class="location-container">
+                <div class="location-header">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="currentColor" class="bi bi-clock" viewBox="0 0 16 16">
+                        <path d="M8 3.5a.5.5 0 0 0-1 0V9a.5.5 0 0 0 .252.434l3.5 2a.5.5 0 0 0 .496-.868L8 8.71z"/>
+                        <path d="M8 16A8 8 0 1 0 8 0a8 8 0 0 0 0 16m7-8A7 7 0 1 1 1 8a7 7 0 0 1 14 0"/>
+                      </svg>
+                      <h4>Business Hours</h4>
+                </div>
+                <div class = "contact-infos">
+                    <p>Monday - Friday: 9:00 AM - 5:00 PM<br>
+                       Saturday: 10:00 AM - 2:00 PM<br>
+                       Sunday: Closed</p>
+                </div>
+            </div><br>
+        </div> 
+</section>
+
+    <footer class="memorial_footer">
+        <div class="footer_container">
+            <div class="footer_header">
+                <h1>MemoriaIDB</h1>
+                <p class="footer_tagline">Presenting memories and honoring legacies through thoughtful database management.</p>
+            </div>
+            
+            <div class="footer-links-container">
+                <div class="footer-links-group">
+                    <div class="footer-links">
+                        <h3>Quick Links</h3>
+                        <ul>
+                            <li><a href="#home">Home</a></li>
+                            <li><a href="#about">About Us</a></li>
+                            <li><a href="#testimonials">Testimonials</a></li>
+                            <li><a href="#pricing">Pricing</a></li>
+                            <li><a href="#contact">Contact</a></li>
+                        </ul>
+                    </div>
+                    
+                    <div class="footer-links">
+                        <h3>Resources</h3>
+                        <ul>
+                            <li><a href="#">Blog</a></li>
+                            <li><a href="#">Documentation</a></li>
+                            <li><a href="#">FAQ</a></li>
+                            <li><a href="#">Support Center</a></li>
+                        </ul>
+                    </div>
+                    
+                    <div class="footer-links">
+                        <h3>Legal</h3>
+                        <ul>
+                            <li><a href="#">Privacy Policy</a></li>
+                            <li><a href="#">Terms of Service</a></li>
+                            <li><a href="#">Data Protection</a></li>
+                            <li><a href="#">Cookie Policy</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="footer-copyright">
+                © 2025 MemoriaIDB. All rights reserved.
+            </div>
+        </div>
+    </footer>
+</body>
+</html>

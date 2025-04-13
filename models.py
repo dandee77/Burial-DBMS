@@ -28,7 +28,6 @@ class AvailCodeEnum(str, enum.Enum):
 
 
 
-
 # ? Models
 
 # Client model
@@ -54,19 +53,11 @@ class Admin(Base):
     username = Column(String, unique=True)
     password = Column(String)
 
-# Block model
-class Block(Base):
-    __tablename__ = "Block"
-
-    block_id = Column(Integer, primary_key=True, index=True)
-    slots = relationship("Slot", back_populates="block")
-
 # Slot model
 class Slot(Base):
     __tablename__ = "Slot"
 
     slot_id = Column(Integer, primary_key=True, index=True)
-    block_id = Column(Integer, ForeignKey("Block.block_id"))
     slot_type = Column(Enum(SlotTypeEnum))
     availability = Column(Enum(AvailabilityEnum))
     client_id = Column(Integer, ForeignKey("Client.client_id"), nullable=True)
@@ -75,7 +66,6 @@ class Slot(Base):
     request_maintenance = Column(Boolean, default=False)
     password = Column(String)
 
-    block = relationship("Block", back_populates="slots")
     client = relationship("Client")
     plot = relationship("Plot", back_populates="slot", uselist=False)
     mausoleum = relationship("Mausoleum", back_populates="slot", uselist=False)
@@ -116,6 +106,9 @@ class Deceased(Base):
 
     plot = relationship("Plot", back_populates="deceased")
     mausoleum = relationship("Mausoleum", back_populates="deceased")
+
+
+############################################################################################
 
 # Purchase model
 class Purchase(Base):
