@@ -21,7 +21,8 @@ body{
     color: #fff;
     overflow: hidden;
     transition: all 0.5s linear;
-    background: rgba(113, 99, 186, 255);
+    background: #1e2837;
+    font-weight: normal;
 }
 .sidebar:hover{
     width: 240px;

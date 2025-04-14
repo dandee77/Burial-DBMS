@@ -94,15 +94,25 @@ def login_page(request: Request):
     return templates.TemplateResponse("login.html", {"request": request})
 
 @app.post("/login")
-def login_user(username: str = Form(...), password: str = Form(...)):
+def login_user(username: str = Form(...), password: str = Form(...)):   
     db = SessionLocal()
     user = db.query(Client).filter_by(username=username, password=password).first()
     db.close()
 
     if user:
-        return {"message": "Login successful", "user_id": user.client_id}
+        return {"message": "Login successful", "client_id": user.client_id}
     else:
-        return {"message": "Invalid credentials"}
+        return {"message": "Invalid username or password"}
+
+
+# ---------------------
+# DASHBOARD
+# ---------------------
+@app.get("/dashboard", response_class=HTMLResponse)
+def dashboard(request: Request):
+    return templates.TemplateResponse("main_dashboard.html", {"request": request})
+
+
 
 # ---------------------
 # DEBUG/DEV ROUTES
