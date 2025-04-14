@@ -105,11 +105,16 @@ def login_user(username: str = Form(...), password: str = Form(...)):
 
 
 # ---------------------
-# DASHBOARD
+# DASHBOARD - CLIENT
 # ---------------------
 @app.get("/dashboard", response_class=HTMLResponse)
 def dashboard(request: Request):
     return templates.TemplateResponse("main_dashboard.html", {"request": request})
+
+
+@app.get("/dashboard/buyaplan", response_class=HTMLResponse)
+def buy_a_plan(request: Request):
+    return templates.TemplateResponse("client_buyaplan.html", {"request": request})
 
 
 

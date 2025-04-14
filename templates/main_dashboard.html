@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard Design</title>
+    <link rel="stylesheet" href="{{ url_for('static', path='css/dashboard_sidebar.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', path='css/main_dashboard.css') }}">
     <link
         rel="stylesheet"
@@ -32,7 +33,7 @@
                 </a>
             </li>
             <li>
-                <a href="#">
+                <a href="/dashboard/buyaplan">
                     <i class="fas fa-shopping-cart"></i>
                     <span>Buy a Plan</span>
                 </a>
