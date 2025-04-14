@@ -21,7 +21,7 @@ body{
     color: #fff;
     overflow: hidden;
     transition: all 0.5s linear;
-    background: rgba(113, 99, 186, 255);
+    background: rgba(32, 71, 8, 0.8);
 }
 .sidebar:hover{
     width: 240px;
