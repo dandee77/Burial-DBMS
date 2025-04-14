@@ -12,8 +12,7 @@ from dotenv import load_dotenv
 from loguru import logger
 from os import getenv
 
-#! NGROK DOMAIN DOES NOT UPDATE EVEN IF THE CSS FILE IS UPDATED
-
+# TODO: REMOVE NGROK WARNING
 load_dotenv()
 
 NGROK_AUTH_TOKEN = getenv("NGROK_AUTH_TOKEN", "NGROK_AUTH_TOKEN")
