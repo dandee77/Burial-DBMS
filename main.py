@@ -14,21 +14,21 @@ from os import getenv
 
 #! NGROK DOMAIN DOES NOT UPDATE EVEN IF THE CSS FILE IS UPDATED
 
-# load_dotenv()
+load_dotenv()
 
-# NGROK_AUTH_TOKEN = getenv("NGROK_AUTH_TOKEN", "NGROK_AUTH_TOKEN")
+NGROK_AUTH_TOKEN = getenv("NGROK_AUTH_TOKEN", "NGROK_AUTH_TOKEN")
 APPLICATION_PORT = 80 
-# NGROK_DOMAIN = "foal-engaged-regularly.ngrok-free.app"
+NGROK_DOMAIN = "foal-engaged-regularly.ngrok-free.app"
 
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    # ngrok.set_auth_token(NGROK_AUTH_TOKEN)
-    # public_url = ngrok.connect(
-    #     addr=APPLICATION_PORT,
-    #     domain=NGROK_DOMAIN, 
-    #     proto="http"
-    # )
+    ngrok.set_auth_token(NGROK_AUTH_TOKEN)
+    public_url = ngrok.connect(
+        addr=APPLICATION_PORT,
+        domain=NGROK_DOMAIN, 
+        proto="http"
+    )
     print("Creating tables...")
     Base.metadata.create_all(bind=engine)
     engine.dispose()
@@ -94,15 +94,25 @@ def login_page(request: Request):
     return templates.TemplateResponse("login.html", {"request": request})
 
 @app.post("/login")
-def login_user(username: str = Form(...), password: str = Form(...)):
+def login_user(username: str = Form(...), password: str = Form(...)):   
     db = SessionLocal()
     user = db.query(Client).filter_by(username=username, password=password).first()
     db.close()
 
     if user:
-        return {"message": "Login successful", "user_id": user.client_id}
+        return {"message": "Login successful", "client_id": user.client_id}
     else:
-        return {"message": "Invalid credentials"}
+        return {"message": "Invalid username or password"}
+
+
+# ---------------------
+# DASHBOARD
+# ---------------------
+@app.get("/dashboard", response_class=HTMLResponse)
+def dashboard(request: Request):
+    return templates.TemplateResponse("main_dashboard.html", {"request": request})
+
+
 
 # ---------------------
 # DEBUG/DEV ROUTES
