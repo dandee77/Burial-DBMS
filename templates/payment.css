@@ -85,3 +85,16 @@ textarea {
     background-color: lightgray;
     transition-delay: 0.1s;
 }
+
+.receipt {
+    margin-top: 30px;
+    background-color: #e8f5e9;
+    padding: 20px;
+    border-radius: 10px;
+    border-left: 5px solid #1e2837;
+  }
+  
+  .hidden {
+    display: none;
+  }
+  
