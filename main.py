@@ -16,7 +16,7 @@ from os import getenv
 load_dotenv()
 
 NGROK_AUTH_TOKEN = getenv("NGROK_AUTH_TOKEN", "NGROK_AUTH_TOKEN")
-APPLICATION_PORT = 80 
+APPLICATION_PORT = 80
 NGROK_DOMAIN = "foal-engaged-regularly.ngrok-free.app"
 
 
