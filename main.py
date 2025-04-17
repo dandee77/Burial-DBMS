@@ -117,6 +117,10 @@ def buy_a_plan(request: Request):
 def payment(request: Request):
     return templates.TemplateResponse("client_payment.html", {"request": request})
 
+@app.get("/dashboard/vicinity_map", response_class=HTMLResponse)
+def vicinity_map(request: Request):
+    return templates.TemplateResponse("vicinity_map.html", {"request": request})
+
 # ---------------------
 # DEBUG/DEV ROUTES
 # ---------------------
