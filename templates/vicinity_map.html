@@ -621,21 +621,58 @@
                         .then(res => res.json())
                         .then(data => {
                             const info = document.getElementById('plot-info');
-                            if (data && data.length > 0) {
-                                info.innerHTML = data.map(d => `
-                                    <h4>${d.name}</h4>
-                                    <p><strong>Birth:</strong> ${new Date(d.birth_date).toLocaleDateString()}</p>
-                                    <p><strong>Death:</strong> ${new Date(d.death_date).toLocaleDateString()}</p>
+
+                            // No deceased assigned
+                            if (!data || data.length === 0) {
+                                info.innerHTML = `
+                                    <h4>Slot ID: ${index + 1}</h4>
+                                    <p><strong>Slot Type:</strong> Unknown</p>
+                                    <p><strong>Availability:</strong> Unknown</p>
+                                    <p><strong>Status:</strong> No deceased assigned.</p>
+                                `;
+                                return;
+                            }
+
+                            const slotId = index + 1;
+
+                            // Show all deceased + slot info (assuming same slot info across entries)
+                            const deceasedHtml = data.map(d => `
+                                <div class="deceased-entry">
+                                    <p><strong>Deceased Name:</strong> ${d.name}</p>
+                                    <p><strong>Birth Date:</strong> ${new Date(d.birth_date).toLocaleDateString()}</p>
+                                    <p><strong>Death Date:</strong> ${new Date(d.death_date).toLocaleDateString()}</p>
                                     <hr>
-                                `).join('');
+                                </div>
+                            `).join('');
+
+                            const slotType = data[0].slot_type || "Unknown";
+                            const availability = data[0].availability || "Unknown";
+                            const clientId = data[0].client_id || "Unassigned";
+                            const price = data[0].price !== undefined ? `₱${data[0].price.toFixed(2)}` : "N/A";
+
+                            if (availability === "available") {
+                                info.innerHTML = `
+                                    <h4>Slot ID: ${slotId}</h4>
+                                    <p><strong>Slot Type:</strong> ${slotType}</p>
+                                    <p><strong>Availability:</strong> ${availability}</p>
+                                    <p><strong>Price:</strong> ${price}</p>
+                                    <a href="/dashboard/buyaplan" class="map-btn">Buy This Plan</a>
+                                `;
                             } else {
-                                info.innerHTML = '<p>No deceased assigned to this plot.</p>';
+                                info.innerHTML = `
+                                    <h4>Slot ID: ${slotId}</h4>
+                                    <p><strong>Slot Type:</strong> ${slotType}</p>
+                                    <p><strong>Availability:</strong> ${availability}</p>
+                                    <p><strong>Client ID:</strong> ${clientId}</p>
+                                    ${deceasedHtml}
+                                `;
                             }
                         })
                         .catch(() => {
-                            document.getElementById('plot-info').innerHTML = '<p>Error loading data.</p>';
+                            document.getElementById('plot-info').innerHTML = '<p>No deceased assigned to this slot.</p>';
                         });
                 });
+
                 
                 imageContainer.appendChild(highlight);
             });

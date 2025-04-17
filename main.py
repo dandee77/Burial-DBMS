@@ -126,16 +126,37 @@ def vicinity_map(request: Request):
 # ---------------------
 @app.get("/api/slot/{slot_id}")
 def get_deceased_by_slot(slot_id: int, db: Session = Depends(get_db)):
+    slot = db.query(Slot).filter(Slot.slot_id == slot_id).first()
+    if not slot:
+        return JSONResponse(content={"message": "Slot not found"}, status_code=404)
+
     deceased_list = db.query(Deceased).filter(Deceased.slot_id == slot_id).all()
-    if deceased_list:
-        return [
-            {
-                "name": d.name,
-                "birth_date": d.birth_date,
-                "death_date": d.death_date
-            } for d in deceased_list
-        ]
-    return JSONResponse(content={"message": "No deceased found for this slot."}, status_code=404)
+
+    result = []
+    for d in deceased_list:
+        result.append({
+            "slot_id": slot.slot_id,
+            "slot_type": slot.slot_type,
+            "availability": slot.availability,
+            "price": slot.price,
+            "client_id": slot.client_id,
+            "name": d.name,
+            "birth_date": d.birth_date,
+            "death_date": d.death_date,
+        })
+
+    # If no deceased but slot exists
+    if not result:
+        result.append({
+            "slot_id": slot.slot_id,
+            "slot_type": slot.slot_type,
+            "availability": slot.availability,
+            "price": slot.price,
+            "client_id": slot.client_id
+        })
+
+    return result
+
 
 # ---------------------
 # DEBUG/DEV ROUTES
