@@ -9,63 +9,18 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
-    <div class="sidebar"> 
+    <div class="sidebar">
         <div class="logo"></div>
         <ul class="menu">
-            <li>
-                <a href="/dashboard">
-                    <i class="fas fa-dashboard"></i>
-                    <span>Dashboard</span>
-                </a>
-            </li>
-            <li class="active">
-                <a href="/dashboard/vicinity_map">
-                    <i class="fas fa-map"></i>
-                    <span>Vicinity Map</span>
-                </a>
-            </li>
-            <li>
-                <a href="#">
-                    <i class="fas fa-phone-square"></i>
-                    <span>Contact Us</span>
-                </a>
-            </li>
-            <li>
-                <a href="/dashboard/buyaplan">
-                    <i class="fas fa-shopping-cart"></i>
-                    <span>Buy a Plan</span>
-                </a>
-            </li>
-            <li>
-                <a href="/dashboard/payment">
-                    <i class="fas fa-tag"></i>
-                    <span>Payments</span>
-                </a>
-            </li>
-            <li>
-                <a href="#">
-                    <i class="fas fa-clipboard"></i>
-                    <span>Contract</span>
-                </a>
-            </li>
-            <li>
-                <a href="#">
-                    <i class="fas fa-gear"></i>
-                    <span>Maintenance</span>
-                </a>
-            </li>
-            <li>
-                <a href="#">
-                    <i class="fas fa-address-card"></i>
-                    <span>Profile</span>
-                </a>
-            </li>
-            <li class="logout">
-                <a href="/">
-                    <i class="fas fa-sign-out-alt"></i>
-                    <span>Logout</span>
-                </a>
-            </li>
+            <li><a href="/dashboard"><i class="fas fa-dashboard"></i><span>Dashboard</span></a></li>
+            <li class="active"><a href="#"><i class="fas fa-map"></i><span>Vicinity Map</span></a></li>
+            <li><a href="#"><i class="fas fa-phone-square"></i><span>Contact Us</span></a></li>
+            <li><a href="/dashboard/buyaplan"><i class="fas fa-shopping-cart"></i><span>Buy a Plan</span></a></li>
+            <li><a href="/dashboard/payment"><i class="fas fa-tag"></i><span>Payments</span></a></li>
+            <li><a href="#"><i class="fas fa-clipboard"></i><span>Contract</span></a></li>
+            <li><a href="#"><i class="fas fa-gear"></i><span>Maintenance</span></a></li>
+            <li><a href="#"><i class="fas fa-address-card"></i><span>Profile</span></a></li>
+            <li class="logout"><a href="/"><i class="fas fa-sign-out-alt"></i><span>Logout</span></a></li>
         </ul>
     </div>
 
@@ -76,23 +31,32 @@
             </div>
         </div>
 
-        <div id="app-container">
-            <div id="header">Kilmihil Graveyard Map</div>
-            <div id="map-viewport">
-                <div id="map-container">
-                    <div id="image-container">
-                        <img src="../static/assets/arial-view-of-kilmihil-graveyard-january-2019.jpg" alt="Aerial view of Kilmihil Graveyard" id="responsive-image">
+        <div class="map-container-wrapper">
+            <div id="app-container">
+                <div id="header">Kilmihil Graveyard Map</div>
+                <div id="map-viewport">
+                    <div id="map-container">
+                        <div id="image-container">
+                            <img src="../static/assets/arial-view-of-kilmihil-graveyard-january-2019.jpg" alt="Graveyard Map" id="responsive-image">
+                        </div>
                     </div>
-                </div>
 
-                <button id="scissor-mode-btn">Scissor Mode</button>
-                <div class="controls">
-                    <button class="control-btn" id="zoom-in">+</button>
-                    <button class="control-btn" id="zoom-out">-</button>
-                    <button class="control-btn" id="reset-zoom">⟲</button>
-                </div>
+                    <button id="scissor-mode-btn">Scissor Mode</button>
+                    <div class="controls">
+                        <button class="control-btn" id="zoom-in">+</button>
+                        <button class="control-btn" id="zoom-out">-</button>
+                        <button class="control-btn" id="reset-zoom">&#10226;</button>
+                    </div>
 
-                <div id="zoom-level">100%</div>
+                    <div id="zoom-level">100%</div>
+                </div>
+            </div>
+
+            <div id="info-panel">
+                <h3>Plot Details</h3>
+                <div id="plot-info">
+                    <p>Select a plot to view details.</p>
+                </div>
             </div>
         </div>
     </div>
@@ -652,11 +616,24 @@
                 }
                 highlight.style.clipPath = `polygon(${polygonPoints.join(', ')})`;
                 
-                highlight.addEventListener('click', (e) => {
-                    if (!isScissorMode) {
-                        e.stopPropagation();
-                        alert(`You clicked area ${index + 1}`);
-                    }
+                highlight.addEventListener('click', () => {
+                    fetch(`/api/deceased/${index + 1}`)
+                        .then(res => res.json())
+                        .then(data => {
+                            const info = document.getElementById('plot-info');
+                            if (data && data.name) {
+                                info.innerHTML = `
+                                    <h4>${data.name}</h4>
+                                    <p><strong>Birth:</strong> ${new Date(data.birth_date).toLocaleDateString()}</p>
+                                    <p><strong>Death:</strong> ${new Date(data.death_date).toLocaleDateString()}</p>
+                                `;
+                            } else {
+                                info.innerHTML = '<p>No deceased assigned to this plot.</p>';
+                            }
+                        })
+                        .catch(() => {
+                            document.getElementById('plot-info').innerHTML = '<p>Error loading data.</p>';
+                        });
                 });
                 
                 imageContainer.appendChild(highlight);

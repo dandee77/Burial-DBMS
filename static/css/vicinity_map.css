@@ -8,7 +8,6 @@ body {
     display: flex;
 }
 
-/* Main content area to match dashboard */
 .main--content {
     position: relative;
     background: #ebe9e9;
@@ -16,7 +15,6 @@ body {
     padding: 1rem;
 }
 
-/* Header style consistent with dashboard */
 .header--wrapper {
     display: flex;
     justify-content: space-between;
@@ -32,9 +30,13 @@ body {
     color: #1e2837;
 }
 
-/* Map styles */
+.map-container-wrapper {
+    display: flex;
+    gap: 1rem;
+}
+
 #app-container {
-    width: 100%;
+    width: 70%;
     height: 80vh;
     border: 3px solid #333;
     border-radius: 8px;
@@ -152,4 +154,29 @@ body {
 
 .scissor-mode-active.grabbing {
     cursor: grabbing;
+}
+
+#info-panel {
+    width: 30%;
+    background: #fff;
+    border-radius: 10px;
+    padding: 1rem;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    overflow-y: auto;
+    max-height: 80vh;
+}
+
+#plot-info h4 {
+    margin-top: 1rem;
+    color: #1e2837;
+}
+
+#plot-info p {
+    font-size: 14px;
+    line-height: 1.5;
+    margin: 0.25rem 0;
+} 
+
+#plot-info {
+    color: #333;
 }
