@@ -1,11 +1,11 @@
 from contextlib import asynccontextmanager
 from fastapi import FastAPI, Form, Request, Depends
-from fastapi.responses import HTMLResponse
+from fastapi.responses import HTMLResponse, JSONResponse
 from fastapi.templating import Jinja2Templates
 from fastapi.staticfiles import StaticFiles
 from sqlalchemy.orm import Session
 from database import engine, Base, SessionLocal
-from models import Client
+from models import Client, Deceased, Slot, Contract
 from crud import create_client, get_all_clients, authenticate_client
 from schemas import ClientCreate
 from datetime import datetime
@@ -122,11 +122,35 @@ def vicinity_map(request: Request):
     return templates.TemplateResponse("vicinity_map.html", {"request": request})
 
 # ---------------------
+# API - DECEASED BY SLOT ID
+# ---------------------
+@app.get("/api/slot/{slot_id}")
+def get_deceased_by_slot(slot_id: int, db: Session = Depends(get_db)):
+    deceased_list = db.query(Deceased).filter(Deceased.slot_id == slot_id).all()
+    if deceased_list:
+        return [
+            {
+                "name": d.name,
+                "birth_date": d.birth_date,
+                "death_date": d.death_date
+            } for d in deceased_list
+        ]
+    return JSONResponse(content={"message": "No deceased found for this slot."}, status_code=404)
+
+# ---------------------
 # DEBUG/DEV ROUTES
 # ---------------------
 @app.get("/clients")
 def get_clients(db: Session = Depends(get_db)):
     return get_all_clients(db)
+
+@app.get("/deceased")
+def get_deceased(db: Session = Depends(get_db)):
+    return db.query(Deceased).all()
+
+@app.get("/slots")
+def get_slots(db: Session = Depends(get_db)):
+    return db.query(Slot).all()
 
 if __name__ == "__main__":
     uvicorn.run("main:app", host="127.0.0.1", port=APPLICATION_PORT, reload=True)

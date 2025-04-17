@@ -617,11 +617,11 @@
                 highlight.style.clipPath = `polygon(${polygonPoints.join(', ')})`;
                 
                 highlight.addEventListener('click', () => {
-                    fetch(`/api/deceased/${index + 1}`)
+                    fetch(`/api/slot/${index + 1}`)
                         .then(res => res.json())
                         .then(data => {
                             const info = document.getElementById('plot-info');
-                            if (data && data.name) {
+                            if (data) {
                                 info.innerHTML = `
                                     <h4>${data.name}</h4>
                                     <p><strong>Birth:</strong> ${new Date(data.birth_date).toLocaleDateString()}</p>
