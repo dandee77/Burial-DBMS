@@ -124,31 +124,8 @@
             <p><strong>Status:</strong> Successful ✅</p>
           </div>
         </div>
-      
-        <script>
-            const form = document.getElementById('paymentForm');
-            const receipt = document.getElementById('receipt');
-            const rName = document.getElementById('rName');
-            const rAmount = document.getElementById('rAmount');
-            const rMode = document.getElementById('rMode');
-          
-            form.addEventListener('submit', function (e) {
-              e.preventDefault();
-          
-              const fullName = document.getElementById('fullName').value;
-              const planValue = document.getElementById('plan').value; // e.g., "Standard - ₱50,000"
-              const [planName, planAmount] = planValue.split(" - ");
-              const paymentMode = document.getElementById('paymentMode').value;
-          
-              rName.textContent = fullName;
-              rAmount.textContent = `${planName} (${planAmount})`;
-              rMode.textContent = paymentMode;
-          
-              receipt.classList.remove('hidden');
-              form.reset();
-            });
-          </script>
-          
+
+        <script src = "{{ url_for('static', path='script/client_payment.js') }}"></script> 
     </div>
 </body>
 </html>

@@ -26,5 +26,6 @@ def create_client(db: Session, client: ClientCreate):
 def get_all_clients(db: Session):
     return db.query(Client).all()
 
+# todo: change username to email
 def authenticate_client(db: Session, username: str, password: str):
     return db.query(Client).filter_by(username=username, password=password).first()
