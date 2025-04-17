@@ -621,12 +621,13 @@
                         .then(res => res.json())
                         .then(data => {
                             const info = document.getElementById('plot-info');
-                            if (data) {
-                                info.innerHTML = `
-                                    <h4>${data.name}</h4>
-                                    <p><strong>Birth:</strong> ${new Date(data.birth_date).toLocaleDateString()}</p>
-                                    <p><strong>Death:</strong> ${new Date(data.death_date).toLocaleDateString()}</p>
-                                `;
+                            if (data && data.length > 0) {
+                                info.innerHTML = data.map(d => `
+                                    <h4>${d.name}</h4>
+                                    <p><strong>Birth:</strong> ${new Date(d.birth_date).toLocaleDateString()}</p>
+                                    <p><strong>Death:</strong> ${new Date(d.death_date).toLocaleDateString()}</p>
+                                    <hr>
+                                `).join('');
                             } else {
                                 info.innerHTML = '<p>No deceased assigned to this plot.</p>';
                             }
