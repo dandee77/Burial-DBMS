@@ -1,70 +1,108 @@
-from datetime import datetime
+import random
+from datetime import datetime, timedelta
+from faker import Faker
 from sqlalchemy.orm import Session
-from models import Slot, Deceased, AvailabilityEnum, SlotTypeEnum
 from database import SessionLocal
+from models import Client, Slot, Deceased, SlotTypeEnum, AvailabilityEnum
 
-def seed_mock_data():
+"""
+This script seeds the database with random data for clients, slots, and deceased individuals.
+It uses the Faker library to generate realistic names, addresses, and other personal information.
+"""
+
+fake = Faker()
+
+def generate_random_date(start_year=1920, end_year=2000):
+    start_date = datetime(start_year, 1, 1)
+    end_date = datetime(end_year, 12, 31)
+    delta = end_date - start_date
+    random_days = random.randint(0, delta.days)
+    return start_date + timedelta(days=random_days)
+
+def seed_full_database():
     db: Session = SessionLocal()
 
+    # Clean tables
     db.query(Deceased).delete()
     db.query(Slot).delete()
+    db.query(Client).delete()
 
-    # Create sample slots
-    slots = [
-        Slot(slot_type=SlotTypeEnum.plot, availability=AvailabilityEnum.occupied, price=1000.0),
-        Slot(slot_type=SlotTypeEnum.plot, availability=AvailabilityEnum.occupied, price=1000.0),
-        Slot(slot_type=SlotTypeEnum.mausoleum, availability=AvailabilityEnum.occupied, price=5000.0),
-    ]
-
-    db.add_all(slots)
     db.commit()
 
-    # Assign slot_ids
-    db.refresh(slots[0])
-    db.refresh(slots[1])
-    db.refresh(slots[2])
-
-    # Create sample deceased entries
-    deceased = [
-        Deceased(
-            slot_id=slots[0].slot_id,
-            client_id=1,
-            name="John Doe",
-            birth_date=datetime(1950, 1, 1),
-            death_date=datetime(2020, 5, 15)
-        ),
-        Deceased(
-            slot_id=slots[1].slot_id,
-            client_id=1,
-            name="Jane Smith",
-            birth_date=datetime(1945, 6, 20),
-            death_date=datetime(2018, 8, 9)
-        ),
-        Deceased(
-            slot_id=slots[2].slot_id,
-            client_id=1,
-            name="Robert Brown",
-            birth_date=datetime(1960, 3, 12),
-            death_date=datetime(2022, 12, 30)
+    clients = []
+    for i in range(1, 506):
+        client = Client(
+            name=fake.name(),
+            email=f"client{i}@example.com",
+            password="hashedpassword123",
+            contact_number=fake.phone_number(),
+            address=fake.address(),
         )
-    ]
+        clients.append(client)
 
-    db.add_all(deceased)
+    db.add_all(clients)
     db.commit()
 
-    slots[0].deceased_id = deceased[0].deceased_id
-    slots[1].deceased_id = deceased[1].deceased_id
-    slots[2].deceased_id = deceased[2].deceased_id
-    db.commit()
+    for client in clients:
+        db.refresh(client)
 
-    slots[0].client_id = 1
-    slots[1].client_id = 1
-    slots[2].client_id = 1
-    db.commit()
+    slots = []
+    deceased_list = []
+    deceased_counter = 1
 
+    for i in range(506):
+        is_mausoleum = i >= 476
+        slot_type = SlotTypeEnum.mausoleum if is_mausoleum else SlotTypeEnum.plot
+
+        # Randomly decide if this slot is available or occupied
+        is_occupied = random.choice([True, False])
+        availability = AvailabilityEnum.occupied if is_occupied else AvailabilityEnum.available
+
+        # Price ranges
+        price = round(random.uniform(800.0, 1500.0), 2) if slot_type == SlotTypeEnum.plot else round(random.uniform(4000.0, 6000.0), 2)
+
+        # Assign a client only if occupied
+        client = random.choice(clients) if is_occupied else None
+
+        slot = Slot(
+            slot_id=i,
+            slot_type=slot_type,
+            availability=availability,
+            price=price,
+            client_id=client.client_id if client else None,
+            deceased_id=None  # Will be set after deceased creation
+        )
+
+        db.add(slot)
+        db.flush()  # get slot_id
+
+        # If occupied, add deceased(s)
+        if is_occupied:
+            num_deceased = 1 if not is_mausoleum else random.randint(2, 5)
+            for _ in range(num_deceased):
+                birth = generate_random_date()
+                death = birth + timedelta(days=random.randint(20000, 30000))
+                deceased = Deceased(
+                    deceased_id=deceased_counter,
+                    slot_id=i,
+                    client_id=client.client_id,
+                    name=fake.name(),
+                    birth_date=birth,
+                    death_date=death
+                )
+                deceased_list.append(deceased)
+                if not slot.deceased_id:
+                    slot.deceased_id = deceased_counter  # Assign first one only
+                deceased_counter += 1
+
+        slots.append(slot)
+
+    db.add_all(deceased_list)
+    db.commit()
     db.close()
 
-    print("✅ Mock data seeded successfully.")
+    print("✅ Full database seeded with clients, slots, and deceased!")
 
-
-seed_mock_data()
+# Run seeding function
+if __name__ == "__main__":
+    seed_full_database()

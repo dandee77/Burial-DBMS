@@ -605,10 +605,9 @@ function createHighlights() {
                     }
                 })
                 .catch(() => {
-                    document.getElementById('plot-info').innerHTML = '<p>No deceased assigned to this slot.</p>';
+                    document.getElementById('plot-info').innerHTML = '<p>No data assigned to this slot.</p>';
                 });
         });
-
         
         imageContainer.appendChild(highlight);
     });
