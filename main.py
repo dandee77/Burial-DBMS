@@ -113,6 +113,10 @@ def dashboard(request: Request):
 def buy_a_plan(request: Request):
     return templates.TemplateResponse("client_buyaplan.html", {"request": request})
 
+@app.get("/dashboard/payment", response_class=HTMLResponse)
+def payment(request: Request):
+    return templates.TemplateResponse("client_payment.html", {"request": request})
+
 # ---------------------
 # DEBUG/DEV ROUTES
 # ---------------------
