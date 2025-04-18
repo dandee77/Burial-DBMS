@@ -16,6 +16,7 @@ from loguru import logger
 from os import getenv
 
 # TODO: REMOVE NGROK WARNING
+# TODO: LEARN HOW TO TRANSITION FROM SQLITE TO MYSQL
 load_dotenv()
 
 NGROK_AUTH_TOKEN = getenv("NGROK_AUTH_TOKEN", "NGROK_AUTH_TOKEN")
