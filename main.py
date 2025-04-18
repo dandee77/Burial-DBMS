@@ -122,6 +122,10 @@ def payment(request: Request):
 def vicinity_map(request: Request):
     return templates.TemplateResponse("vicinity_map.html", {"request": request})
 
+@app.get("/dashboard/contact_us", response_class=HTMLResponse)
+def contact_us(request: Request):
+    return templates.TemplateResponse("contact_us.html", {"request": request})
+
 # ---------------------
 # API - DECEASED BY SLOT ID
 # ---------------------

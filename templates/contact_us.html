@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FAQs</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', path='css/contact_us.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', path='css/dashboard_sidebar.css') }}">
+    <link
+        rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <div class="sidebar" style="position: fixed;"> 
+        <div class="logo"></div>
+        <ul class="menu">
+           <li>
+               <a href="/dashboard">
+                   <i class="fas fa-dashboard"></i>
+                   <span>Dashboard</span>
+               </a>
+           </li>
+           <li>
+               <a href="/dashboard/vicinity_map">
+                   <i class="fas fa-map"></i>
+                   <span>Vicinity Map</span>
+               </a>
+           </li>
+           <li class = "active"> 
+               <a href="/dashboard/contact_us">
+                   <i class="fas fa-phone-square"></i>
+                   <span>Contact Us</span>
+               </a>
+           </li>
+           <li>
+               <a href="/dashboard/buyaplan">
+                   <i class="fas fa-shopping-cart"></i>
+                   <span>Buy a Plan</span>
+               </a>
+           </li>
+           <li>
+               <a href="/dashboard/payment">
+                   <i class="fas fa-tag"></i>
+                   <span>Payments</span>
+               </a>
+           </li>
+           <li>
+               <a href="#">
+                   <i class="fas fa-clipboard"></i>
+                   <span>Contract</span>
+               </a>
+           </li>
+           <li>
+               <a href="#">
+                   <i class="fas fa-gear"></i>
+                   <span>Maintenance</span>
+               </a>
+           <li>
+               <a href="#">
+                   <i class="fas fa-address-card"></i>
+                   <span>Profile</span>
+               </a>
+           </li>
+           </li>
+           <li class = "logout">
+               <a href="/">
+                   <i class="fas fa-sign-out-alt"></i>
+                   <span>Logout</span>
+               </a>
+           </li>
+        </ul>
+   </div>
+   
+    <div class="container">
+        <div class="main-content-box">
+            <h2 class="faq-heading">Frequently Asked Questions</h2>
+            <div class="accordion">
+                <div class="accordion-item">
+                    <button id="accordion-button-1" aria-expanded="false">
+                        <span class="accordion-title">What types of burials are available?</span>
+                        <span class="icon" aria-hidden="true"></span>
+                    </button> 
+                    <div class="accordion-content">
+                        <p>We offer both <strong>traditional in-ground burials</strong> and above-ground <strong>mausoleum entombments.</strong></p>
+                    </div>
+                </div>
+
+                <div class="accordion-item">
+                    <button id="accordion-button-2" aria-expanded="false">
+                        <span class="accordion-title">Can I upgrade/downgrade my plan?</span>
+                        <span class="icon" aria-hidden="true"></span>
+                    </button> 
+                    <div class="accordion-content">
+                        <p><strong>No, upgrades to existing burial plans are not allowed.</strong></p>
+                        <p>Once a burial plan has been finalized and purchased, it cannot be changed or upgraded. This ensures consistency in record-keeping and plot availability.</p>
+                    </div>
+                </div>
+
+                <div class="accordion-item">
+                    <button id="accordion-button-3" aria-expanded="false">
+                        <span class="accordion-title">Is my plan transferable?</span>
+                        <span class="icon" aria-hidden="true"></span>
+                    </button> 
+                    <div class="accordion-content">
+                        <p><strong>No, burial plans are non-transferable.</strong></p>
+                        <p>Once a burial plan is purchased, it is assigned specifically to the individual named in the contract to maintain accurate records.</p>
+                    </div>
+                </div>
+
+                <div class="accordion-item">
+                    <button id="accordion-button-4" aria-expanded="false">
+                        <span class="accordion-title">How many days is the grace period for plan payments after the due date?</span>
+                        <span class="icon" aria-hidden="true"></span>
+                    </button> 
+                    <div class="accordion-content">
+                        <p><strong>We provide a grace period of 30 days after the due date.</strong></p>
+                        <p>If payment is not received within the grace period, late fees may apply, and the plan may be subject to cancellation or suspension.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="contact-section">
+            <!-- Need More Help Section -->
+            <div class="contact-extra">
+                <h3 class="contact-heading">Need More Help?</h3>
+                <p class="contact-subtext">If your question wasn't answered above, feel free to reach out to our customer support team. We're here to help!</p>
+            </div>
+        
+            <!-- Contact Info Section -->
+            <div class="contact-info">
+                <h3 class="info-heading">Contact Information</h3>
+                
+                <!-- Location -->
+                <div class="info-item">
+                    <div class="info-header">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="currentColor" viewBox="0 0 16 16">
+                            <path d="M12.166 8.94c-.524 1.062-1.234 2.12-1.96 3.07A32 32 0 0 1 8 14.58a32 32 0 0 1-2.206-2.57c-.726-.95-1.436-2.008-1.96-3.07C3.304 7.867 3 6.862 3 6a5 5 0 0 1 10 0c0 .862-.305 1.867-.834 2.94M8 16s6-5.686 6-10A6 6 0 0 0 2 6c0 4.314 6 10 6 10"/>
+                            <path d="M8 8a2 2 0 1 1 0-4 2 2 0 0 1 0 4m0 1a3 3 0 1 0 0-6 3 3 0 0 0 0 6"/>
+                        </svg>
+                        <h4>Our Location</h4>
+                    </div>
+                    <p class="info-detail">123 Memorial Avenue Suite 600<br>Malolos, Bulacan 02110</p>
+                </div>
+                
+                <!-- Phone Number -->
+                <div class="info-item">
+                    <div class="info-header">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="currentColor" viewBox="0 0 16 16">
+                            <path d="M3.654 1.328a.678.678 0 0 0-1.015-.063L1.605 2.3c-.483.484-.661 1.169-.45 1.77a17.6 17.6 0 0 0 4.168 6.608 17.6 17.6 0 0 0 6.608 4.168c.601.211 1.286.033 1.77-.45l1.034-1.034a.678.678 0 0 0-.063-1.015l-2.307-1.794a.68.68 0 0 0-.58-.122l-2.19.547a1.75 1.75 0 0 1-1.657-.459L5.482 8.062a1.75 1.75 0 0 1-.46-1.657l.548-2.19a.68.68 0 0 0-.122-.58z"/>
+                        </svg>
+                        <h4>Phone Number</h4>
+                    </div>
+                    <p class="info-detail">(555) 123-4567</p>
+                </div>
+                
+                <!-- Email -->
+                <div class="info-item">
+                    <div class="info-header">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="currentColor" viewBox="0 0 16 16">
+                            <path d="M0 4a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2zm2-1a1 1 0 0 0-1 1v.217l7 4.2 7-4.2V4a1 1 0 0 0-1-1zm13 2.383-4.708 2.825L15 11.105zm-.034 6.876-5.64-3.471L8 9.583l-1.326-.795-5.64 3.47A1 1 0 0 0 2 13h12a1 1 0 0 0 .966-.741M1 11.105l4.708-2.897L1 5.383z"/>
+                        </svg>
+                        <h4>Email Address</h4>
+                    </div> 
+                    <p class="info-detail">info@memorialdb.com</p>
+                </div>
+                
+                <!-- Business Hours -->
+                <div class="info-item">
+                    <div class="info-header">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="currentColor" viewBox="0 0 16 16">
+                            <path d="M8 3.5a.5.5 0 0 0-1 0V9a.5.5 0 0 0 .252.434l3.5 2a.5.5 0 0 0 .496-.868L8 8.71z"/>
+                            <path d="M8 16A8 8 0 1 0 8 0a8 8 0 0 0 0 16m7-8A7 7 0 1 1 1 8a7 7 0 0 1 14 0"/>
+                        </svg>
+                        <h4>Business Hours</h4>
+                    </div>
+                    <div class="info-detail">
+                        <p>Monday - Friday: 9:00 AM - 5:00 PM<br>
+                           Saturday: 10:00 AM - 2:00 PM<br>
+                           Sunday: Closed</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src = "{{ url_for('static', path='script/contact_us.js') }}"></script> 
+</body>
+</html>
