@@ -24,10 +24,10 @@ body{
     background: #1e2837;
     font-weight: normal;
 }
-.sidebar:hover{
+/* .sidebar:hover{
     width: 280px;
     transition: 0.5s;
-}
+} */
 .logo{
     height: 70px;
     padding: 16px;
