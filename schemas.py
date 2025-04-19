@@ -73,24 +73,74 @@ class DeceasedOut(DeceasedBase):
     }
 
 
-
-class ContractBase(BaseModel):
-    client_id: int
-    slot_id: int
-    payment_method: PaymentMethodEnum
-    initial_price: float
-    interest_rate: float
-    down_payment: float
-    years_to_pay: int  # in months
-    final_price: float
-
-class ContractCreate(ContractBase):
-    pass
-
-class ContractOut(ContractBase):
+class ContractSchema(BaseModel):
     order_id: int
     order_date: datetime
+    client_id: int
+    slot_id: int
+
+    payment_method: PaymentMethodEnum
+    contract_price: float
+    vat_percent: float
+    vat_amount: float
+    price_with_vat: float
+    admin_fee: float
+    spot_cash_total: float
+
+    interest_rate: float
+    down_payment: float
+    years_to_pay: int
+    monthly_amortization: float
+    final_price: float
+
+    latest_payment_date: Optional[datetime]
+    is_paid_on_time: bool
+    is_paid: bool
 
     model_config = {
         "from_attributes": True
     }
+
+class ContractCreate(BaseModel):
+    client_id: int
+    slot_id: int
+    payment_method: PaymentMethodEnum
+
+    contract_price: float
+    vat_percent: float
+    vat_amount: float
+    price_with_vat: float
+    admin_fee: float
+    spot_cash_total: float
+
+    interest_rate: float
+    down_payment: float
+    years_to_pay: int
+    monthly_amortization: float
+    final_price: float
+
+    latest_payment_date: Optional[datetime] = None
+    is_paid_on_time: Optional[bool] = True
+    is_paid: Optional[bool] = False
+
+class ContractUpdate(BaseModel):
+    payment_method: Optional[PaymentMethodEnum] = None
+
+    contract_price: Optional[float] = None
+    vat_percent: Optional[float] = None
+    vat_amount: Optional[float] = None
+    price_with_vat: Optional[float] = None
+    admin_fee: Optional[float] = None
+    spot_cash_total: Optional[float] = None
+
+    interest_rate: Optional[float] = None
+    down_payment: Optional[float] = None
+    years_to_pay: Optional[int] = None
+    monthly_amortization: Optional[float] = None
+    final_price: Optional[float] = None
+
+    latest_payment_date: Optional[datetime] = None
+    is_paid_on_time: Optional[bool] = None
+    is_paid: Optional[bool] = None
+
+

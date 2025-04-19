@@ -164,6 +164,45 @@ def get_deceased_by_slot(slot_id: int, db: Session = Depends(get_db)):
 
 
 # ---------------------
+# API - CONTRACTS BY CLIENT ID
+# ---------------------
+@app.get("/api/contracts/client/{client_id}")
+def get_contracts_by_client(client_id: int, db: Session = Depends(get_db)):
+    contracts = db.query(Contract).filter(Contract.client_id == client_id).all()
+
+    if not contracts:
+        return JSONResponse(content={"message": "No contracts found for this client"}, status_code=404)
+
+    result = []
+    for c in contracts:
+        result.append({
+            "order_id": c.order_id,  # Changed from contract_id to order_id
+            "client_id": c.client_id,
+            "slot_id": c.slot_id,
+            "contract_price": c.contract_price,  # Changed from price
+            "vat_percent": c.vat_percent,  # Changed from vat
+            "admin_fee": c.admin_fee,  # Changed from transfer_fee
+            "down_payment": c.down_payment,
+            "monthly_amortization": c.monthly_amortization,
+            "final_price": c.final_price,  # Changed from full_payment
+            "years_to_pay": c.years_to_pay,
+            "order_date": c.order_date,  # Changed from created_at
+            "slot_type": c.slot.slot_type if c.slot else None,
+            "payment_method": c.payment_method if c.payment_method else None,
+            "is_paid": c.is_paid,
+            "is_paid_on_time": c.is_paid_on_time,
+            "latest_payment_date": c.latest_payment_date,
+            "interest_rate": c.interest_rate,
+            "vat_amount": c.vat_amount,
+            "price_with_vat": c.price_with_vat,
+            "spot_cash_total": c.spot_cash_total
+        })
+
+    return result
+
+
+
+# ---------------------
 # DEBUG/DEV ROUTES
 # ---------------------
 @app.get("/clients")
@@ -180,3 +219,31 @@ def get_slots(db: Session = Depends(get_db)):
 
 if __name__ == "__main__":
     uvicorn.run("main:app", host="127.0.0.1", port=APPLICATION_PORT, reload=True)
+
+
+# Add this temporary debug route to your main.py
+@app.get("/debug/client/{client_id}")
+def debug_client(client_id: int, db: Session = Depends(get_db)):
+    client = db.query(Client).filter(Client.client_id == client_id).first()
+    if not client:
+        return {"message": "Client not found"}
+    
+    slots = db.query(Slot).filter(Slot.client_id == client_id).all()
+    contracts = db.query(Contract).filter(Contract.client_id == client_id).all()
+    
+    return {
+        "client": client,
+        "slots": [s.slot_id for s in slots],
+        "contracts": [c.order_id for c in contracts]
+    }
+
+@app.get("/debug/all-contracts")
+def debug_all_contracts(db: Session = Depends(get_db)):
+    contracts = db.query(Contract).all()
+    return [{
+        "order_id": c.order_id,
+        "client_id": c.client_id,
+        "slot_id": c.slot_id,
+        "client_exists": db.query(Client).filter(Client.client_id == c.client_id).first() is not None,
+        "slot_exists": db.query(Slot).filter(Slot.slot_id == c.slot_id).first() is not None
+    } for c in contracts]
