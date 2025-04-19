@@ -6,6 +6,9 @@
     <title>Buy a Plan</title>
     <link rel="stylesheet" href="{{ url_for('static', path='css/dashboard_sidebar.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', path='css/client_buyaplan.css') }}">
+    <link rel="stylesheet" href="../static/css/client_buyaplan.css">
+    <link rel="stylesheet" href="../static/css/dashboard_sidebar.css">
+    
     <link
         rel="stylesheet"
         href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -85,50 +88,162 @@
                 <a href="vicinity_map.html" class="map-btn">View Vicinity Map</a>
             </div>
         </div>
-        <form action = "/submit_plan" method = "POST" class = "plan-form">
-            
-            <div class="form-group">
-                <label for="block">Block:</label>
-                <select name="block" id="block" required>
-                    <option value="">--Select Block --</option>
-                    <option value="A">Block A</option>
-                    <option value="B">Block B</option>
-                    <option value="C">Block C</option>
-                </select>
-            </div>
 
-            <div class="form-group">
-                <label for="type">Burial Type:</label>
-                <select name="type" id="type" required>
-                    <option value="">--Select Type --</option>
-                    <option value="plot">Plot</option>
-                    <option value="mausoleum">Mausoleum</option>
-                </select>
-            </div>
 
+        <form action="/submit_plan" method="POST" class="plan-form">
+            <!-- Select SLOT ID -->
             <div class="form-group">
                 <label for="slot">Slot Number:</label>
                 <select name="slot" id="slot" required>
                     <option value="">-- Select Slot --</option>
-                    <option value="1">Slot 1</option>
-                    <option value="2">Slot 2</option>
-                    <option value="3">Slot 3</option>
+                    <option value="1" data-type="plot">Slot 1</option>
+                    <option value="2" data-type="mausoleum">Slot 2</option>
+                    <option value="3" data-type="plot">Slot 3</option>
                 </select>
             </div>
 
+            <!-- Display Burial TYPE -->
+            <div class="form-group">
+                <label for="type">Burial Type:</label>
+                <input type="text" id="type" name="type" readonly>
+            </div>
+
+            <!-- Plan Selection -->
             <div class="form-group">
                 <label for="plan">Pricing Plan:</label>
                 <select name="plan" id="plan" required>
                     <option value="">-- Select Plan --</option>
-                    <option value="standard">Standard - ₱50,000</option>
-                    <option value="premium">Premium - ₱75,000</option>
-                    <option value="family">Family Estate - ₱150,000</option>
+                    <option value="no">No Installment</option>
+                    <option value="3">3 Years Monthly Amortization (8%)</option>
+                    <option value="5">5 Years Monthly Amortization (10%)</option>
+                    <option value="10">10 Years Monthly Amortization (12%)</option>
                 </select>
             </div>
 
-            <button type="submit" class="submit-btn">Buy Now</button>
+            <!-- Auto-generated cost summary -->
+            <div id="cost-summary" class="form-group" style="display:none; border: 1px solid #ccc; padding: 15px; border-radius: 10px;">
+                <h3>Payment Summary</h3>
+                <p>Contract Cost: ₱<span id="contract-cost"></span></p>
+                <p>VAT (12%): ₱<span id="vat"></span></p>
+                <p>Admin/Facilitation Fee: ₱<span id="fee"></span></p>
+                <p><strong>Spot Cash Total:</strong> ₱<span id="total"></span></p>
+                <p><strong>Down Payment (20%):</strong> ₱<span id="down-payment"></span></p>
+                <p><strong>Total Value to be Paid (after Amortization):</strong> ₱<span id="total-value"></span></p>
+                <p id="amortization-row" style="display:none;">
+                    <strong>Monthly Amortization:</strong> ₱<span id="monthly"></span>
+                </p>
+            </div>
 
+            <button type="submit" class="submit-btn">Buy Now</button>
         </form>
     </div>
+
+    <script>
+        const slotSelect = document.getElementById('slot');
+        const typeField = document.getElementById('type');
+    
+        slotSelect.addEventListener('change', function () {
+            const selected = this.options[this.selectedIndex];
+            const burialType = selected.getAttribute('data-type');
+    
+            if (burialType) {
+                typeField.value = burialType.charAt(0).toUpperCase() + burialType.slice(1); // Capitalize
+            } else {
+                typeField.value = '';
+            }
+        });
+    </script>
+
+    <script>
+        const slot = document.getElementById("slot");
+        const type = document.getElementById("type");
+        const plan = document.getElementById("plan");
+
+        const contractCostEl = document.getElementById("contract-cost");
+        const vatEl = document.getElementById("vat");
+        const feeEl = document.getElementById("fee");
+        const totalEl = document.getElementById("total");
+        const downPaymentEl = document.getElementById("down-payment");
+        const totalValueEl = document.getElementById("total-value");
+        const monthlyRow = document.getElementById("amortization-row");
+        const monthlyEl = document.getElementById("monthly");
+        const costSummary = document.getElementById("cost-summary");
+
+        let burialType = "";
+
+        // Function to update burial type and calculate cost breakdown
+        function updateBurialTypeAndCost() {
+            const selected = slot.options[slot.selectedIndex];
+            burialType = selected.getAttribute("data-type");
+
+            if (!burialType) {
+                type.value = "";
+                costSummary.style.display = "none";
+                return;
+            }
+
+            type.value = burialType.charAt(0).toUpperCase() + burialType.slice(1);
+
+            const isPlot = burialType === "plot";
+            const contractCost = isPlot ? 300000 : 10000000;
+            const vat = contractCost * 0.12;
+            const fee = isPlot ? 5000 : 25000;
+            const total = contractCost + vat + fee;
+
+            // Calculate down payment (20% of the total cost)
+            const downPayment = total * 0.20;
+            const remainingTotal = total - downPayment;
+
+            // Update UI with values
+            contractCostEl.textContent = contractCost.toLocaleString();
+            vatEl.textContent = vat.toLocaleString();
+            feeEl.textContent = fee.toLocaleString();
+            totalEl.textContent = total.toLocaleString();
+            downPaymentEl.textContent = downPayment.toLocaleString();
+            totalValueEl.textContent = total.toLocaleString();
+
+            const selectedPlan = plan.value;
+
+            let totalToBePaid = total;
+            let interestRate = 0;
+
+            // Determine the interest rate based on the selected plan
+            if (selectedPlan === "3") {
+                interestRate = 0.12; // 8% for 3 years
+            } else if (selectedPlan === "5") {
+                interestRate = 0.24; // 10% for 5 years
+            } else if (selectedPlan === "10") {
+                interestRate = 0.36; // 12% for 10 years
+            }
+
+            if (selectedPlan !== "no") {
+                const years = parseInt(selectedPlan);
+                const months = years * 12 - 1;
+                
+                // Calculate interest amount
+                const interestAmount = remainingTotal * interestRate;
+                const totalWithInterest = remainingTotal + interestAmount;
+
+                // Calculate monthly payment including interest
+                const monthly = totalWithInterest / months;
+                monthlyEl.textContent = monthly.toLocaleString(undefined, { minimumFractionDigits: 2 });
+                monthlyRow.style.display = "block";
+
+                // Calculate the total value to be paid after amortization
+                totalToBePaid = downPayment + totalWithInterest; // Down payment + amortized total with interest
+            } else {
+                monthlyRow.style.display = "none";
+            }
+
+            // Update the total value to be paid after amortization (if applicable)
+            totalValueEl.textContent = totalToBePaid.toLocaleString();
+            
+            costSummary.style.display = "block";
+        }
+
+        slot.addEventListener("change", updateBurialTypeAndCost);
+        plan.addEventListener("change", updateBurialTypeAndCost);
+    </script>
+
 </body>
 </html>
