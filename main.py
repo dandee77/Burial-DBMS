@@ -230,6 +230,26 @@ def create_contract(
         client_id = payload.get("client_id")
         years_to_pay = payload.get("years_to_pay", 0)
         payment_method = payload.get("payment_method")
+        deceased_name = payload.get("deceased_name")
+        birth_date = payload.get("birth_date")
+        death_date = payload.get("death_date")
+
+        # Validate required fields
+        if not all([slot_id, client_id, deceased_name, birth_date, death_date]):
+            raise HTTPException(
+                status_code=400,
+                detail="Missing required fields (slot_id, client_id, deceased_name, birth_date, death_date)"
+            )
+
+        # Convert string dates to datetime objects
+        try:
+            birth_date = datetime.strptime(birth_date, "%Y-%m-%d").date()
+            death_date = datetime.strptime(death_date, "%Y-%m-%d").date()
+        except ValueError:
+            raise HTTPException(
+                status_code=400,
+                detail="Invalid date format. Please use YYYY-MM-DD"
+            )
 
         slot = db.query(Slot).filter(Slot.slot_id == slot_id).first()
         if not slot:
@@ -264,6 +284,7 @@ def create_contract(
             monthly_amortization = principal * ((interest_rate * pow(1 + interest_rate, periods)) / (pow(1 + interest_rate, periods) - 1))
             final_price = down_payment + monthly_amortization * periods
 
+        # Create contract
         contract = Contract(
             client_id=client_id,
             slot_id=slot_id,
@@ -292,19 +313,35 @@ def create_contract(
         db.commit()
         db.refresh(contract)
 
+
+        deceased = Deceased(
+            client_id=client_id,
+            slot_id=slot_id,
+            name=deceased_name,
+            birth_date=birth_date,
+            death_date=death_date
+        )
+
+        db.add(deceased)
+        
         # Update slot
         slot.availability = "occupied"
         slot.client_id = client_id
+        
         db.commit()
 
         return {
             "message": "Contract created successfully",
-            "order_id": contract.order_id
+            "order_id": contract.order_id,
+            "deceased_id": deceased.deceased_id
         }
 
     except Exception as e:
         db.rollback()
-        return JSONResponse(status_code=500, content={"message": f"Contract creation failed: {str(e)}"})
+        raise HTTPException(
+            status_code=500,
+            detail=f"Contract creation failed: {str(e)}"
+        )
 
 # ---------------------
 # API - UDPATE CONTRACT PAYMENT

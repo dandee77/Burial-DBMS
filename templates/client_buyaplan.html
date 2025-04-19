@@ -98,6 +98,25 @@
             </select>
   
             <button type="submit" class="btn-submit">Submit Purchase</button>
+
+            <fieldset class="deceased-details">
+                <legend>Deceased Information</legend>
+                
+                <label for="deceasedName">Full Name:</label>
+                <input type="text" id="deceasedName" name="deceased_name" required>
+                
+                <div class="date-fields">
+                    <div class="form-group">
+                        <label for="birthDate">Date of Birth:</label>
+                        <input type="date" id="birthDate" name="birth_date" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="deathDate">Date of Death:</label>
+                        <input type="date" id="deathDate" name="death_date" required>
+                    </div>
+                </div>  
+            </fieldset>
           </form>
         </div>
       </div>
@@ -306,54 +325,86 @@ function resetCalculations() {
   });
 }
 
-// Handle form submission
 function handleFormSubmit(e) {
-  e.preventDefault();
-  
-  // Strict validation of slot selection
-  if (!slotInput.value.match(/Slot \d+ \(\w+\)/) || !selectedSlot) {
-    showError('Please select a valid slot from the dropdown list.');
-    return;
-  }
+    e.preventDefault();
+    
+    // Validate slot selection
+    if (!slotInput.value.match(/Slot \d+ \(\w+\)/) || !selectedSlot) {
+        showError('Please select a valid slot from the dropdown list.');
+        return;
+    }
 
-  // Populate confirmation modal
-  document.getElementById('modalSlot').textContent = `Slot ${selectedSlot.slot_id} (${selectedSlot.slot_type})`;
-  document.getElementById('modalPayment').textContent = paymentMethod.options[paymentMethod.selectedIndex].text;
-  document.getElementById('modalTerm').textContent = yearsToPay.value === '0' ? 'Full Payment' : `${yearsToPay.value / 12} Years`;
-  document.getElementById('modalPrice').textContent = document.getElementById('finalPrice').textContent;
+    // Validate deceased details
+    const deceasedName = document.getElementById('deceasedName').value.trim();
+    const birthDate = document.getElementById('birthDate').value;
+    const deathDate = document.getElementById('deathDate').value;
+    
+    if (!deceasedName || !birthDate || !deathDate) {
+        showError('Please complete all deceased information fields.');
+        return;
+    }
 
-  // Show confirmation modal
-  confirmationModal.style.display = 'block';
+    // Populate confirmation modal with deceased info
+    document.getElementById('modalSlot').textContent = `Slot ${selectedSlot.slot_id} (${selectedSlot.slot_type})`;
+    document.getElementById('modalPayment').textContent = paymentMethod.options[paymentMethod.selectedIndex].text;
+    document.getElementById('modalTerm').textContent = yearsToPay.value === '0' ? 'Full Payment' : `${yearsToPay.value / 12} Years`;
+    document.getElementById('modalPrice').textContent = document.getElementById('finalPrice').textContent;
+    
+    // Add deceased info to modal
+    const modalBody = document.getElementById('modalBody');
+    const deceasedInfo = document.createElement('div');
+    deceasedInfo.className = 'modal-summary';
+    deceasedInfo.innerHTML = `
+        <h4>Deceased Information</h4>
+        <p><strong>Name:</strong> <span>${deceasedName}</span></p>
+        <p><strong>Date of Birth:</strong> <span>${formatDate(birthDate)}</span></p>
+        <p><strong>Date of Death:</strong> <span>${formatDate(deathDate)}</span></p>
+    `;
+    modalBody.appendChild(deceasedInfo);
+
+    confirmationModal.style.display = 'block';
 }
 
-// Handle purchase confirmation
+// Add this helper function to format dates
+function formatDate(dateString) {
+    if (!dateString) return '-';
+    const options = { year: 'numeric', month: 'long', day: 'numeric' };
+    return new Date(dateString).toLocaleDateString(undefined, options);
+}
+
+// Update the purchase confirmation handler
 async function handlePurchaseConfirmation() {
-  const payload = {
-    slot_id: selectedSlot.slot_id,
-    client_id: clientId,
-    years_to_pay: parseInt(yearsToPay.value),
-    payment_method: paymentMethod.value
-  };
+    const payload = {
+        slot_id: selectedSlot.slot_id,
+        client_id: clientId,
+        years_to_pay: parseInt(yearsToPay.value),
+        payment_method: paymentMethod.value,
+        deceased_name: document.getElementById('deceasedName').value.trim(),
+        birth_date: document.getElementById('birthDate').value,
+        death_date: document.getElementById('deathDate').value
+    };
 
-  try {
-    const res = await fetch('/api/contracts/create', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(payload)
-    });
+    try {
+        const res = await fetch('/api/contracts/create', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+        });
 
-    const data = await res.json();
-    
-    if (res.ok) {
-      confirmationModal.style.display = 'none';
-
-      fetchAvailableSlots(); // Refresh available slots
-    } else {
-      showError('Failed to create contract: ' + (data.message || 'Unknown error'));
+        const data = await res.json();
+        
+        if (res.ok) {
+            confirmationModal.style.display = 'none';
+            showSuccess('Contract successfully created!');
+            // Reset form
+            document.getElementById('planForm').reset();
+            fetchAvailableSlots();
+        } else {
+            showError('Failed to create contract: ' + (data.message || 'Unknown error'));
+        }
+    } catch (error) {
+        showError('Network error: ' + error.message);
     }
-  } catch (error) {
-    showError('Network error: ' + error.message);
-  }
 }
 
 // Show error modal
