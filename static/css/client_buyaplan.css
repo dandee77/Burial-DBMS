@@ -1,13 +1,5 @@
 @import url("https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap");
 
-/* main content */
-.main--content {
-    position: relative;
-    background: #ebe9e9;
-    width: 100%;
-    padding: 1rem;
-
-}
 
 .header--wrapper {
     display: flex;

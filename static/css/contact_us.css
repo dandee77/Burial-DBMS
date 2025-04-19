@@ -1,0 +1,231 @@
+* {
+    font-family: 'Poppins', sans-serif;
+    box-sizing: border-box;
+}
+
+*::before, *::after {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    padding: 0;
+    background: #ffffff;
+    color: #4d5974;
+    display: flex;
+    min-height: 100vh;
+}
+
+
+.container {
+    margin: 0 auto;
+    padding: 4rem;
+    width: 48rem;
+}
+
+
+.faq-section {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 0 1rem;
+}
+
+.faq-heading {
+    text-align: center;  
+    position: relative;  
+    margin: 2rem 0;      
+    font-size: 1.8rem;
+    color:#3b4a65;
+}
+
+.accordion .accordion-item {
+    border-bottom: 1px solid #e5e5e5;
+} 
+
+.accordion button[aria-expanded="true"] {
+    border-bottom: 1px solid #3b4a65;
+}
+
+.accordion button {
+    position: relative;
+    display: block; 
+    text-align: left;
+    width: 100%;
+    padding: 1em 0;
+    color: #727272;
+    font-size: 1.08rem;
+    font-weight: 400;
+    border: none;
+    background: none;
+    outline: none;
+}
+
+.accordion button:hover, 
+.accordion button:focus {
+    cursor: pointer;
+    color: #3b4a65;
+}
+
+.accordion button:hover::after, 
+.accordion button:focus::after {
+    cursor: pointer;
+    color: #1e2837;
+    border: 1px solid #3b4a65; 
+} 
+
+.accordion button .accordion-title {
+    padding: 1em 1.5em 1em 0;
+}
+
+.accordion button .icon {
+    display: inline-block;
+    position: absolute;
+    top: 18px;
+    right: 0;
+    width: 22px;
+    height: 22px;
+    border: 1px solid;
+    border-radius: 22px;
+}
+
+.accordion button .icon::before {
+    display: block;
+    position: absolute;
+    content: '';
+    top: 9px;
+    left: 5px;
+    width: 10px;
+    height: 2px;
+    background: currentColor;
+}
+
+.accordion button .icon::after {
+    display: block;
+    position: absolute;
+    content: '';
+    top: 5px;
+    left: 9px;
+    width: 2px;
+    height: 10px;
+    background: currentColor;
+}
+
+.accordion button[aria-expanded='true'] .icon::after {
+    width: 0;
+}
+
+.accordion-content {
+    padding: 0;
+    max-height: 0;
+    overflow: hidden;
+    will-change: max-height; 
+    transition: max-height 0.35s cubic-bezier(0.65, 0, 0.35, 1);
+}
+
+.accordion-content p {
+    padding: 0.8em 0;
+    margin: 0;
+    font-size: 0.9rem;
+    text-align: justify;
+    text-justify: inter-word;
+    hyphens: auto;
+    line-height: 1.6;
+}
+
+.accordion button[aria-expanded='true'] + .accordion-content {
+    max-height: var(--max-height); /
+}
+
+/* Need More Help Section */
+.contact-extra {
+    text-align: center;
+    padding: 1.5rem;
+    margin: 2rem auto;
+    max-width: 800px;
+}
+
+.contact-heading {
+    font-size: 1.5rem;
+    color: #3b4a65;
+    margin-bottom: 0.65rem;
+    margin-top: -1rem;
+    
+}
+
+.contact-subtext {
+    font-size: 1rem;
+    line-height: 1.5;
+    color: #555;
+    padding: 0 1rem;
+}
+
+/* Contact Info Section */
+.contact-info {
+    max-width: 800px;
+    margin: 1.8rem auto;
+    background-color: #fff;
+    padding: 1.5rem;
+    border-radius: 10px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.info-heading {
+    margin-top: 0;
+    border-bottom: 2px solid #ccc;
+    padding-bottom: 0.5rem;
+    color: #3b4a65;
+}
+
+.info-item {
+    margin-top: 0.75rem;
+    padding: 0.5rem 0;
+}
+
+.info-header {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    color: #3b4a65;
+}
+
+.info-detail {
+    margin-left: 2.5rem; 
+    line-height: 1.5; 
+    color: #444;
+    margin-top: 0.25rem; 
+    margin-bottom: 0.25rem;
+}
+
+/* Icons */
+svg {
+    fill: currentColor;
+    flex-shrink: 0; 
+}
+
+
+.main-content-box {
+    background-color: white;
+    border-radius: 10px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    padding: 2rem;
+    margin-bottom: 2rem;
+    width: 100%;
+    max-width: 800px;
+}
+
+.container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 2rem;
+    margin-left: 260px;
+    width: calc(100% - 260px);
+}
+
+@media (max-width: 768px) {
+    .container {
+        margin-left: 0;
+        width: 100%;
+        padding: 1rem;
+    }
+}
