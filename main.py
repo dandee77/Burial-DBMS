@@ -200,7 +200,63 @@ def get_contracts_by_client(client_id: int, db: Session = Depends(get_db)):
 
     return result
 
+# ---------------------
+# API - UDPATE CONTRACT PAYMENT
+# ---------------------
+@app.post("/api/contracts/{order_id}/payment")
+def process_payment(
+    order_id: int,
+    client_id: int, 
+    db: Session = Depends(get_db)
+):
+    # Simulate fetching client (you can skip if unnecessary)
+    contract = db.query(Contract).filter(
+        Contract.order_id == order_id,
+        Contract.client_id == client_id
+    ).first()
 
+    if not contract:
+        return JSONResponse(
+            content={"message": "Contract not found or not authorized"},
+            status_code=404
+        )
+
+    if contract.is_paid:
+        return JSONResponse(
+            content={"message": "Contract is already fully paid"},
+            status_code=400
+        )
+
+    if contract.years_to_pay <= 0:
+        return JSONResponse(
+            content={"message": "No remaining payments on this contract"},
+            status_code=400
+        )
+
+    try:
+        # Simulate payment
+        contract.years_to_pay -= 1
+        contract.latest_payment_date = datetime.now()
+        contract.is_paid_on_time = True
+
+        if contract.years_to_pay <= 0:
+            contract.is_paid = True
+
+        db.commit()
+        db.refresh(contract)
+
+        return {
+            "message": "Payment processed successfully",
+            "remaining_years": contract.years_to_pay,
+            "is_fully_paid": contract.is_paid
+        }
+
+    except Exception as e:
+        db.rollback()
+        return JSONResponse(
+            content={"message": f"Payment failed: {str(e)}"},
+            status_code=500
+        )
 
 # ---------------------
 # DEBUG/DEV ROUTES
