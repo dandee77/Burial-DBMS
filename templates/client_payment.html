@@ -82,7 +82,7 @@
 
 <script>
     document.addEventListener('DOMContentLoaded', function() {
-        const clientId = 1; // Replace with actual client ID from session
+        const clientId = 3; // Replace with actual client ID from session
         
         fetch(`/api/contracts/client/${clientId}`)
             .then(response => {
@@ -147,8 +147,8 @@
                             
                             <div class="summary-details">
                                 <div class="detail-row">
-                                    <span class="detail-label">Slot Type:</span>
-                                    <span class="detail-value">${contract.slot_type ? contract.slot_type.toUpperCase() : 'N/A'}</span>
+                                    <span class="detail-label">Slot ID:</span>
+                                    <span class="detail-value">${contract.slot_id ? contract.slot_id : 'N/A'}</span>
                                 </div>
                                 
                                 <div class="detail-row">
