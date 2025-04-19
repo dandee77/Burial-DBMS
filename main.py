@@ -5,7 +5,7 @@ from fastapi.templating import Jinja2Templates
 from fastapi.staticfiles import StaticFiles
 from sqlalchemy.orm import Session
 from database import engine, Base, SessionLocal
-from models import Client, Deceased, Slot, Contract
+from models import Client, Deceased, Slot, Contract, PaymentMethodEnum
 from crud import create_client, get_all_clients, authenticate_client
 from schemas import ClientCreate
 from datetime import datetime
@@ -199,6 +199,112 @@ def get_contracts_by_client(client_id: int, db: Session = Depends(get_db)):
         })
 
     return result
+
+
+@app.get("/api/available_slots")
+def get_available_slots(db: Session = Depends(get_db)):
+    available_slots = db.query(Slot).filter(Slot.availability == "available").all()
+    if not available_slots:
+        return JSONResponse(content={"message": "No available slots"}, status_code=404)
+
+    result = []
+    for slot in available_slots:
+        result.append({
+            "slot_id": slot.slot_id,
+            "slot_type": slot.slot_type,
+            "availability": slot.availability,
+            "price": slot.price,
+            "client_id": slot.client_id
+        })
+
+    return result
+
+
+@app.post("/api/contracts/create")
+def create_contract(
+    payload: dict,
+    db: Session = Depends(get_db)
+):
+    try:
+        slot_id = payload.get("slot_id")
+        client_id = payload.get("client_id")
+        years_to_pay = payload.get("years_to_pay", 0)
+        payment_method = payload.get("payment_method")
+
+        slot = db.query(Slot).filter(Slot.slot_id == slot_id).first()
+        if not slot:
+            raise HTTPException(status_code=404, detail="Slot not found")
+        if slot.availability != "available":
+            raise HTTPException(status_code=400, detail="Slot is not available")
+
+        # Constants
+        contract_price = 300_000.0 if slot.slot_type == "plot" else 10_000_000.0
+        vat_percent = 12.0
+        vat_amount = contract_price * vat_percent / 100
+        price_with_vat = contract_price + vat_amount
+        admin_fee = 5000.0 if slot.slot_type == "plot" else 25000.0
+        spot_cash_total = price_with_vat + admin_fee
+        down_payment = price_with_vat * 0.20
+
+        # Interest and amortization logic
+        interest_rate = 0.0
+        monthly_amortization = 0.0
+        final_price = spot_cash_total
+
+        if years_to_pay > 0:
+            if years_to_pay == 60:
+                interest_rate = 0.00525
+            elif years_to_pay == 120:
+                interest_rate = 0.00623
+            elif years_to_pay == 36:
+                interest_rate = 0.0034286
+
+            principal = price_with_vat - down_payment
+            periods = years_to_pay - 1
+            monthly_amortization = principal * ((interest_rate * pow(1 + interest_rate, periods)) / (pow(1 + interest_rate, periods) - 1))
+            final_price = down_payment + monthly_amortization * periods
+
+        contract = Contract(
+            client_id=client_id,
+            slot_id=slot_id,
+            order_date=datetime.now(),
+            payment_method=PaymentMethodEnum(payment_method),
+
+            contract_price=contract_price,
+            vat_percent=vat_percent,
+            vat_amount=vat_amount,
+            price_with_vat=price_with_vat,
+            admin_fee=admin_fee,
+            spot_cash_total=spot_cash_total,
+
+            interest_rate=interest_rate,
+            down_payment=down_payment,
+            years_to_pay=years_to_pay,
+            monthly_amortization=monthly_amortization,
+            final_price=final_price,
+
+            is_paid=False,
+            is_paid_on_time=False,
+            latest_payment_date=None
+        )
+
+        db.add(contract)
+        db.commit()
+        db.refresh(contract)
+
+        # Update slot
+        slot.availability = "occupied"
+        slot.client_id = client_id
+        db.commit()
+
+        return {
+            "message": "Contract created successfully",
+            "order_id": contract.order_id
+        }
+
+    except Exception as e:
+        db.rollback()
+        return JSONResponse(status_code=500, content={"message": f"Contract creation failed: {str(e)}"})
 
 # ---------------------
 # API - UDPATE CONTRACT PAYMENT

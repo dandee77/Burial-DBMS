@@ -1,249 +1,212 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Buy a Plan</title>
-    <link rel="stylesheet" href="{{ url_for('static', path='css/dashboard_sidebar.css') }}">
-    <link rel="stylesheet" href="{{ url_for('static', path='css/client_buyaplan.css') }}">
-    <link rel="stylesheet" href="../static/css/client_buyaplan.css">
-    <link rel="stylesheet" href="../static/css/dashboard_sidebar.css">
-    
-    <link
-        rel="stylesheet"
-        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Buy a Plan</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{{ url_for('static', path='css/dashboard_sidebar.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', path='css/client_buyaplan.css') }}">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
     <div class="sidebar"> 
-         <div class="logo"></div>
-         <ul class="menu">
-            <li>
-                <a href="/dashboard">
-                    <i class="fas fa-dashboard"></i>
-                    <span>Dashboard</span>
-                </a>
-            </li>
-            <li>
-                <a href="/dashboard/vicinity_map">
-                    <i class="fas fa-map"></i>
-                    <span>Vicinity Map</span>
-                </a>
-            </li>
-            <li>
-                <a href="/dashboard/contact_us">
-                    <i class="fas fa-phone-square"></i>
-                    <span>Contact Us</span>
-                </a>
-            </li>
-            <li class = "active">
-                <a href="#">
-                    <i class="fas fa-shopping-cart"></i>
-                    <span>Buy a Plan</span>
-                </a>
-            </li>
-            <li>
-                <a href="/dashboard/payment">
-                    <i class="fas fa-tag"></i>
-                    <span>Payments</span>
-                </a>
-            </li>
-            <li>
-                <a href="#">
-                    <i class="fas fa-clipboard"></i>
-                    <span>Contract</span>
-                </a>
-            </li>
-            <li>
-                <a href="#">
-                    <i class="fas fa-gear"></i>
-                    <span>Maintenance</span>
-                </a>
-            <li>
-                <a href="#">
-                    <i class="fas fa-address-card"></i>
-                    <span>Profile</span>
-                </a>
-            </li>
- 
-            </li>
-            <li class = "logout">
-                <a href="/">
-                    <i class="fas fa-sign-out-alt"></i>
-                    <span>Logout</span>
-                </a>
-            </li>
-         </ul>
-    </div>
-    <div class="main--content">
-        <div class="header--wrapper">
-            <div class="header--title">
-                <div style="display: flex; align-items: center; justify-content: space-between;">
-                    <div>
-                        <span>Buy a </span>
-                        <h2>Burial Plan</h2>
-                    </div>
-                </div>
-            </div>
-            <div class="user--info">
-                <a href="vicinity_map.html" class="map-btn">View Vicinity Map</a>
-            </div>
-        </div>
+        <div class="logo"></div>
+        <ul class="menu">
+           <li>
+               <a href="/dashboard">
+                   <i class="fas fa-dashboard"></i>
+                   <span>Dashboard</span>
+               </a>
+           </li>
+           <li>
+               <a href="/dashboard/vicinity_map">
+                   <i class="fas fa-map"></i>
+                   <span>Vicinity Map</span>
+               </a>
+           </li>
+           <li class = "active"> 
+               <a href="/dashboard/contact_us">
+                   <i class="fas fa-phone-square"></i>
+                   <span>Contact Us</span>
+               </a>
+           </li>
+           <li>
+               <a href="/dashboard/buyaplan">
+                   <i class="fas fa-shopping-cart"></i>
+                   <span>Buy a Plan</span>
+               </a>
+           </li>
+           <li>
+               <a href="/dashboard/payment">
+                   <i class="fas fa-tag"></i>
+                   <span>Payments</span>
+               </a>
+           </li>
+           <li>
+               <a href="#">
+                   <i class="fas fa-clipboard"></i>
+                   <span>Contract</span>
+               </a>
+           </li>
+           <li>
+               <a href="#">
+                   <i class="fas fa-gear"></i>
+                   <span>Maintenance</span>
+               </a>
+           <li>
+               <a href="#">
+                   <i class="fas fa-address-card"></i>
+                   <span>Profile</span>
+               </a>
+           </li>
+           </li>
+           <li class = "logout">
+               <a href="/">
+                   <i class="fas fa-sign-out-alt"></i>
+                   <span>Logout</span>
+               </a>
+           </li>
+        </ul>
+   </div>
 
+<div class="container">
+  <h1 class="page-title">Buy a Burial Plan</h1>
 
-        <form action="/submit_plan" method="POST" class="plan-form">
-            <!-- Select SLOT ID -->
-            <div class="form-group">
-                <label for="slot">Slot Number:</label>
-                <select name="slot" id="slot" required>
-                    <option value="">-- Select Slot --</option>
-                    <option value="1" data-type="plot">Slot 1</option>
-                    <option value="2" data-type="mausoleum">Slot 2</option>
-                    <option value="3" data-type="plot">Slot 3</option>
-                </select>
-            </div>
+  <div class="form-section">
+    <form id="planForm">
+      <label for="slotSelect">Select Available Slot:</label>
+      <input list="slots" id="slotSelect" name="slot_id" placeholder="Type to search...">
+      <datalist id="slots"></datalist>
 
-            <!-- Display Burial TYPE -->
-            <div class="form-group">
-                <label for="type">Burial Type:</label>
-                <input type="text" id="type" name="type" readonly>
-            </div>
+      <label for="paymentMethod">Payment Method:</label>
+      <select id="paymentMethod" name="payment_method">
+        <option value="cash">Cash</option>
+        <option value="online">Online</option>
+        <option value="bank_transfer">Bank Transfer</option>
+      </select>
 
-            <!-- Plan Selection -->
-            <div class="form-group">
-                <label for="plan">Pricing Plan:</label>
-                <select name="plan" id="plan" required>
-                    <option value="">-- Select Plan --</option>
-                    <option value="no">No Installment</option>
-                    <option value="3">3 Years Monthly Amortization (8%)</option>
-                    <option value="5">5 Years Monthly Amortization (10%)</option>
-                    <option value="10">10 Years Monthly Amortization (12%)</option>
-                </select>
-            </div>
+      <label for="yearsToPay">Years to Pay:</label>
+      <select id="yearsToPay" name="years_to_pay">
+        <option value="0">Full Payment</option>
+        <option value="36">3 Years</option>
+        <option value="60">5 Years</option>
+        <option value="120">10 Years</option>
+      </select>
 
-            <!-- Auto-generated cost summary -->
-            <div id="cost-summary" class="form-group" style="display:none; border: 1px solid #ccc; padding: 15px; border-radius: 10px;">
-                <h3>Payment Summary</h3>
-                <p>Contract Cost: ₱<span id="contract-cost"></span></p>
-                <p>VAT (12%): ₱<span id="vat"></span></p>
-                <p>Admin/Facilitation Fee: ₱<span id="fee"></span></p>
-                <p><strong>Spot Cash Total:</strong> ₱<span id="total"></span></p>
-                <p><strong>Down Payment (20%):</strong> ₱<span id="down-payment"></span></p>
-                <p><strong>Total Value to be Paid (after Amortization):</strong> ₱<span id="total-value"></span></p>
-                <p id="amortization-row" style="display:none;">
-                    <strong>Monthly Amortization:</strong> ₱<span id="monthly"></span>
-                </p>
-            </div>
+      <button type="submit" class="btn-submit">Submit Purchase</button>
+    </form>
+  </div>
 
-            <button type="submit" class="submit-btn">Buy Now</button>
-        </form>
-    </div>
+  <div class="details-section">
+    <h2>Contract Summary</h2>
+    <table id="summaryTable">
+      <tbody>
+        <tr><td>Contract Price:</td><td id="contractPrice">-</td></tr>
+        <tr><td>VAT (12%):</td><td id="vatAmount">-</td></tr>
+        <tr><td>Price with VAT:</td><td id="priceWithVAT">-</td></tr>
+        <tr><td>Admin Fee:</td><td id="adminFee">-</td></tr>
+        <tr><td>Spot Cash Total:</td><td id="spotCashTotal">-</td></tr>
+        <tr><td>Down Payment (20%):</td><td id="downPayment">-</td></tr>
+        <tr><td>Interest Rate:</td><td id="interestRate">-</td></tr>
+        <tr><td>Monthly Amortization:</td><td id="monthlyAmortization">-</td></tr>
+        <tr><td>Final Price:</td><td id="finalPrice">-</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
 
-    <script>
-        const slotSelect = document.getElementById('slot');
-        const typeField = document.getElementById('type');
-    
-        slotSelect.addEventListener('change', function () {
-            const selected = this.options[this.selectedIndex];
-            const burialType = selected.getAttribute('data-type');
-    
-            if (burialType) {
-                typeField.value = burialType.charAt(0).toUpperCase() + burialType.slice(1); // Capitalize
-            } else {
-                typeField.value = '';
-            }
-        });
-    </script>
+<script>
+  const clientId = 3; // Replace with dynamic session value in production
+  const slotInput = document.getElementById('slotSelect');
+  const slotList = document.getElementById('slots');
+  const paymentMethod = document.getElementById('paymentMethod');
+  const yearsToPay = document.getElementById('yearsToPay');
 
-    <script>
-        const slot = document.getElementById("slot");
-        const type = document.getElementById("type");
-        const plan = document.getElementById("plan");
+  let selectedSlot = null;
+  let slotData = [];
 
-        const contractCostEl = document.getElementById("contract-cost");
-        const vatEl = document.getElementById("vat");
-        const feeEl = document.getElementById("fee");
-        const totalEl = document.getElementById("total");
-        const downPaymentEl = document.getElementById("down-payment");
-        const totalValueEl = document.getElementById("total-value");
-        const monthlyRow = document.getElementById("amortization-row");
-        const monthlyEl = document.getElementById("monthly");
-        const costSummary = document.getElementById("cost-summary");
+  async function fetchAvailableSlots() {
+    const response = await fetch('/api/available_slots');
+    slotData = await response.json();
 
-        let burialType = "";
+    slotList.innerHTML = '';
+    slotData.forEach(slot => {
+      const option = document.createElement('option');
+      option.value = `Slot ${slot.slot_id} (${slot.slot_type})`;
+      option.dataset.id = slot.slot_id;
+      slotList.appendChild(option);
+    });
+  }
 
-        // Function to update burial type and calculate cost breakdown
-        function updateBurialTypeAndCost() {
-            const selected = slot.options[slot.selectedIndex];
-            burialType = selected.getAttribute("data-type");
+  function calculate() {
+    if (!selectedSlot) return;
+    const slotType = selectedSlot.slot_type;
+    const basePrice = slotType === 'plot' ? 300000 : 10000000;
+    const vat = basePrice * 0.12;
+    const priceWithVAT = basePrice + vat;
+    const adminFee = slotType === 'plot' ? 5000 : 25000;
+    const spotCashTotal = priceWithVAT + adminFee;
+    const downPayment = priceWithVAT * 0.2;
 
-            if (!burialType) {
-                type.value = "";
-                costSummary.style.display = "none";
-                return;
-            }
+    let interestRate = 0;
+    let amortization = 0;
+    let years = parseInt(yearsToPay.value);
 
-            type.value = burialType.charAt(0).toUpperCase() + burialType.slice(1);
+    if (years === 60) interestRate = 0.00525;
+    else if (years === 120) interestRate = 0.00623;
+    else if (years === 36) interestRate = 0.0034286;
 
-            const isPlot = burialType === "plot";
-            const contractCost = isPlot ? 300000 : 10000000;
-            const vat = contractCost * 0.12;
-            const fee = isPlot ? 5000 : 25000;
-            const total = contractCost + vat + fee;
+    if (years > 0) {
+      const principal = priceWithVAT - downPayment;
+      amortization = principal * ((interestRate * Math.pow(1 + interestRate, years - 1)) / (Math.pow(1 + interestRate, years - 1) - 1));
+    }
 
-            // Calculate down payment (20% of the total cost)
-            const downPayment = total * 0.20;
-            const remainingTotal = total - downPayment;
+    const finalPrice = years > 0 ? downPayment + (amortization * (years - 1)) : spotCashTotal;
 
-            // Update UI with values
-            contractCostEl.textContent = contractCost.toLocaleString();
-            vatEl.textContent = vat.toLocaleString();
-            feeEl.textContent = fee.toLocaleString();
-            totalEl.textContent = total.toLocaleString();
-            downPaymentEl.textContent = downPayment.toLocaleString();
-            totalValueEl.textContent = total.toLocaleString();
+    document.getElementById('contractPrice').textContent = `₱${basePrice.toLocaleString()}`;
+    document.getElementById('vatAmount').textContent = `₱${vat.toLocaleString()}`;
+    document.getElementById('priceWithVAT').textContent = `₱${priceWithVAT.toLocaleString()}`;
+    document.getElementById('adminFee').textContent = `₱${adminFee.toLocaleString()}`;
+    document.getElementById('spotCashTotal').textContent = `₱${spotCashTotal.toLocaleString()}`;
+    document.getElementById('downPayment').textContent = `₱${downPayment.toLocaleString()}`;
+    document.getElementById('interestRate').textContent = interestRate > 0 ? `${(interestRate * 100).toFixed(2)}%` : '-';
+    document.getElementById('monthlyAmortization').textContent = amortization > 0 ? `₱${amortization.toFixed(2)}` : '-';
+    document.getElementById('finalPrice').textContent = `₱${finalPrice.toLocaleString()}`;
+  }
 
-            const selectedPlan = plan.value;
+  slotInput.addEventListener('input', () => {
+    const match = slotData.find(s => slotInput.value.includes(s.slot_id));
+    selectedSlot = match;
+    calculate();
+  });
 
-            let totalToBePaid = total;
-            let interestRate = 0;
+  yearsToPay.addEventListener('change', calculate);
+  paymentMethod.addEventListener('change', calculate);
 
-            // Determine the interest rate based on the selected plan
-            if (selectedPlan === "3") {
-                interestRate = 0.12; // 8% for 3 years
-            } else if (selectedPlan === "5") {
-                interestRate = 0.24; // 10% for 5 years
-            } else if (selectedPlan === "10") {
-                interestRate = 0.36; // 12% for 10 years
-            }
+  document.getElementById('planForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    if (!selectedSlot) return alert('Please select a valid slot.');
 
-            if (selectedPlan !== "no") {
-                const years = parseInt(selectedPlan);
-                const months = years * 12 - 1;
-                
-                // Calculate interest amount
-                const interestAmount = remainingTotal * interestRate;
-                const totalWithInterest = remainingTotal + interestAmount;
+    const payload = {
+      slot_id: selectedSlot.slot_id,
+      client_id: clientId,
+      years_to_pay: parseInt(yearsToPay.value),
+      payment_method: paymentMethod.value
+    };
 
-                // Calculate monthly payment including interest
-                const monthly = totalWithInterest / months;
-                monthlyEl.textContent = monthly.toLocaleString(undefined, { minimumFractionDigits: 2 });
-                monthlyRow.style.display = "block";
+    const res = await fetch('/api/contracts/create', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
 
-                // Calculate the total value to be paid after amortization
-                totalToBePaid = downPayment + totalWithInterest; // Down payment + amortized total with interest
-            } else {
-                monthlyRow.style.display = "none";
-            }
+    const data = await res.json();
+    if (res.ok) alert('Contract successfully created!');
+    else alert('Failed to create contract: ' + data.message);
+  });
 
-            // Update the total value to be paid after amortization (if applicable)
-            totalValueEl.textContent = totalToBePaid.toLocaleString();
-            
-            costSummary.style.display = "block";
-        }
-
-        slot.addEventListener("change", updateBurialTypeAndCost);
-        plan.addEventListener("change", updateBurialTypeAndCost);
-    </script>
-
+  fetchAvailableSlots();
+</script>
 </body>
 </html>
