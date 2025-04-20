@@ -19,6 +19,8 @@ from os import getenv
 # TODO: LEARN HOW TO TRANSITION FROM SQLITE TO MYSQL
 load_dotenv()
 
+#TODO: FIX LOGIN AND SIGNUP
+
 NGROK_AUTH_TOKEN = getenv("NGROK_AUTH_TOKEN", "NGROK_AUTH_TOKEN")
 APPLICATION_PORT = 80
 NGROK_DOMAIN = "foal-engaged-regularly.ngrok-free.app"
@@ -96,12 +98,12 @@ def login_page(request: Request):
     return templates.TemplateResponse("login.html", {"request": request})
 
 @app.post("/login")
-def login_user(username: str = Form(...), password: str = Form(...), db: Session = Depends(get_db)):
-    user = authenticate_client(db, username=username, password=password)
+def login_user(email: str = Form(...), password: str = Form(...), db: Session = Depends(get_db)):
+    user = authenticate_client(db, email=email, password=password)
     if user:
         return {"message": "Login successful", "client_id": user.client_id}
     else:
-        return {"message": "Invalid username or password"}
+        return {"message": "Invalid email or password"}
 
 # ---------------------
 # DASHBOARD - CLIENT

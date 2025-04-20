@@ -8,15 +8,12 @@ from datetime import datetime
 # ---------------------
 def create_client(db: Session, client: ClientCreate):
     new_client = Client(
-        username=client.username,
-        contact_number=client.contact_number,
+        name=client.name,
         email=client.email,
-        first_name=client.first_name,
-        middle_name=client.middle_name,
-        last_name=client.last_name,
-        gender=client.gender,
         password=client.password,
-        date_created=datetime.utcnow()
+        date_created=datetime.utcnow(),
+        contact_number=None,
+        address=None
     )
     db.add(new_client)
     db.commit()
@@ -27,5 +24,5 @@ def get_all_clients(db: Session):
     return db.query(Client).all()
 
 # todo: change username to email
-def authenticate_client(db: Session, username: str, password: str):
-    return db.query(Client).filter_by(username=username, password=password).first()
+def authenticate_client(db: Session, email: str, password: str):
+    return db.query(Client).filter_by(email=email, password=password).first()
