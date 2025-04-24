@@ -20,10 +20,12 @@ from os import getenv
 load_dotenv()
 
 #TODO: FIX LOGIN AND SIGNUP
+#TODO: SIGNUP DOES NOT REDIRECT AND IT CRASHES WHEN SIGN IN AN EXISTING ACC
 
 NGROK_AUTH_TOKEN = getenv("NGROK_AUTH_TOKEN", "NGROK_AUTH_TOKEN")
 APPLICATION_PORT = 80
 NGROK_DOMAIN = "foal-engaged-regularly.ngrok-free.app"
+CLIENT_ID = -1
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -67,27 +69,21 @@ def client_form(request: Request):
 
 @app.post("/submit-client")
 def submit_client(
-    username: str = Form(...),
-    contact_number: str = Form(None),
+    name: str = Form(...),
     email: str = Form(...),
-    first_name: str = Form(...),
-    middle_name: str = Form(None),
-    last_name: str = Form(...),
-    gender: str = Form(...),
     password: str = Form(...),
     db: Session = Depends(get_db)
 ):
     client_data = ClientCreate(
-        username=username,
-        contact_number=contact_number,
+        name=name,
         email=email,
-        first_name=first_name,
-        middle_name=middle_name,
-        last_name=last_name,
-        gender=gender,
-        password=password
+        password=password,
+        contact_number=None,
+        address=None  
     )
     new_client = create_client(db, client_data)
+    global CLIENT_ID
+    CLIENT_ID = new_client.client_id
     return {"message": "Client created!", "client_id": new_client.client_id}
 
 # ---------------------
@@ -101,6 +97,8 @@ def login_page(request: Request):
 def login_user(email: str = Form(...), password: str = Form(...), db: Session = Depends(get_db)):
     user = authenticate_client(db, email=email, password=password)
     if user:
+        global CLIENT_ID
+        CLIENT_ID = user.client_id
         return {"message": "Login successful", "client_id": user.client_id}
     else:
         return {"message": "Invalid email or password"}
@@ -417,6 +415,10 @@ def get_deceased(db: Session = Depends(get_db)):
 @app.get("/slots")
 def get_slots(db: Session = Depends(get_db)):
     return db.query(Slot).all()
+
+@app.get("/clientID")
+def get_client_id():
+    return {"client_id": CLIENT_ID}
 
 if __name__ == "__main__":
     uvicorn.run("main:app", host="127.0.0.1", port=APPLICATION_PORT, reload=True)
