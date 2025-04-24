@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <!--TODO: QUERY IF THERES ALREADY AN EXISTING ACCOUNT -->
+    <link rel="stylesheet" href="client_profile.css">
+    <!--<link rel="stylesheet" href="{{ url_for('static', path='css/dashboard_sidebar.css') }}"-->
+    <link rel="stylesheet" href="dashboard_sidebar.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <title> Client Profile</title>
+</head>
+<body>
+    <div class="sidebar"> 
+        <div class="logo"></div>
+        <ul class="menu">
+           <li><a href="/dashboard"><i class="fas fa-dashboard"></i><span>Dashboard</span></a></li>
+           <li><a href="/dashboard/vicinity_map"><i class="fas fa-map"></i><span>Vicinity Map</span></a></li>
+           <li><a href="/dashboard/contact_us"><i class="fas fa-phone-square"></i><span>Contact Us</span></a></li>
+           <li><a href="/dashboard/buyaplan"><i class="fas fa-shopping-cart"></i><span>Buy a Plan</span></a></li>
+           <li class="active"><a href="/dashboard/payment"><i class="fas fa-tag"></i><span>Payments</span></a></li>
+           <li><a href="#"><i class="fas fa-clipboard"></i><span>Contract</span></a></li>
+           <li><a href="#"><i class="fas fa-gear"></i><span>Maintenance</span></a></li>
+           <li><a href="#"><i class="fas fa-address-card"></i><span>Profile</span></a></li>
+           <li class="logout"><a href="/"><i class="fas fa-sign-out-alt"></i><span>Logout</span></a></li>
+        </ul>
+    </div>
+    <div class="container">
+        <h2>Your Profile</h2>
+        <div class="field">
+            <label>Client Name</label>
+            <p>VARILLA,Nymrod Erris P.</p>
+        </div>
+
+        <div class="field">
+            <label>Contact Number:</label>
+            <p>09123456789</p>
+        </div>
+
+        <div class="field">
+            <label>Email:</label>
+            <p>erris@example.com</p>
+        </div>
+
+        <div class="field">
+            <label>Password:</label>
+            <p>********</p>
+        </div>
+      
+        <div class="field">
+                <label>Address:</label>
+                <p>Malolos,Bulacan</p>
+            </div>
+              
+        <div class="field">
+            <label>Date of account creation:</label>
+            <p>04-21-2025</p>
+        </div>
+       
+
+    </div>
+    
+</body>
+
+</html>
