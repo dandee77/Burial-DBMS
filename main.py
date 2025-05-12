@@ -272,13 +272,23 @@ def submit_client(
         # Create access token
         access_token = create_access_token({"sub": str(new_client.client_id)})
         
-        response = JSONResponse(
-            content={
-                "message": "Client created successfully!",
-                "access_token": access_token,
-                "client_id": new_client.client_id
-            }
-        )
+        # Create HTML response that sets localStorage and redirects
+        html_content = f"""
+        <html>
+            <head>
+                <title>Redirecting...</title>
+            </head>
+            <body>
+                <p>Account created successfully. Redirecting to dashboard...</p>
+                <script>
+                    localStorage.setItem('access_token', '{access_token}');
+                    localStorage.setItem('client_id', '{new_client.client_id}');
+                    window.location.href = '/dashboard';
+                </script>
+            </body>
+        </html>
+        """
+        response = HTMLResponse(content=html_content)
         
         # Set secure cookie
         response.set_cookie(
