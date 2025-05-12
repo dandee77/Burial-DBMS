@@ -29,8 +29,9 @@ document.addEventListener('DOMContentLoaded', function() {
           contracts.forEach(contract => {
               const orderDate = contract.order_date ? new Date(contract.order_date).toLocaleDateString() : 'N/A';
               const lastPaymentDate = contract.latest_payment_date ? new Date(contract.latest_payment_date).toLocaleDateString() : 'N/A';
-              const statusBadge = contract.is_paid ? '<span class="status-badge paid">PAID</span>' : '<span class="status-badge unpaid">UNPAID</span>';
+              const statusBadge = contract.years_to_pay > 0 ? '<span class="status-badge unpaid">UNPAID</span>' : '<span class="status-badge paid">PAID</span>';
 
+               
               const card = document.createElement('div');
               card.className = 'contract-card';
               card.dataset.expanded = 'false';
@@ -75,7 +76,7 @@ document.addEventListener('DOMContentLoaded', function() {
                       </div>
                   </div>
                   <div class="contract-actions">
-                      <button class="btn-pay-now" ${contract.is_paid ? 'disabled' : ''} data-id="${contract.order_id}" data-amount="${contract.final_price}">
+                      <button class="btn-pay-now" ${contract.years_to_pay < 1 ? 'disabled' : ''} data-id="${contract.order_id}" data-amount="${contract.final_price}">
                           <i class="fas fa-credit-card"></i> Pay Now
                       </button>
                       <button class="btn-view-details">
