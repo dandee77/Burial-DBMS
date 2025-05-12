@@ -569,25 +569,39 @@ def create_contract(
         client_id = current_user_id  # Use the authenticated user's ID
         years_to_pay = payload.get("years_to_pay", 0)
         payment_method = payload.get("payment_method")
-        deceased_name = payload.get("deceased_name")
-        birth_date = payload.get("birth_date")
-        death_date = payload.get("death_date")
-
+        
+        # Handle both new and old API formats for deceased information
+        deceased_info = payload.get("deceased_info")
+        
+        # If new format is not present, try to use the old format
+        if deceased_info is None:
+            deceased_name = payload.get("deceased_name")
+            birth_date = payload.get("birth_date")
+            death_date = payload.get("death_date")
+            
+            if all([deceased_name, birth_date, death_date]):
+                deceased_info = [{
+                    "name": deceased_name,
+                    "birth_date": birth_date,
+                    "death_date": death_date
+                }]
+            else:
+                deceased_info = []
+        elif not isinstance(deceased_info, list):
+            # Handle case where deceased_info is provided but not as a list
+            deceased_info = [deceased_info]
+        
         # Validate required fields
-        if not all([slot_id, client_id, deceased_name, birth_date, death_date]):
+        if not all([slot_id, client_id]):
             raise HTTPException(
                 status_code=400,
-                detail="Missing required fields (slot_id, client_id, deceased_name, birth_date, death_date)"
+                detail="Missing required fields (slot_id, client_id)"
             )
-
-        # Convert string dates to datetime objects
-        try:
-            birth_date = datetime.strptime(birth_date, "%Y-%m-%d").date()
-            death_date = datetime.strptime(death_date, "%Y-%m-%d").date()
-        except ValueError:
+            
+        if not deceased_info:
             raise HTTPException(
                 status_code=400,
-                detail="Invalid date format. Please use YYYY-MM-DD"
+                detail="No deceased information provided"
             )
 
         slot = db.query(Slot).filter(Slot.slot_id == slot_id).first()
@@ -595,6 +609,47 @@ def create_contract(
             raise HTTPException(status_code=404, detail="Slot not found")
         if slot.availability != "available":
             raise HTTPException(status_code=400, detail="Slot is not available")
+            
+        # Validate for mausoleum capacity
+        if slot.slot_type == "mausoleum" and len(deceased_info) > 10:
+            raise HTTPException(
+                status_code=400,
+                detail="Mausoleum can hold a maximum of 10 deceased records"
+            )
+        elif slot.slot_type == "plot" and len(deceased_info) > 1:
+            raise HTTPException(
+                status_code=400,
+                detail="Plot can only hold a single deceased record"
+            )
+            
+        # Validate all deceased entries
+        deceased_records = []
+        for info in deceased_info:
+            name = info.get("name")
+            birth_date_str = info.get("birth_date")
+            death_date_str = info.get("death_date")
+            
+            if not all([name, birth_date_str, death_date_str]):
+                raise HTTPException(
+                    status_code=400,
+                    detail="Missing deceased information fields (name, birth_date, death_date)"
+                )
+                
+            # Convert string dates to datetime objects
+            try:
+                birth_date = datetime.strptime(birth_date_str, "%Y-%m-%d").date()
+                death_date = datetime.strptime(death_date_str, "%Y-%m-%d").date()
+            except ValueError:
+                raise HTTPException(
+                    status_code=400,
+                    detail="Invalid date format. Please use YYYY-MM-DD"
+                )
+                
+            deceased_records.append({
+                "name": name,
+                "birth_date": birth_date,
+                "death_date": death_date
+            })
 
         # Constants
         contract_price = 300_000.0 if slot.slot_type == "plot" else 10_000_000.0
@@ -652,16 +707,19 @@ def create_contract(
         db.commit()
         db.refresh(contract)
 
-
-        deceased = Deceased(
-            client_id=client_id,
-            slot_id=slot_id,
-            name=deceased_name,
-            birth_date=birth_date,
-            death_date=death_date
-        )
-
-        db.add(deceased)
+        # Create deceased records
+        deceased_ids = []
+        for record in deceased_records:
+            deceased = Deceased(
+                client_id=client_id,
+                slot_id=slot_id,
+                name=record["name"],
+                birth_date=record["birth_date"],
+                death_date=record["death_date"]
+            )
+            db.add(deceased)
+            db.flush()  # This assigns an ID without committing the transaction
+            deceased_ids.append(deceased.deceased_id)
         
         # Update slot
         slot.availability = "occupied"
@@ -672,7 +730,8 @@ def create_contract(
         return {
             "message": "Contract created successfully",
             "order_id": contract.order_id,
-            "deceased_id": deceased.deceased_id
+            "deceased_ids": deceased_ids,
+            "deceased_count": len(deceased_ids)
         }
 
     except Exception as e:

@@ -197,6 +197,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 const card = document.createElement('div');
                 card.className = 'contract-card';
                 card.dataset.expanded = 'false';
+                card.dataset.slotid = contract.slot_id; // Add slot_id as data attribute for later use
                 card.innerHTML = `
                     <div class="contract-summary">
                         <div class="summary-header">
@@ -205,6 +206,7 @@ document.addEventListener('DOMContentLoaded', function() {
                         </div>
                         <div class="summary-details">
                             <div class="detail-row"><span class="detail-label">Slot ID:</span><span class="detail-value">${contract.slot_id}</span></div>
+                            <div class="detail-row"><span class="detail-label">Slot Type:</span><span class="detail-value">${contract.slot_type || 'Not Specified'}</span></div>
                             <div class="detail-row"><span class="detail-label">Total Amount:</span><span class="detail-value">${formatCurrency(contract.final_price)}</span></div>
                             ${contract.monthly_amortization > 0 ? `
                                 <div class="detail-row"><span class="detail-label">Monthly Payment:</span><span class="detail-value">${formatCurrency(contract.monthly_amortization)}</span></div>
@@ -235,6 +237,15 @@ document.addEventListener('DOMContentLoaded', function() {
                                 <div class="detail-row"><span class="detail-label">Down Payment:</span><span class="detail-value">${formatCurrency(contract.down_payment)}</span></div>
                             </div>
                             ` : ''}
+                            
+                            <!-- Deceased Information Section - Will be populated later -->
+                            <div class="detail-group deceased-information" data-loaded="false">
+                                <h4>Deceased Information</h4>
+                                <div class="deceased-loading">
+                                    <i class="fas fa-spinner fa-spin"></i> Loading deceased information...
+                                </div>
+                                <div class="deceased-content"></div>
+                            </div>
                         </div>
                     </div>
                     <div class="contract-actions">
@@ -264,11 +275,26 @@ document.addEventListener('DOMContentLoaded', function() {
                 const detailsSection = card.querySelector('.contract-full-details');
                 const icon = this.querySelector('i');
                 const isExpanded = card.dataset.expanded === 'true';
-
+                
+                // Toggle visibility of details section
                 detailsSection.style.display = isExpanded ? 'none' : 'block';
+                
+                // Update button icon and text
                 icon.className = isExpanded ? 'fas fa-chevron-down' : 'fas fa-chevron-up';
                 this.innerHTML = isExpanded ? '<i class="fas fa-chevron-down"></i> View Details' : '<i class="fas fa-chevron-up"></i> Hide Details';
+                
+                // Update expanded state
                 card.dataset.expanded = (!isExpanded).toString();
+                
+                // If expanded and deceased info not loaded yet, fetch it
+                if (!isExpanded) {
+                    const deceasedSection = detailsSection.querySelector('.deceased-information');
+                    const slotId = card.dataset.slotid;
+                    
+                    if (deceasedSection && deceasedSection.dataset.loaded === 'false' && slotId) {
+                        fetchAndDisplayDeceasedInfo(slotId, deceasedSection);
+                    }
+                }
             });
         });
 
@@ -280,6 +306,77 @@ document.addEventListener('DOMContentLoaded', function() {
                 modal.style.display = 'flex';
             });
         });
+    }
+
+    // New function to fetch and display deceased information
+    async function fetchAndDisplayDeceasedInfo(slotId, deceasedSection) {
+        const loadingElement = deceasedSection.querySelector('.deceased-loading');
+        const contentElement = deceasedSection.querySelector('.deceased-content');
+        
+        try {
+            // Mark as loading
+            loadingElement.style.display = 'block';
+            contentElement.innerHTML = '';
+            
+            // Fetch deceased information
+            const response = await fetchWithAuth(`/api/slot/${slotId}`);
+            
+            if (!response.ok) {
+                throw new Error('Failed to fetch deceased information');
+            }
+            
+            const data = await response.json();
+            
+            // Remove loading indicator
+            loadingElement.style.display = 'none';
+            
+            if (!data || data.length === 0) {
+                contentElement.innerHTML = '<div class="no-deceased-info">No deceased information available.</div>';
+                return;
+            }
+            
+            // Process and display deceased information
+            let deceasedCount = 0;
+            let html = '';
+            
+            data.forEach(item => {
+                if (item.name) {
+                    deceasedCount++;
+                    
+                    // Format dates if available
+                    const birthDate = item.birth_date ? new Date(item.birth_date).toLocaleDateString() : 'Not specified';
+                    const deathDate = item.death_date ? new Date(item.death_date).toLocaleDateString() : 'Not specified';
+                    
+                    html += `
+                        <div class="deceased-item">
+                            <h5>${deceasedCount}. ${item.name}</h5>
+                            <div class="detail-row">
+                                <span class="detail-label">Birth Date:</span>
+                                <span class="detail-value">${birthDate}</span>
+                            </div>
+                            <div class="detail-row">
+                                <span class="detail-label">Death Date:</span>
+                                <span class="detail-value">${deathDate}</span>
+                            </div>
+                        </div>
+                    `;
+                }
+            });
+            
+            if (deceasedCount === 0) {
+                contentElement.innerHTML = '<div class="no-deceased-info">No deceased information available.</div>';
+            } else {
+                contentElement.innerHTML = html;
+            }
+            
+            // Mark as loaded
+            deceasedSection.dataset.loaded = 'true';
+            
+        } catch (error) {
+            console.error('Error fetching deceased information:', error);
+            loadingElement.style.display = 'none';
+            contentElement.innerHTML = '<div class="error-message">Failed to load deceased information. Please try again later.</div>';
+        }
     }
 
     confirmBtn.onclick = async function () {

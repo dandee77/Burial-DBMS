@@ -365,3 +365,273 @@ body {
     border-bottom: 1px solid #eee;
     padding-bottom: 8px;
 }
+
+/* Add these new styles for multiple deceased forms */
+#deceased-container {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  margin-bottom: 1.5rem;
+  transition: all 0.3s ease;
+}
+
+.deceased-form {
+  background-color: #f9f9f9;
+  border-radius: 10px;
+  padding: 1.8rem;
+  position: relative;
+  border: 1px solid #e0e0e0;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+}
+
+.deceased-form:hover {
+  box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+}
+
+.deceased-form.mausoleum-mode {
+  border-left: 4px solid #3b4a65;
+  background: linear-gradient(to right, rgba(59, 74, 101, 0.05), transparent 20%);
+}
+
+.deceased-form input, 
+.deceased-form select {
+  background-color: white;
+}
+
+.form-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.2rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 1px solid #eaeaea;
+}
+
+.form-header h4 {
+  margin: 0;
+  color: #3b4a65;
+  font-size: 1.1rem;
+  display: flex;
+  align-items: center;
+}
+
+.form-header h4::before {
+  content: '';
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background-color: #3b4a65;
+  margin-right: 8px;
+}
+
+.remove-deceased-btn {
+  background: none;
+  border: none;
+  color: #f44336;
+  cursor: pointer;
+  font-size: 1.2rem;
+  padding: 0.5rem;
+  margin: -0.5rem;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+}
+
+.remove-deceased-btn:hover {
+  background-color: rgba(244, 67, 54, 0.1);
+  transform: scale(1.1);
+}
+
+.btn-add-deceased {
+  background-color: #4caf50;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 0.9rem 1.5rem;
+  margin-top: 1.2rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.7rem;
+  width: 100%;
+  font-weight: 500;
+  transition: all 0.3s;
+  box-shadow: 0 3px 6px rgba(76, 175, 80, 0.2);
+  position: relative;
+  overflow: hidden;
+}
+
+.btn-add-deceased::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(to right, transparent, rgba(255,255,255,0.1), transparent);
+  transform: translateX(-100%);
+  transition: transform 0.6s;
+}
+
+.btn-add-deceased:hover {
+  background-color: #43a047;
+  box-shadow: 0 4px 10px rgba(76, 175, 80, 0.3);
+}
+
+.btn-add-deceased:hover::after {
+  transform: translateX(100%);
+}
+
+.btn-add-deceased i {
+  font-size: 1rem;
+}
+
+.capacity-note {
+  font-size: 0.85rem;
+  color: #666;
+  margin-top: 0.75rem;
+  margin-bottom: 0.5rem;
+  font-style: italic;
+  padding: 0.5rem 0.75rem;
+  background-color: #f8f9fa;
+  border-left: 3px solid #4caf50;
+  border-radius: 3px;
+}
+
+/* Progress indicator for number of deceased records */
+.capacity-indicator {
+  margin-top: 1rem;
+  margin-bottom: 1rem;
+  display: none;
+}
+
+.deceased-form.mausoleum-mode + .capacity-indicator,
+.capacity-indicator.show {
+  display: block;
+}
+
+.capacity-bar {
+  height: 8px;
+  background-color: #e0e0e0;
+  border-radius: 4px;
+  overflow: hidden;
+  position: relative;
+}
+
+.capacity-progress {
+  height: 100%;
+  background-color: #4caf50;
+  width: 10%; /* Will be updated via JS */
+  transition: width 0.3s ease;
+}
+
+.capacity-text {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.75rem;
+  color: #666;
+  margin-top: 0.3rem;
+}
+
+/* Specific field styling */
+.deceased-form label {
+  color: #3b4a65;
+  font-weight: 500;
+  margin-bottom: 0.5rem;
+}
+
+.deceased-form .date-fields {
+  display: flex;
+  gap: 1rem;
+  margin-top: 0.5rem;
+}
+
+.deceased-form .date-fields .form-group {
+  flex: 1;
+}
+
+/* Animations for adding/removing forms */
+@keyframes fadeInSlideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.deceased-form {
+  animation: fadeInSlideDown 0.3s ease-out forwards;
+}
+
+/* Enhanced styling for the deceased section in the confirmation modal */
+.deceased-info-section {
+  margin-top: 1.8rem;
+  border-top: 1px dashed #ddd;
+  padding-top: 1.5rem;
+}
+
+.deceased-info-section h4 {
+  margin-bottom: 1.2rem;
+  color: #3b4a65;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.deceased-list {
+  max-height: 300px;
+  overflow-y: auto;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 1rem;
+  padding-right: 0.5rem;
+}
+
+.deceased-item {
+  background-color: #f9f9f9;
+  border-radius: 8px;
+  padding: 1rem;
+  border: 1px solid #eee;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.03);
+  transition: transform 0.2s;
+}
+
+.deceased-item:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0,0,0,0.06);
+}
+
+.deceased-item p {
+  margin: 0.3rem 0;
+}
+
+.deceased-item p:first-child {
+  color: #3b4a65;
+  font-weight: 500;
+  padding-bottom: 0.4rem;
+  border-bottom: 1px solid #eee;
+}
+
+/* Responsiveness adjustments */
+@media (max-width: 768px) {
+  .deceased-form {
+    padding: 1.2rem;
+  }
+  
+  .deceased-form .date-fields {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+  
+  .deceased-list {
+    grid-template-columns: 1fr;
+  }
+}
