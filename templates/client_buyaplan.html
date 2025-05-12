@@ -13,15 +13,13 @@
   <div class="sidebar"> 
     <div class="logo"></div>
     <ul class="menu">
-       <li><a href="/dashboard"><i class="fas fa-dashboard"></i><span>Dashboard</span></a></li>
-       <li><a href="/dashboard/vicinity_map"><i class="fas fa-map"></i><span>Vicinity Map</span></a></li>
-       <li><a href="/dashboard/contact_us"><i class="fas fa-phone-square"></i><span>Contact Us</span></a></li>
+       <li><a href="/dashboard"><i class="fas fa-tachometer-alt"></i><span>Dashboard</span></a></li>
+       <li><a href="/dashboard/vicinity_map"><i class="fas fa-map-location-dot"></i><span>Vicinity Map</span></a></li>
        <li class="active"><a href="/dashboard/buyaplan"><i class="fas fa-shopping-cart"></i><span>Buy a Plan</span></a></li>
-       <li><a href="/dashboard/payment"><i class="fas fa-tag"></i><span>Payments</span></a></li>
-       <li><a href="#"><i class="fas fa-clipboard"></i><span>Contract</span></a></li>
-       <li><a href="#"><i class="fas fa-gear"></i><span>Maintenance</span></a></li>
-       <li><a href="#"><i class="fas fa-address-card"></i><span>Profile</span></a></li>
-       <li class="logout"><a href="/"><i class="fas fa-sign-out-alt"></i><span>Logout</span></a></li>
+       <li><a href="/dashboard/payment"><i class="fas fa-credit-card"></i><span>Payments</span></a></li>
+       <li><a href="/dashboard/profile"><i class="fas fa-user"></i><span>Profile</span></a></li>
+       <li><a href="/dashboard/message_us"><i class="fas fa-envelope"></i><span>Message Us</span></a></li>
+       <li class="logout"><a href="#" id="logout-btn"><i class="fas fa-sign-out-alt"></i><span>Logout</span></a></li>
     </ul>
   </div>
 
@@ -128,6 +126,33 @@
     </div>
   </div>
 
-  <script src = "{{ url_for('static', path='script/client_buyaplan.js') }}"></script> 
+  <script src = "{{ url_for('static', path='script/client_buyaplan.js') }}"></script>
+  <script>
+    // Add the logout functionality
+    document.addEventListener('DOMContentLoaded', function() {
+        const logoutBtn = document.getElementById('logout-btn');
+        
+        // Logout functionality
+        logoutBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            
+            fetch('/logout', {
+                method: 'POST',
+                credentials: 'include'
+            })
+            .then(response => {
+                if (response.ok) {
+                    // Clear local storage
+                    localStorage.removeItem('access_token');
+                    localStorage.removeItem('client_id');
+                    
+                    // Redirect to home page
+                    window.location.href = '/';
+                }
+            })
+            .catch(error => console.error('Logout error:', error));
+        });
+    });
+  </script>
 </body>
 </html>

@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Message Us - Burial DBMS</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', path='css/dashboard_sidebar.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', path='css/message_us.css') }}">
+</head>
+<body>
+    <div class="sidebar">
+        <div class="logo"></div>
+        <ul class="menu">
+            <li><a href="/dashboard"><i class="fas fa-tachometer-alt"></i><span>Dashboard</span></a></li>
+            <li><a href="/dashboard/vicinity_map"><i class="fas fa-map-location-dot"></i><span>Vicinity Map</span></a></li>
+            <li><a href="/dashboard/buyaplan"><i class="fas fa-shopping-cart"></i><span>Buy a Plan</span></a></li>
+            <li><a href="/dashboard/payment"><i class="fas fa-credit-card"></i><span>Payments</span></a></li>
+            <li><a href="/dashboard/profile"><i class="fas fa-user"></i><span>Profile</span></a></li>
+            <li class="active"><a href="/dashboard/message_us"><i class="fas fa-envelope"></i><span>Message Us</span></a></li>
+            <li class="logout"><a href="#" id="logout-btn"><i class="fas fa-sign-out-alt"></i><span>Logout</span></a></li>
+        </ul>
+    </div>
+
+    <div class="container">
+        <h1 class="page-title">Message Us</h1>
+        
+        <div id="feedback-message" class="feedback-message"></div>
+        
+        <div class="message-grid">
+            <!-- Company Information & Map Section -->
+            <div class="company-info-section">
+                <h3>Our Contact Information</h3>
+                <div class="info-grid">
+                    <div class="info-item">
+                        <div class="info-icon">
+                            <i class="fas fa-map-marker-alt"></i>
+                        </div>
+                        <div class="info-content">
+                            <h4>Our Location</h4>
+                            <p>123 Memorial Avenue, Suite 600<br>Malolos, Bulacan 02110</p>
+                        </div>
+                    </div>
+                    
+                    <div class="info-item">
+                        <div class="info-icon">
+                            <i class="fas fa-phone-alt"></i>
+                        </div>
+                        <div class="info-content">
+                            <h4>Phone Number</h4>
+                            <p>(555) 123-4567</p>
+                        </div>
+                    </div>
+                    
+                    <div class="info-item">
+                        <div class="info-icon">
+                            <i class="fas fa-envelope"></i>
+                        </div>
+                        <div class="info-content">
+                            <h4>Email Address</h4>
+                            <p>info@burialdbms.com</p>
+                        </div>
+                    </div>
+                    
+                    <div class="info-item">
+                        <div class="info-icon">
+                            <i class="fas fa-clock"></i>
+                        </div>
+                        <div class="info-content">
+                            <h4>Business Hours</h4>
+                            <p>Monday - Friday: 9:00 AM - 5:00 PM<br>
+                               Saturday: 10:00 AM - 2:00 PM<br>
+                               Sunday: Closed</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="map-container">
+                    <!-- Mock map embed (replace with actual map in production) -->
+                    <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d15426.54023847542!2d120.81343863094285!3d14.847021839337226!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3396539f2a550d51%3A0x1e2a7fe6a23ca3e5!2sMalolos%2C%20Bulacan!5e0!3m2!1sen!2sph!4v1698233701386!5m2!1sen!2sph" allowfullscreen="" loading="lazy"></iframe>
+                </div>
+            </div>
+            
+            <!-- Contact Form Section -->
+            <div class="message-form-section">
+                <h3>Send Us a Message</h3>
+                <form id="message-form">
+                    <div class="form-group">
+                        <label for="name">Your Name <span style="color: #dc3545;">*</span></label>
+                        <input type="text" id="name" name="name" class="form-control" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="email">Email Address <span style="color: #dc3545;">*</span></label>
+                        <input type="email" id="email" name="email" class="form-control" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="phone">Phone Number</label>
+                        <input type="tel" id="phone" name="phone" class="form-control">
+                        <span class="form-hint">Optional, but helpful for urgent matters</span>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="subject">Subject</label>
+                        <input type="text" id="subject" name="subject" class="form-control">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="message">Your Message <span style="color: #dc3545;">*</span></label>
+                        <textarea id="message" name="message" class="form-control" rows="5" required></textarea>
+                    </div>
+                    
+                    <button type="submit" class="btn-submit">
+                        <i class="fas fa-paper-plane"></i> Send Message
+                    </button>
+                </form>
+            </div>
+            
+            <!-- FAQ Section -->
+            <div class="faq-section">
+                <h3>Frequently Asked Questions</h3>
+                <div class="accordion">
+                    <div class="accordion-item">
+                        <button id="accordion-button-1" aria-expanded="false">
+                            <span class="accordion-title">What types of burials are available?</span>
+                            <span class="icon" aria-hidden="true"></span>
+                        </button> 
+                        <div class="accordion-content">
+                            <p>We offer both <strong>traditional in-ground burials</strong> and above-ground <strong>mausoleum entombments.</strong> Our memorial park provides various options to suit different preferences and cultural requirements.</p>
+                        </div>
+                    </div>
+
+                    <div class="accordion-item">
+                        <button id="accordion-button-2" aria-expanded="false">
+                            <span class="accordion-title">Can I upgrade or downgrade my plan?</span>
+                            <span class="icon" aria-hidden="true"></span>
+                        </button> 
+                        <div class="accordion-content">
+                            <p><strong>No, upgrades to existing burial plans are not allowed.</strong></p>
+                            <p>Once a burial plan has been finalized and purchased, it cannot be changed or upgraded. This ensures consistency in record-keeping and plot availability.</p>
+                        </div>
+                    </div>
+
+                    <div class="accordion-item">
+                        <button id="accordion-button-3" aria-expanded="false">
+                            <span class="accordion-title">Is my plan transferable to another person?</span>
+                            <span class="icon" aria-hidden="true"></span>
+                        </button> 
+                        <div class="accordion-content">
+                            <p><strong>No, burial plans are non-transferable.</strong></p>
+                            <p>Once a burial plan is purchased, it is assigned specifically to the individual named in the contract to maintain accurate records.</p>
+                        </div>
+                    </div>
+
+                    <div class="accordion-item">
+                        <button id="accordion-button-4" aria-expanded="false">
+                            <span class="accordion-title">How many days is the grace period for plan payments after the due date?</span>
+                            <span class="icon" aria-hidden="true"></span>
+                        </button> 
+                        <div class="accordion-content">
+                            <p><strong>We provide a grace period of 30 days after the due date.</strong></p>
+                            <p>If payment is not received within the grace period, late fees may apply, and the plan may be subject to cancellation or suspension.</p>
+                        </div>
+                    </div>
+                    
+                    <div class="accordion-item">
+                        <button id="accordion-button-5" aria-expanded="false">
+                            <span class="accordion-title">What happens if I miss a payment on my installment plan?</span>
+                            <span class="icon" aria-hidden="true"></span>
+                        </button> 
+                        <div class="accordion-content">
+                            <p>If you miss a payment, you will have a 30-day grace period to make up the payment without penalty. After the grace period, a late fee of 2% will be applied to the outstanding amount. If payments remain outstanding for more than 90 days, your plan may be at risk of cancellation.</p>
+                            <p>We understand that financial situations can change, so we encourage you to contact our customer service team if you anticipate payment difficulties.</p>
+                        </div>
+                    </div>
+                    
+                    <div class="accordion-item">
+                        <button id="accordion-button-6" aria-expanded="false">
+                            <span class="accordion-title">Can I pay off my plan early?</span>
+                            <span class="icon" aria-hidden="true"></span>
+                        </button> 
+                        <div class="accordion-content">
+                            <p><strong>Yes, you can pay off your plan early without any prepayment penalties.</strong></p>
+                            <p>Early payoff can save you money on interest charges for installment plans. Please contact our finance department for the exact payoff amount and instructions for processing the final payment.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script src="{{ url_for('static', path='script/message_us.js') }}"></script>
+    <script>
+        // Add the logout functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            const logoutBtn = document.getElementById('logout-btn');
+            
+            // Logout functionality
+            logoutBtn.addEventListener('click', function(e) {
+                e.preventDefault();
+                
+                fetch('/logout', {
+                    method: 'POST',
+                    credentials: 'include'
+                })
+                .then(response => {
+                    if (response.ok) {
+                        // Clear local storage
+                        localStorage.removeItem('access_token');
+                        localStorage.removeItem('client_id');
+                        
+                        // Redirect to home page
+                        window.location.href = '/';
+                    }
+                })
+                .catch(error => console.error('Logout error:', error));
+            });
+        });
+    </script>
+</body>
+</html> 

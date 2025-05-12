@@ -354,15 +354,88 @@ def vicinity_map(
         {"request": request, "client_id": current_user_id}
     )
 
-@app.get("/dashboard/contact_us", response_class=HTMLResponse)
-def contact_us(
+@app.get("/dashboard/profile", response_class=HTMLResponse)
+def client_profile(
     request: Request,
-    current_user_id: int = Depends(get_current_user_id)
+    message: str = None,
+    type: str = None,
+    current_user_id: int = Depends(get_current_user_id),
+    db: Session = Depends(get_db)
 ):
+    # Get the client data
+    client = db.query(Client).filter(Client.client_id == current_user_id).first()
+    
+    if not client:
+        raise HTTPException(status_code=404, detail="Client not found")
+    
     return templates.TemplateResponse(
-        "contact_us.html",
-        {"request": request, "client_id": current_user_id}
+        "client_profile.html",
+        {
+            "request": request,
+            "client": client,
+            "message": message,
+            "message_type": type
+        }
     )
+
+@app.post("/api/client/update")
+async def update_client(
+    request: Request,
+    name: str = Form(...),
+    email: str = Form(...),
+    password: str = Form(None),
+    contact_number: str = Form(None),
+    address: str = Form(None),
+    current_user_id: int = Depends(get_current_user_id),
+    db: Session = Depends(get_db)
+):
+    try:
+        # Get the current client
+        client = db.query(Client).filter(Client.client_id == current_user_id).first()
+        if not client:
+            return JSONResponse(
+                status_code=404,
+                content={"success": False, "message": "Client not found"}
+            )
+        
+        # Check if email is already in use by another client
+        if email != client.email:
+            existing_client = db.query(Client).filter(Client.email == email).first()
+            if existing_client:
+                return JSONResponse(
+                    status_code=400,
+                    content={"success": False, "message": "Email already in use by another account"}
+                )
+        
+        # Update client information
+        client.name = name
+        client.email = email
+        
+        # Only update password if provided
+        if password and password.strip():
+            if len(password) < 8:
+                return JSONResponse(
+                    status_code=400,
+                    content={"success": False, "message": "Password must be at least 8 characters long"}
+                )
+            client.password = pwd_context.hash(password)
+        
+        # Update optional fields
+        client.contact_number = contact_number if contact_number else None
+        client.address = address if address else None
+        
+        db.commit()
+        
+        return JSONResponse(
+            content={"success": True, "message": "Profile updated successfully"}
+        )
+        
+    except Exception as e:
+        logger.error(f"Error updating client: {str(e)}")
+        return JSONResponse(
+            status_code=500,
+            content={"success": False, "message": "An error occurred while updating profile"}
+        )
 
 # ---------------------
 # API - DECEASED BY SLOT ID
@@ -900,4 +973,14 @@ async def test_error(request: Request, status_code: int):
     raise HTTPException(
         status_code=status_code,
         detail=error_messages.get(status_code, f"Test error with status code {status_code}")
+    )
+
+@app.get("/dashboard/message_us", response_class=HTMLResponse)
+def message_us(
+    request: Request,
+    current_user_id: int = Depends(get_current_user_id)
+):
+    return templates.TemplateResponse(
+        "message_us.html",
+        {"request": request, "client_id": current_user_id}
     )

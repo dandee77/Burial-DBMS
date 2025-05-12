@@ -1,64 +1,213 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <!--TODO: QUERY IF THERES ALREADY AN EXISTING ACCOUNT -->
-    <link rel="stylesheet" href="client_profile.css">
-    <!--<link rel="stylesheet" href="{{ url_for('static', path='css/dashboard_sidebar.css') }}"-->
-    <link rel="stylesheet" href="dashboard_sidebar.css">
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <title> Client Profile</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Your Profile - Burial DBMS</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', path='css/dashboard_sidebar.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', path='css/client_profile.css') }}">
 </head>
 <body>
-    <div class="sidebar"> 
+    <div class="sidebar">
         <div class="logo"></div>
         <ul class="menu">
-           <li><a href="/dashboard"><i class="fas fa-dashboard"></i><span>Dashboard</span></a></li>
-           <li><a href="/dashboard/vicinity_map"><i class="fas fa-map"></i><span>Vicinity Map</span></a></li>
-           <li><a href="/dashboard/contact_us"><i class="fas fa-phone-square"></i><span>Contact Us</span></a></li>
-           <li><a href="/dashboard/buyaplan"><i class="fas fa-shopping-cart"></i><span>Buy a Plan</span></a></li>
-           <li class="active"><a href="/dashboard/payment"><i class="fas fa-tag"></i><span>Payments</span></a></li>
-           <li><a href="#"><i class="fas fa-clipboard"></i><span>Contract</span></a></li>
-           <li><a href="#"><i class="fas fa-gear"></i><span>Maintenance</span></a></li>
-           <li><a href="#"><i class="fas fa-address-card"></i><span>Profile</span></a></li>
-           <li class="logout"><a href="/"><i class="fas fa-sign-out-alt"></i><span>Logout</span></a></li>
+            <li><a href="/dashboard"><i class="fas fa-tachometer-alt"></i><span>Dashboard</span></a></li>
+            <li><a href="/dashboard/vicinity_map"><i class="fas fa-map-location-dot"></i><span>Vicinity Map</span></a></li>
+            <li><a href="/dashboard/buyaplan"><i class="fas fa-shopping-cart"></i><span>Buy a Plan</span></a></li>
+            <li><a href="/dashboard/payment"><i class="fas fa-credit-card"></i><span>Payments</span></a></li>
+            <li class="active"><a href="/dashboard/profile"><i class="fas fa-user"></i><span>Profile</span></a></li>
+            <li><a href="/dashboard/message_us"><i class="fas fa-envelope"></i><span>Message Us</span></a></li>
+            <li class="logout"><a href="#" id="logout-btn"><i class="fas fa-sign-out-alt"></i><span>Logout</span></a></li>
         </ul>
     </div>
-    <div class="container">
-        <h2>Your Profile</h2>
-        <div class="field">
-            <label>Client Name</label>
-            <p>VARILLA,Nymrod Erris P.</p>
-        </div>
 
-        <div class="field">
-            <label>Contact Number:</label>
-            <p>09123456789</p>
+    <div class="profile-container">
+        <h1 class="page-title">My Profile</h1>
+        
+        {% if message %}
+        <div class="alert alert-{{ message_type }}">
+            {{ message }}
         </div>
-
-        <div class="field">
-            <label>Email:</label>
-            <p>erris@example.com</p>
-        </div>
-
-        <div class="field">
-            <label>Password:</label>
-            <p>********</p>
-        </div>
-      
-        <div class="field">
-                <label>Address:</label>
-                <p>Malolos,Bulacan</p>
+        {% endif %}
+        
+        <div class="profile-card">
+            <div class="profile-header">
+                <h3>Account Information</h3>
             </div>
-              
-        <div class="field">
-            <label>Date of account creation:</label>
-            <p>04-21-2025</p>
+            
+            <button class="btn-edit" id="edit-profile-btn">
+                <i class="fas fa-pencil-alt"></i> Edit Profile
+            </button>
+            
+            <!-- View Mode -->
+            <div id="view-mode">
+                <div class="profile-grid">
+                    <div class="profile-field">
+                        <span class="field-label">Client ID</span>
+                        <div class="field-value">{{ client.client_id }}</div>
+                    </div>
+                    
+                    <div class="profile-field">
+                        <span class="field-label">Full Name</span>
+                        <div class="field-value">{{ client.name }}</div>
+                    </div>
+                    
+                    <div class="profile-field">
+                        <span class="field-label">Email Address</span>
+                        <div class="field-value">{{ client.email }}</div>
+                    </div>
+                    
+                    <div class="profile-field">
+                        <span class="field-label">Password</span>
+                        <div class="field-value">••••••••</div>
+                    </div>
+                    
+                    <div class="profile-field">
+                        <span class="field-label">Contact Number</span>
+                        <div class="field-value">{{ client.contact_number if client.contact_number else 'Not provided' }}</div>
+                    </div>
+                    
+                    <div class="profile-field">
+                        <span class="field-label">Address</span>
+                        <div class="field-value">{{ client.address if client.address else 'Not provided' }}</div>
+                    </div>
+                    
+                    <div class="profile-field">
+                        <span class="field-label">Account Created</span>
+                        <div class="field-value">{{ client.date_created.strftime('%B %d, %Y') if client.date_created else 'Unknown' }}</div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Edit Mode -->
+            <div id="edit-mode" class="hidden">
+                <form id="profile-form" action="/api/client/update" method="POST">
+                    <div class="profile-grid">
+                        <div class="form-group">
+                            <label for="name">Full Name</label>
+                            <input type="text" id="name" name="name" class="form-control" value="{{ client.name }}" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="email">Email Address</label>
+                            <input type="email" id="email" name="email" class="form-control" value="{{ client.email }}" required>
+                        </div>
+                        
+                        <div class="form-group password-field">
+                            <label for="password">New Password (leave blank to keep current)</label>
+                            <input type="password" id="password" name="password" class="form-control">
+                            <span class="toggle-password" id="toggle-password">
+                                <i class="fas fa-eye"></i>
+                            </span>
+                            <span class="form-hint">Must be at least 8 characters</span>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="contact_number">Contact Number</label>
+                            <input type="tel" id="contact_number" name="contact_number" class="form-control" value="{{ client.contact_number or '' }}">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="address">Address</label>
+                            <textarea id="address" name="address" class="form-control" rows="3">{{ client.address or '' }}</textarea>
+                        </div>
+                    </div>
+                    
+                    <div class="form-actions">
+                        <button type="button" id="cancel-edit-btn" class="btn-cancel">Cancel</button>
+                        <button type="submit" class="btn-save">Save Changes</button>
+                    </div>
+                </form>
+            </div>
         </div>
-       
-
     </div>
     
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const viewMode = document.getElementById('view-mode');
+            const editMode = document.getElementById('edit-mode');
+            const editBtn = document.getElementById('edit-profile-btn');
+            const cancelBtn = document.getElementById('cancel-edit-btn');
+            const togglePasswordBtn = document.getElementById('toggle-password');
+            const passwordField = document.getElementById('password');
+            const logoutBtn = document.getElementById('logout-btn');
+            
+            // Toggle between view and edit modes
+            editBtn.addEventListener('click', function() {
+                viewMode.classList.add('hidden');
+                editMode.classList.remove('hidden');
+                editBtn.classList.add('hidden');
+            });
+            
+            cancelBtn.addEventListener('click', function() {
+                editMode.classList.add('hidden');
+                viewMode.classList.remove('hidden');
+                editBtn.classList.remove('hidden');
+            });
+            
+            // Toggle password visibility
+            togglePasswordBtn.addEventListener('click', function() {
+                const type = passwordField.getAttribute('type') === 'password' ? 'text' : 'password';
+                passwordField.setAttribute('type', type);
+                this.querySelector('i').classList.toggle('fa-eye');
+                this.querySelector('i').classList.toggle('fa-eye-slash');
+            });
+            
+            // Logout functionality
+            logoutBtn.addEventListener('click', function(e) {
+                e.preventDefault();
+                
+                fetch('/logout', {
+                    method: 'POST',
+                    credentials: 'include'
+                })
+                .then(response => {
+                    if (response.ok) {
+                        // Clear local storage
+                        localStorage.removeItem('access_token');
+                        localStorage.removeItem('client_id');
+                        
+                        // Redirect to home page
+                        window.location.href = '/';
+                    }
+                })
+                .catch(error => console.error('Logout error:', error));
+            });
+            
+            // Form submission with fetch API
+            const profileForm = document.getElementById('profile-form');
+            profileForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                const formData = new FormData(profileForm);
+                const token = localStorage.getItem('access_token');
+                
+                fetch('/api/client/update', {
+                    method: 'POST',
+                    body: formData,
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    },
+                    credentials: 'include'
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        // Reload the page to show updated info
+                        window.location.href = '/dashboard/profile?message=Profile updated successfully&type=success';
+                    } else {
+                        window.location.href = '/dashboard/profile?message=' + 
+                            encodeURIComponent(data.message || 'Failed to update profile') + '&type=danger';
+                    }
+                })
+                .catch(error => {
+                    console.error('Update error:', error);
+                    window.location.href = '/dashboard/profile?message=An error occurred&type=danger';
+                });
+            });
+        });
+    </script>
 </body>
-
 </html>
