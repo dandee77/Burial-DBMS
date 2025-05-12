@@ -166,18 +166,47 @@
     color: #666;
 }
 
-.btn-buy-plan {
+.no-contracts-actions {
+    display: flex;
+    gap: 1rem;
+    margin-top: 1rem;
+}
+
+.link-buy-plan, .link-contact {
+    color: #3b4a65;
+    font-weight: 500;
+    text-decoration: underline;
+}
+
+.link-buy-plan:hover, .link-contact:hover {
+    color: #2c384e;
+}
+
+.btn-buy-plan, .btn-contact-us {
     padding: 0.75rem 1.5rem;
-    background-color: #3b4a65;
-    color: white;
     border-radius: 5px;
     text-decoration: none;
     font-weight: 500;
     transition: background-color 0.2s ease;
 }
 
+.btn-buy-plan {
+    background-color: #3b4a65;
+    color: white;
+}
+
+.btn-contact-us {
+    background-color: white;
+    color: #3b4a65;
+    border: 1px solid #3b4a65;
+}
+
 .btn-buy-plan:hover {
     background-color: #2c384e;
+}
+
+.btn-contact-us:hover {
+    background-color: #f0f0f0;
 }
 
 @media (max-width: 768px) {

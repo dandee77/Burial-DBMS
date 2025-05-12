@@ -108,6 +108,9 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Fetch and display contracts
     async function fetchAndDisplayContracts() {
+        // Define container first thing
+        const container = document.getElementById('contracts-container');
+        
         showLoading();
         
         try {
@@ -123,6 +126,28 @@ document.addEventListener('DOMContentLoaded', function() {
 
             // Use the explicit client ID endpoint
             const response = await fetchWithAuth(`/api/contracts/client/${clientId}`);
+            
+            // Special handling for 404 "No contracts found" case
+            if (response.status === 404) {
+                const errorData = await response.json();
+                // Check if this is our specific "No contracts found" message
+                if (errorData.message && errorData.message.includes("No contracts found")) {
+                    // This is an expected case, not an error
+                    container.innerHTML = `
+                        <div class="no-contracts">
+                            <i class="fas fa-info-circle"></i>
+                            <p>You don't have any active contracts yet.</p>
+                            <p>You can <a href="/dashboard/buyaplan" class="link-buy-plan">purchase a plan</a> to get started or 
+                            <a href="/dashboard/contact_us" class="link-contact">contact us</a> if you think this is an error.</p>
+                            <div class="no-contracts-actions">
+                                <a href="/dashboard/buyaplan" class="btn-buy-plan">Buy a Plan</a>
+                                <a href="/dashboard/contact_us" class="btn-contact-us">Contact Us</a>
+                            </div>
+                        </div>
+                    `;
+                    return;
+                }
+            }
             
             if (!response.ok) {
                 const error = await response.json();
@@ -146,14 +171,18 @@ document.addEventListener('DOMContentLoaded', function() {
             }
 
             const contracts = await response.json();
-            const container = document.getElementById('contracts-container');
             
             if (!contracts || contracts.length === 0) {
                 container.innerHTML = `
                     <div class="no-contracts">
                         <i class="fas fa-info-circle"></i>
                         <p>You don't have any active contracts yet.</p>
-                        <a href="/dashboard/buyaplan" class="btn-buy-plan">Buy a Plan</a>
+                        <p>You can <a href="/dashboard/buyaplan" class="link-buy-plan">purchase a plan</a> to get started or 
+                        <a href="/dashboard/contact_us" class="link-contact">contact us</a> if you think this is an error.</p>
+                        <div class="no-contracts-actions">
+                            <a href="/dashboard/buyaplan" class="btn-buy-plan">Buy a Plan</a>
+                            <a href="/dashboard/contact_us" class="btn-contact-us">Contact Us</a>
+                        </div>
                     </div>
                 `;
                 return;
