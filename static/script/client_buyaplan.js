@@ -20,6 +20,7 @@ document.addEventListener('DOMContentLoaded', () => {
   setupEventListeners();
 });
 
+
 // Fetch available slots from API
 async function fetchAvailableSlots() {
   try {
@@ -219,8 +220,8 @@ async function handlePurchaseConfirmation() {
         
         if (res.ok) {
             confirmationModal.style.display = 'none';
-            showSuccess('Contract successfully created!');
-            // Reset form
+            location.reload();
+        
             document.getElementById('planForm').reset();
             fetchAvailableSlots();
         } else {
@@ -244,6 +245,6 @@ function showSuccess(message) {
 
 // Close all modals
 function closeAllModals() {
-  confirmationModal.style.display = 'none';
-  errorModal.style.display = 'none';
+    confirmationModal.style.display = 'none';
+    errorModal.style.display = 'none';
 }

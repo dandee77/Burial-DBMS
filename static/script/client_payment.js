@@ -108,7 +108,17 @@ document.addEventListener('DOMContentLoaded', function() {
                   modal.style.display = 'flex';
               });
           });
-      });
+      })
+    .catch(error => {
+        const container = document.getElementById('contracts-container');
+        container.innerHTML = `
+            <div class="error-message">
+                <i class="fas fa-exclamation-triangle"></i>
+                <p>You don't have any contracts. Please go to <a href="/dashboard/buyaplan">Buy a Plan</a> to purchase or <a href="/dashboard/contact_us">Contact Us</a> if you think this is an error.</p>
+            </div>
+        `;
+        console.error("Fetch error:", error);
+    });
 
   confirmBtn.onclick = async function () {
       modal.style.display = 'none';
