@@ -20,6 +20,7 @@ from passlib.context import CryptContext
 import secrets
 from typing import List
 from pydantic import BaseModel
+from typing import Any
 
 # Security settings
 SECRET_KEY = secrets.token_urlsafe(32)
@@ -125,14 +126,76 @@ async def login_user(
             content={"detail": "An error occurred during login"}
         )
 
-# Update the get_current_user_id function to handle cookie-based authentication
+# Custom error handlers
+@app.exception_handler(HTTPException)
+async def http_exception_handler(request: Request, exc: HTTPException):
+    # For API requests (expecting JSON), return JSON response
+    if request.url.path.startswith("/api/"):
+        return JSONResponse(
+            status_code=exc.status_code,
+            content={"detail": exc.detail}
+        )
+    
+    # For 401 Unauthorized errors
+    if exc.status_code == 401:
+        return templates.TemplateResponse(
+            "error_page.html",
+            {
+                "request": request,
+                "status_code": 401,
+                "title": "Unauthorized Access",
+                "message": "You need to be logged in to access this page. Please log in with your credentials to continue."
+            },
+            status_code=401
+        )
+    
+    # For 404 Not Found errors
+    if exc.status_code == 404:
+        return templates.TemplateResponse(
+            "error_page.html",
+            {
+                "request": request,
+                "status_code": 404,
+                "title": "Page Not Found",
+                "message": "The page you are looking for doesn't exist or has been moved."
+            },
+            status_code=404
+        )
+    
+    # Generic error handler for other HTTP errors
+    return templates.TemplateResponse(
+        "error_page.html",
+        {
+            "request": request,
+            "status_code": exc.status_code,
+            "title": "An Error Occurred",
+            "message": exc.detail
+        },
+        status_code=exc.status_code
+    )
+
+# Handle 404 for non-existent routes
+@app.exception_handler(404)
+async def not_found_handler(request: Request, exc: Any):
+    return templates.TemplateResponse(
+        "error_page.html",
+        {
+            "request": request,
+            "status_code": 404,
+            "title": "Page Not Found",
+            "message": "The page you are looking for doesn't exist or has been moved."
+        },
+        status_code=404
+    )
+
+# Now update the get_current_user_id function to use the HTTPException that will be caught by your handler
 async def get_current_user_id(
     request: Request,
     db: Session = Depends(get_db)
 ) -> int:
     credentials_exception = HTTPException(
         status_code=401,
-        detail="Could not validate credentials",
+        detail="Please log in to access this page",
         headers={"WWW-Authenticate": "Bearer"},
     )
     
@@ -799,3 +862,42 @@ async def get_user_info(
             status_code=500,
             detail="An error occurred while fetching user information"
         )
+
+# Add this after the other exception handlers
+@app.exception_handler(Exception)
+async def global_exception_handler(request: Request, exc: Exception):
+    # Log the error
+    logger.error(f"Unhandled exception: {str(exc)}")
+    
+    # For API requests, return JSON
+    if request.url.path.startswith("/api/"):
+        return JSONResponse(
+            status_code=500,
+            content={"detail": "An internal server error occurred."}
+        )
+    
+    # For other requests, show error page
+    return templates.TemplateResponse(
+        "error_page.html",
+        {
+            "request": request,
+            "status_code": 500,
+            "title": "Internal Server Error",
+            "message": "Something went wrong on our side. Please try again later or contact support if the problem persists."
+        },
+        status_code=500
+    )
+
+# Test error pages (remove in production)
+@app.get("/test-error/{status_code}")
+async def test_error(request: Request, status_code: int):
+    error_messages = {
+        401: "This is a test 401 Unauthorized error",
+        404: "This is a test 404 Not Found error",
+        500: "This is a test 500 Internal Server Error"
+    }
+    
+    raise HTTPException(
+        status_code=status_code,
+        detail=error_messages.get(status_code, f"Test error with status code {status_code}")
+    )
