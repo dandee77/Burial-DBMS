@@ -10,7 +10,6 @@ const confirmPurchaseBtn = document.getElementById('confirmPurchase');
 const closeErrorBtn = document.getElementById('closeError');
 
 // Global Variables
-const clientId = 3; // Replace with dynamic session value in production
 let selectedSlot = null;
 let slotData = [];
 
@@ -20,11 +19,26 @@ document.addEventListener('DOMContentLoaded', () => {
   setupEventListeners();
 });
 
+// Helper function for API calls
+async function fetchWithAuth(url, options = {}) {
+  const token = localStorage.getItem('access_token');
+  const defaultOptions = {
+    headers: {
+      'Authorization': `Bearer ${token}`,
+      'Accept': 'application/json'
+    },
+    credentials: 'include'
+  };
+  return fetch(url, { ...defaultOptions, ...options });
+}
 
 // Fetch available slots from API
 async function fetchAvailableSlots() {
   try {
-    const response = await fetch('/api/available_slots');
+    const response = await fetchWithAuth('/api/available_slots');
+    if (!response.ok) {
+      throw new Error('Failed to fetch slots');
+    }
     slotData = await response.json();
     populateSlotDropdown();
   } catch (error) {
@@ -150,7 +164,8 @@ function resetCalculations() {
   });
 }
 
-function handleFormSubmit(e) {
+// Update handleFormSubmit to use authentication
+async function handleFormSubmit(e) {
     e.preventDefault();
     
     // Validate slot selection
@@ -177,6 +192,7 @@ function handleFormSubmit(e) {
     
     // Add deceased info to modal
     const modalBody = document.getElementById('modalBody');
+    modalBody.innerHTML = ''; // Clear previous content
     const deceasedInfo = document.createElement('div');
     deceasedInfo.className = 'modal-summary';
     deceasedInfo.innerHTML = `
@@ -197,38 +213,44 @@ function formatDate(dateString) {
     return new Date(dateString).toLocaleDateString(undefined, options);
 }
 
-// Update the purchase confirmation handler
+// Update handlePurchaseConfirmation
 async function handlePurchaseConfirmation() {
-    const payload = {
-        slot_id: selectedSlot.slot_id,
-        client_id: clientId,
-        years_to_pay: parseInt(yearsToPay.value),
-        payment_method: paymentMethod.value,
-        deceased_name: document.getElementById('deceasedName').value.trim(),
-        birth_date: document.getElementById('birthDate').value,
-        death_date: document.getElementById('deathDate').value
-    };
-
     try {
-        const res = await fetch('/api/contracts/create', {
+        const deceasedName = document.getElementById('deceasedName').value.trim();
+        const birthDate = document.getElementById('birthDate').value;
+        const deathDate = document.getElementById('deathDate').value;
+
+        const payload = {
+            slot_id: selectedSlot.slot_id,
+            payment_method: paymentMethod.value,
+            years_to_pay: parseInt(yearsToPay.value),
+            deceased_name: deceasedName,
+            birth_date: birthDate,
+            death_date: deathDate
+        };
+
+        const response = await fetchWithAuth('/api/contracts/create', {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
+            headers: {
+                'Content-Type': 'application/json'
+            },
             body: JSON.stringify(payload)
         });
 
-        const data = await res.json();
-        
-        if (res.ok) {
-            confirmationModal.style.display = 'none';
-            location.reload();
-        
-            document.getElementById('planForm').reset();
-            fetchAvailableSlots();
-        } else {
-            showError('Failed to create contract: ' + (data.message || 'Unknown error'));
+        if (!response.ok) {
+            const error = await response.json();
+            throw new Error(error.detail || 'Failed to create contract');
         }
+
+        const result = await response.json();
+        showSuccess('Contract created successfully!');
+        setTimeout(() => {
+            window.location.href = '/dashboard/payment';
+        }, 2000);
     } catch (error) {
-        showError('Network error: ' + error.message);
+        showError(error.message);
+    } finally {
+        closeAllModals();
     }
 }
 

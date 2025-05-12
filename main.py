@@ -1,19 +1,36 @@
 from contextlib import asynccontextmanager
-from fastapi import FastAPI, Form, Request, Depends
-from fastapi.responses import HTMLResponse, JSONResponse
+from fastapi import FastAPI, Form, Request, Depends, HTTPException, Response, Cookie
+from fastapi.responses import HTMLResponse, JSONResponse, RedirectResponse
 from fastapi.templating import Jinja2Templates
 from fastapi.staticfiles import StaticFiles
+from fastapi.security import OAuth2PasswordBearer
 from sqlalchemy.orm import Session
 from database import engine, Base, SessionLocal
 from models import Client, Deceased, Slot, Contract, PaymentMethodEnum
 from crud import create_client, get_all_clients, authenticate_client
 from schemas import ClientCreate
-from datetime import datetime
+from datetime import datetime, timedelta
 import uvicorn
 import ngrok
 from dotenv import load_dotenv
 from loguru import logger
 from os import getenv
+from jose import JWTError, jwt
+from passlib.context import CryptContext
+import secrets
+from typing import List
+from pydantic import BaseModel
+
+# Security settings
+SECRET_KEY = secrets.token_urlsafe(32)
+ALGORITHM = "HS256"
+ACCESS_TOKEN_EXPIRE_MINUTES = 60
+
+# Password hashing
+pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+
+# OAuth2 scheme
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 
 # TODO: REMOVE NGROK WARNING
 # TODO: LEARN HOW TO TRANSITION FROM SQLITE TO MYSQL
@@ -25,7 +42,6 @@ load_dotenv()
 NGROK_AUTH_TOKEN = getenv("NGROK_AUTH_TOKEN", "NGROK_AUTH_TOKEN")
 APPLICATION_PORT = 80
 NGROK_DOMAIN = "foal-engaged-regularly.ngrok-free.app"
-CLIENT_ID = -1
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -53,6 +69,100 @@ def get_db():
     finally:
         db.close()
 
+# Security utilities
+def create_access_token(data: dict):
+    to_encode = data.copy()
+    expire = datetime.utcnow() + timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
+    to_encode.update({"exp": expire})
+    encoded_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
+    return encoded_jwt
+
+@app.post("/login")
+async def login_user(
+    request: Request,
+    email: str = Form(...),
+    password: str = Form(...),
+    db: Session = Depends(get_db)
+):
+    try:
+        # Authenticate user
+        user = authenticate_client(db, email=email, password=password)
+        if not user:
+            return JSONResponse(
+                status_code=401,
+                content={"detail": "Incorrect email or password"}
+            )
+        
+        # Create access token
+        access_token = create_access_token({"sub": str(user.client_id)})
+        
+        # Create response with success message
+        response = JSONResponse(
+            status_code=200,  # Explicitly set 200 status
+            content={
+                "message": "Login successful",
+                "access_token": access_token,
+                "client_id": user.client_id
+            }
+        )
+        
+        # Set secure cookie with token
+        response.set_cookie(
+            key="session_token",
+            value=access_token,
+            httponly=True,
+            secure=True,
+            samesite="lax",
+            max_age=3600  # 1 hour
+        )
+        
+        return response
+        
+    except Exception as e:
+        logger.error(f"Login error: {str(e)}")
+        return JSONResponse(
+            status_code=500,
+            content={"detail": "An error occurred during login"}
+        )
+
+# Update the get_current_user_id function to handle cookie-based authentication
+async def get_current_user_id(
+    request: Request,
+    db: Session = Depends(get_db)
+) -> int:
+    credentials_exception = HTTPException(
+        status_code=401,
+        detail="Could not validate credentials",
+        headers={"WWW-Authenticate": "Bearer"},
+    )
+    
+    # Try to get token from cookie first
+    token = request.cookies.get("session_token")
+    
+    # If no cookie, try to get token from Authorization header
+    if not token:
+        auth_header = request.headers.get("Authorization")
+        if auth_header and auth_header.startswith("Bearer "):
+            token = auth_header.split(" ")[1]
+    
+    if not token:
+        raise credentials_exception
+        
+    try:
+        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+        client_id = int(payload.get("sub"))
+        if client_id is None:
+            raise credentials_exception
+            
+        # Verify user exists
+        client = db.query(Client).filter(Client.client_id == client_id).first()
+        if client is None:
+            raise credentials_exception
+            
+        return client_id
+    except (JWTError, ValueError):
+        raise credentials_exception
+
 # ---------------------
 # LANDING PAGE
 # ---------------------
@@ -74,17 +184,56 @@ def submit_client(
     password: str = Form(...),
     db: Session = Depends(get_db)
 ):
-    client_data = ClientCreate(
-        name=name,
-        email=email,
-        password=password,
-        contact_number=None,
-        address=None  
-    )
-    new_client = create_client(db, client_data)
-    global CLIENT_ID
-    CLIENT_ID = new_client.client_id
-    return {"message": "Client created!", "client_id": new_client.client_id}
+    try:
+        # Check if user already exists
+        existing_user = db.query(Client).filter(Client.email == email).first()
+        if existing_user:
+            return JSONResponse(
+                status_code=400,
+                content={"detail": "Email already registered"}
+            )
+
+        # Hash the password before creating the client
+        hashed_password = pwd_context.hash(password)
+        
+        client_data = ClientCreate(
+            name=name,
+            email=email,
+            password=hashed_password,  # Store the hashed password
+            contact_number=None,
+            address=None  
+        )
+        
+        new_client = create_client(db, client_data)
+        
+        # Create access token
+        access_token = create_access_token({"sub": str(new_client.client_id)})
+        
+        response = JSONResponse(
+            content={
+                "message": "Client created successfully!",
+                "access_token": access_token,
+                "client_id": new_client.client_id
+            }
+        )
+        
+        # Set secure cookie
+        response.set_cookie(
+            key="session_token",
+            value=access_token,
+            httponly=True,
+            secure=True,
+            samesite="lax",
+            max_age=3600  # 1 hour
+        )
+        return response
+        
+    except Exception as e:
+        logger.error(f"Signup error: {str(e)}")
+        return JSONResponse(
+            status_code=500,
+            content={"detail": "An error occurred during signup"}
+        )
 
 # ---------------------
 # LOGIN
@@ -93,44 +242,74 @@ def submit_client(
 def login_page(request: Request):
     return templates.TemplateResponse("login.html", {"request": request})
 
-@app.post("/login")
-def login_user(email: str = Form(...), password: str = Form(...), db: Session = Depends(get_db)):
-    user = authenticate_client(db, email=email, password=password)
-    if user:
-        global CLIENT_ID
-        CLIENT_ID = user.client_id
-        return {"message": "Login successful", "client_id": user.client_id}
-    else:
-        return {"message": "Invalid email or password"}
+@app.post("/logout")
+def logout():
+    response = JSONResponse(content={"message": "Logged out successfully"})
+    response.delete_cookie(key="session_token")
+    return response
 
 # ---------------------
 # DASHBOARD - CLIENT
 # ---------------------
 @app.get("/dashboard", response_class=HTMLResponse)
-def dashboard(request: Request):
-    return templates.TemplateResponse("main_dashboard.html", {"request": request})
+async def dashboard(
+    request: Request,
+    current_user_id: int = Depends(get_current_user_id)
+):
+    return templates.TemplateResponse(
+        "main_dashboard.html",
+        {"request": request, "client_id": current_user_id}
+    )
 
 @app.get("/dashboard/buyaplan", response_class=HTMLResponse)
-def buy_a_plan(request: Request):
-    return templates.TemplateResponse("client_buyaplan.html", {"request": request})
+def buy_a_plan(
+    request: Request,
+    current_user_id: int = Depends(get_current_user_id)
+):
+    return templates.TemplateResponse(
+        "client_buyaplan.html",
+        {"request": request, "client_id": current_user_id}
+    )
 
 @app.get("/dashboard/payment", response_class=HTMLResponse)
-def payment(request: Request):
-    return templates.TemplateResponse("client_payment.html", {"request": request})
+def payment(
+    request: Request,
+    current_user_id: int = Depends(get_current_user_id)
+):
+    return templates.TemplateResponse(
+        "client_payment.html",
+        {"request": request, "client_id": current_user_id}
+    )
 
 @app.get("/dashboard/vicinity_map", response_class=HTMLResponse)
-def vicinity_map(request: Request):
-    return templates.TemplateResponse("vicinity_map.html", {"request": request})
+def vicinity_map(
+    request: Request,
+    current_user_id: int = Depends(get_current_user_id)
+):
+    return templates.TemplateResponse(
+        "vicinity_map.html",
+        {"request": request, "client_id": current_user_id}
+    )
 
 @app.get("/dashboard/contact_us", response_class=HTMLResponse)
-def contact_us(request: Request):
-    return templates.TemplateResponse("contact_us.html", {"request": request})
+def contact_us(
+    request: Request,
+    current_user_id: int = Depends(get_current_user_id)
+):
+    return templates.TemplateResponse(
+        "contact_us.html",
+        {"request": request, "client_id": current_user_id}
+    )
 
 # ---------------------
 # API - DECEASED BY SLOT ID
 # ---------------------
 @app.get("/api/slot/{slot_id}")
-def get_deceased_by_slot(slot_id: int, db: Session = Depends(get_db)):
+def get_deceased_by_slot(
+    slot_id: int,
+    db: Session = Depends(get_db),
+    current_user_id: int = Depends(get_current_user_id)
+):
     slot = db.query(Slot).filter(Slot.slot_id == slot_id).first()
     if not slot:
         return JSONResponse(content={"message": "Slot not found"}, status_code=404)
@@ -150,7 +329,6 @@ def get_deceased_by_slot(slot_id: int, db: Session = Depends(get_db)):
             "death_date": d.death_date,
         })
 
-    # If no deceased but slot exists
     if not result:
         result.append({
             "slot_id": slot.slot_id,
@@ -167,26 +345,40 @@ def get_deceased_by_slot(slot_id: int, db: Session = Depends(get_db)):
 # API - CONTRACTS BY CLIENT ID
 # ---------------------
 @app.get("/api/contracts/client/{client_id}")
-def get_contracts_by_client(client_id: int, db: Session = Depends(get_db)):
+def get_contracts_by_client(
+    client_id: int,
+    db: Session = Depends(get_db),
+    current_user_id: int = Depends(get_current_user_id)
+):
+    # Verify the user is accessing their own contracts
+    if client_id != current_user_id:
+        raise HTTPException(
+            status_code=403,
+            detail="Not authorized to view these contracts"
+        )
+
     contracts = db.query(Contract).filter(Contract.client_id == client_id).all()
 
     if not contracts:
-        return JSONResponse(content={"message": "No contracts found for this client"}, status_code=404)
+        return JSONResponse(
+            content={"message": "No contracts found for this client"},
+            status_code=404
+        )
 
     result = []
     for c in contracts:
         result.append({
-            "order_id": c.order_id,  # Changed from contract_id to order_id
+            "order_id": c.order_id,
             "client_id": c.client_id,
             "slot_id": c.slot_id,
-            "contract_price": c.contract_price,  # Changed from price
-            "vat_percent": c.vat_percent,  # Changed from vat
-            "admin_fee": c.admin_fee,  # Changed from transfer_fee
+            "contract_price": c.contract_price,
+            "vat_percent": c.vat_percent,
+            "admin_fee": c.admin_fee,
             "down_payment": c.down_payment,
             "monthly_amortization": c.monthly_amortization,
-            "final_price": c.final_price,  # Changed from full_payment
+            "final_price": c.final_price,
             "years_to_pay": c.years_to_pay,
-            "order_date": c.order_date,  # Changed from created_at
+            "order_date": c.order_date,
             "slot_type": c.slot.slot_type if c.slot else None,
             "payment_method": c.payment_method if c.payment_method else None,
             "is_paid": c.is_paid,
@@ -223,11 +415,12 @@ def get_available_slots(db: Session = Depends(get_db)):
 @app.post("/api/contracts/create")
 def create_contract(
     payload: dict,
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    current_user_id: int = Depends(get_current_user_id)
 ):
     try:
         slot_id = payload.get("slot_id")
-        client_id = payload.get("client_id")
+        client_id = current_user_id  # Use the authenticated user's ID
         years_to_pay = payload.get("years_to_pay", 0)
         payment_method = payload.get("payment_method")
         deceased_name = payload.get("deceased_name")
@@ -349,13 +542,13 @@ def create_contract(
 @app.post("/api/contracts/{order_id}/payment")
 def process_payment(
     order_id: int,
-    client_id: int, 
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    current_user_id: int = Depends(get_current_user_id)
 ):
-    # Simulate fetching client (you can skip if unnecessary)
+    # Verify the contract belongs to the authenticated user
     contract = db.query(Contract).filter(
         Contract.order_id == order_id,
-        Contract.client_id == client_id
+        Contract.client_id == current_user_id
     ).first()
 
     if not contract:
@@ -416,10 +609,6 @@ def get_deceased(db: Session = Depends(get_db)):
 def get_slots(db: Session = Depends(get_db)):
     return db.query(Slot).all()
 
-@app.get("/clientID")
-def get_client_id():
-    return {"client_id": CLIENT_ID}
-
 if __name__ == "__main__":
     uvicorn.run("main:app", host="127.0.0.1", port=APPLICATION_PORT, reload=True)
 
@@ -450,3 +639,163 @@ def debug_all_contracts(db: Session = Depends(get_db)):
         "client_exists": db.query(Client).filter(Client.client_id == c.client_id).first() is not None,
         "slot_exists": db.query(Slot).filter(Slot.slot_id == c.slot_id).first() is not None
     } for c in contracts]
+
+class ContractResponse(BaseModel):
+    order_id: int
+    client_id: int
+    slot_id: int
+    contract_price: float
+    vat_percent: float
+    admin_fee: float
+    down_payment: float
+    monthly_amortization: float
+    final_price: float
+    years_to_pay: int
+    order_date: str | None
+    slot_type: str | None
+    payment_method: str | None
+    is_paid: bool
+    is_paid_on_time: bool
+    latest_payment_date: str | None
+    interest_rate: float
+    vat_amount: float
+    price_with_vat: float
+    spot_cash_total: float
+
+@app.get("/api/contracts/client/current", response_model=List[ContractResponse])
+async def get_current_user_contracts(
+    request: Request,
+    db: Session = Depends(get_db)
+):
+    try:
+        # Get the current user's ID from the token
+        token = request.cookies.get("session_token")
+        if not token:
+            auth_header = request.headers.get("Authorization")
+            if auth_header and auth_header.startswith("Bearer "):
+                token = auth_header.split(" ")[1]
+        
+        if not token:
+            raise HTTPException(
+                status_code=401,
+                detail="Authentication required"
+            )
+
+        try:
+            payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+            current_user_id = int(payload.get("sub"))
+            if not current_user_id:
+                raise HTTPException(
+                    status_code=401,
+                    detail="Invalid authentication token"
+                )
+        except (JWTError, ValueError):
+            raise HTTPException(
+                status_code=401,
+                detail="Invalid authentication token"
+            )
+
+        # Get the user's contracts
+        contracts = db.query(Contract).filter(Contract.client_id == current_user_id).all()
+        
+        if not contracts:
+            return []  # Return empty list instead of 404
+
+        result = []
+        for c in contracts:
+            # Get the slot type
+            slot = db.query(Slot).filter(Slot.slot_id == c.slot_id).first()
+            slot_type = slot.slot_type if slot else None
+
+            # Ensure all numeric fields are explicitly converted to float and dates are properly formatted
+            contract_data = ContractResponse(
+                order_id=c.order_id,
+                client_id=c.client_id,
+                slot_id=c.slot_id,
+                contract_price=float(c.contract_price),
+                vat_percent=float(c.vat_percent),
+                admin_fee=float(c.admin_fee),
+                down_payment=float(c.down_payment),
+                monthly_amortization=float(c.monthly_amortization),
+                final_price=float(c.final_price),
+                years_to_pay=c.years_to_pay,
+                order_date=c.order_date.isoformat() if c.order_date else None,
+                slot_type=slot_type,
+                payment_method=c.payment_method.value if c.payment_method else None,
+                is_paid=c.is_paid,
+                is_paid_on_time=c.is_paid_on_time,
+                latest_payment_date=c.latest_payment_date.isoformat() if c.latest_payment_date else None,
+                interest_rate=float(c.interest_rate),
+                vat_amount=float(c.vat_amount),
+                price_with_vat=float(c.price_with_vat),
+                spot_cash_total=float(c.spot_cash_total)
+            )
+            result.append(contract_data)
+
+        return result
+        
+    except HTTPException as he:
+        raise he
+    except Exception as e:
+        logger.error(f"Error fetching contracts: {str(e)}")
+        raise HTTPException(
+            status_code=500,
+            detail="An error occurred while fetching contracts"
+        )
+
+@app.get("/api/user/info")
+async def get_user_info(
+    request: Request,
+    db: Session = Depends(get_db)
+):
+    try:
+        # Get the current user's ID from the token
+        token = request.cookies.get("session_token")
+        if not token:
+            auth_header = request.headers.get("Authorization")
+            if auth_header and auth_header.startswith("Bearer "):
+                token = auth_header.split(" ")[1]
+        
+        if not token:
+            raise HTTPException(
+                status_code=401,
+                detail="Authentication required"
+            )
+
+        try:
+            payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+            current_user_id = int(payload.get("sub"))
+            if not current_user_id:
+                raise HTTPException(
+                    status_code=401,
+                    detail="Invalid authentication token"
+                )
+        except (JWTError, ValueError):
+            raise HTTPException(
+                status_code=401,
+                detail="Invalid authentication token"
+            )
+
+        # Get the user from the database
+        client = db.query(Client).filter(Client.client_id == current_user_id).first()
+        if not client:
+            raise HTTPException(
+                status_code=404,
+                detail="User not found"
+            )
+
+        # Return only necessary user info
+        return {
+            "client_id": client.client_id,
+            "name": client.name,
+            "email": client.email
+        }
+        
+    except HTTPException as he:
+        raise he
+    except Exception as e:
+        logger.error(f"Error fetching user info: {str(e)}")
+        raise HTTPException(
+            status_code=500,
+            detail="An error occurred while fetching user information"
+        )
