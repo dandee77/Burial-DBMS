@@ -76,12 +76,13 @@ form {
 .input-box input, .input-box select {
     width: 100%;
     height: 40px;
-    background: transparent;
+    background-color: transparent !important;
     border: none;
     outline: none;
     font-size: 1em;
-    color: white;
+    color: white !important;
     padding: 0 5px 0 5px;
+    -webkit-text-fill-color: #fff !important;
 }
 
 .input-box input:focus ~ label,
@@ -159,4 +160,119 @@ select option {
     background-color: #f8d7da;
     color: #721c24;
     border: 1px solid #f5c6cb;
+}
+
+/* Complete fix for all autofill styling issues */
+input:-webkit-autofill,
+input:-webkit-autofill:hover, 
+input:-webkit-autofill:focus,
+input:-webkit-autofill:active,
+input:-webkit-autofill::first-line,
+input[type="text"]:-webkit-autofill,
+input[type="email"]:-webkit-autofill,
+input[type="password"]:-webkit-autofill,
+.input-box input:-webkit-autofill,
+#name:-webkit-autofill,
+#email:-webkit-autofill,
+#password:-webkit-autofill {
+    -webkit-background-clip: text !important;
+    -webkit-text-fill-color: #fff !important;
+    transition: background-color 9999s ease-in-out 0s !important;
+    box-shadow: inset 0 0 0 9999px transparent !important;
+    background-color: transparent !important;
+    caret-color: white !important;
+}
+
+/* Special trick for Webkit browsers */
+@-webkit-keyframes autofill {
+    0%,100% {
+        color: #fff;
+        background: transparent;
+        -webkit-box-shadow: 0 0 0 1000px transparent inset;
+    }
+}
+
+/* Apply animation immediately */
+input:-webkit-autofill,
+input[type="text"]:-webkit-autofill,
+input[type="email"]:-webkit-autofill,
+input[type="password"]:-webkit-autofill,
+.input-box input:-webkit-autofill,
+#name:-webkit-autofill,
+#email:-webkit-autofill,
+#password:-webkit-autofill {
+    animation-name: autofill !important;
+    animation-fill-mode: both !important;
+    -webkit-animation-name: autofill !important;
+    -webkit-animation-fill-mode: both !important;
+}
+
+/* Force transparent background for autofilled inputs */
+.input-box input,
+#name, #email, #password {
+    background-color: transparent !important;
+    color: #fff !important;
+    -webkit-text-fill-color: #fff !important;
+}
+
+/* Additional force override for Chrome */
+@media screen and (-webkit-min-device-pixel-ratio:0) {
+    .input-box input:-webkit-autofill,
+    #name:-webkit-autofill,
+    #email:-webkit-autofill,
+    #password:-webkit-autofill {
+        background-color: transparent !important;
+        -webkit-box-shadow: 0 0 0 100px transparent inset !important;
+        color: #fff !important;
+        -webkit-text-fill-color: #fff !important;
+    }
+}
+
+/* Firefox specific overrides */
+@-moz-document url-prefix() {
+    .input-box input,
+    #name, #email, #password {
+        background-color: transparent !important;
+        color: #fff !important;
+        -webkit-text-fill-color: #fff !important;
+    }
+}
+
+/* Define CSS variables for consistent coloring */
+:root {
+    --input-text: #fff;
+    --input-bg: transparent;
+}
+
+/* Further strengthen the input styling */
+.input-box input {
+    background-color: var(--input-bg) !important;
+    color: var(--input-text) !important;
+    -webkit-text-fill-color: var(--input-text) !important;
+    border-color: var(--input-text) !important;
+}
+
+/* More specific selectors for the signup form */
+.signup-box .input-box input[type="text"],
+.signup-box .input-box input[type="email"],
+.signup-box .input-box input[type="password"],
+.signup-box #name,
+.signup-box #email,
+.signup-box #password {
+    background-color: var(--input-bg) !important;
+    color: var(--input-text) !important;
+    -webkit-text-fill-color: var(--input-text) !important;
+}
+
+/* Most specific selectors with !important to override browser defaults */
+.signup-box .input-box input[type="text"]:-webkit-autofill,
+.signup-box .input-box input[type="email"]:-webkit-autofill,
+.signup-box .input-box input[type="password"]:-webkit-autofill,
+.signup-box #name:-webkit-autofill,
+.signup-box #email:-webkit-autofill,
+.signup-box #password:-webkit-autofill {
+    background-color: var(--input-bg) !important;
+    -webkit-box-shadow: 0 0 0 1000px var(--input-bg) inset !important;
+    -webkit-text-fill-color: var(--input-text) !important;
+    caret-color: var(--input-text) !important;
 }
