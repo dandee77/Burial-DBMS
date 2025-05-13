@@ -138,10 +138,10 @@ document.addEventListener('DOMContentLoaded', function() {
                             <i class="fas fa-info-circle"></i>
                             <p>You don't have any active contracts yet.</p>
                             <p>You can <a href="/dashboard/buyaplan" class="link-buy-plan">purchase a plan</a> to get started or 
-                            <a href="/dashboard/contact_us" class="link-contact">contact us</a> if you think this is an error.</p>
+                            <a href="/dashboard/message_us" class="link-contact">contact us</a> if you think this is an error.</p>
                             <div class="no-contracts-actions">
                                 <a href="/dashboard/buyaplan" class="btn-buy-plan">Buy a Plan</a>
-                                <a href="/dashboard/contact_us" class="btn-contact-us">Contact Us</a>
+                                <a href="/dashboard/message_us" class="btn-contact-us">Contact Us</a>
                             </div>
                         </div>
                     `;
@@ -178,10 +178,10 @@ document.addEventListener('DOMContentLoaded', function() {
                         <i class="fas fa-info-circle"></i>
                         <p>You don't have any active contracts yet.</p>
                         <p>You can <a href="/dashboard/buyaplan" class="link-buy-plan">purchase a plan</a> to get started or 
-                        <a href="/dashboard/contact_us" class="link-contact">contact us</a> if you think this is an error.</p>
+                        <a href="/dashboard/message_us" class="link-contact">contact us</a> if you think this is an error.</p>
                         <div class="no-contracts-actions">
                             <a href="/dashboard/buyaplan" class="btn-buy-plan">Buy a Plan</a>
-                            <a href="/dashboard/contact_us" class="btn-contact-us">Contact Us</a>
+                            <a href="/dashboard/message_us" class="btn-contact-us">Contact Us</a>
                         </div>
                     </div>
                 `;

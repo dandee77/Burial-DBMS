@@ -34,7 +34,7 @@
         
         <div class="profile-card">
             <div class="profile-header">
-                <h3>Account Information</h3>
+                <h3><i class="fas fa-user-circle"></i> Account Information</h3>
             </div>
             
             <button class="btn-edit" id="edit-profile-btn">
@@ -45,37 +45,37 @@
             <div id="view-mode">
                 <div class="profile-grid">
                     <div class="profile-field">
-                        <span class="field-label">Client ID</span>
+                        <span class="field-label"><i class="fas fa-id-card"></i> Client ID</span>
                         <div class="field-value">{{ client.client_id }}</div>
                     </div>
                     
                     <div class="profile-field">
-                        <span class="field-label">Full Name</span>
+                        <span class="field-label"><i class="fas fa-user"></i> Full Name</span>
                         <div class="field-value">{{ client.name }}</div>
                     </div>
                     
                     <div class="profile-field">
-                        <span class="field-label">Email Address</span>
+                        <span class="field-label"><i class="fas fa-envelope"></i> Email Address</span>
                         <div class="field-value">{{ client.email }}</div>
                     </div>
                     
                     <div class="profile-field">
-                        <span class="field-label">Password</span>
+                        <span class="field-label"><i class="fas fa-lock"></i> Password</span>
                         <div class="field-value">••••••••</div>
                     </div>
                     
                     <div class="profile-field">
-                        <span class="field-label">Contact Number</span>
+                        <span class="field-label"><i class="fas fa-phone"></i> Contact Number</span>
                         <div class="field-value">{{ client.contact_number if client.contact_number else 'Not provided' }}</div>
                     </div>
                     
                     <div class="profile-field">
-                        <span class="field-label">Address</span>
+                        <span class="field-label"><i class="fas fa-map-marker-alt"></i> Address</span>
                         <div class="field-value">{{ client.address if client.address else 'Not provided' }}</div>
                     </div>
                     
                     <div class="profile-field">
-                        <span class="field-label">Account Created</span>
+                        <span class="field-label"><i class="fas fa-calendar-alt"></i> Account Created</span>
                         <div class="field-value">{{ client.date_created.strftime('%B %d, %Y') if client.date_created else 'Unknown' }}</div>
                     </div>
                 </div>
@@ -86,38 +86,42 @@
                 <form id="profile-form" action="/api/client/update" method="POST">
                     <div class="profile-grid">
                         <div class="form-group">
-                            <label for="name">Full Name</label>
+                            <label for="name"><i class="fas fa-user"></i> Full Name</label>
                             <input type="text" id="name" name="name" class="form-control" value="{{ client.name }}" required>
                         </div>
                         
                         <div class="form-group">
-                            <label for="email">Email Address</label>
+                            <label for="email"><i class="fas fa-envelope"></i> Email Address</label>
                             <input type="email" id="email" name="email" class="form-control" value="{{ client.email }}" required>
                         </div>
                         
                         <div class="form-group password-field">
-                            <label for="password">New Password (leave blank to keep current)</label>
-                            <input type="password" id="password" name="password" class="form-control">
+                            <label for="password"><i class="fas fa-lock"></i> New Password</label>
+                            <input type="password" id="password" name="password" class="form-control" placeholder="Leave blank to keep current password">
                             <span class="toggle-password" id="toggle-password">
                                 <i class="fas fa-eye"></i>
                             </span>
-                            <span class="form-hint">Must be at least 8 characters</span>
+                            <span class="form-hint">Must be at least 8 characters with letters and numbers</span>
                         </div>
                         
                         <div class="form-group">
-                            <label for="contact_number">Contact Number</label>
-                            <input type="tel" id="contact_number" name="contact_number" class="form-control" value="{{ client.contact_number or '' }}">
+                            <label for="contact_number"><i class="fas fa-phone"></i> Contact Number</label>
+                            <input type="tel" id="contact_number" name="contact_number" class="form-control" value="{{ client.contact_number or '' }}" placeholder="Enter your contact number">
                         </div>
                         
                         <div class="form-group">
-                            <label for="address">Address</label>
-                            <textarea id="address" name="address" class="form-control" rows="3">{{ client.address or '' }}</textarea>
+                            <label for="address"><i class="fas fa-map-marker-alt"></i> Address</label>
+                            <textarea id="address" name="address" class="form-control" rows="3" placeholder="Enter your full address">{{ client.address or '' }}</textarea>
                         </div>
                     </div>
                     
                     <div class="form-actions">
-                        <button type="button" id="cancel-edit-btn" class="btn-cancel">Cancel</button>
-                        <button type="submit" class="btn-save">Save Changes</button>
+                        <button type="button" id="cancel-edit-btn" class="btn-cancel">
+                            <i class="fas fa-times"></i> Cancel
+                        </button>
+                        <button type="submit" class="btn-save">
+                            <i class="fas fa-check"></i> Save Changes
+                        </button>
                     </div>
                 </form>
             </div>
@@ -139,6 +143,12 @@
                 viewMode.classList.add('hidden');
                 editMode.classList.remove('hidden');
                 editBtn.classList.add('hidden');
+                
+                // Scroll to top of form
+                window.scrollTo({
+                    top: 0,
+                    behavior: 'smooth'
+                });
             });
             
             cancelBtn.addEventListener('click', function() {
@@ -181,8 +191,31 @@
             profileForm.addEventListener('submit', function(e) {
                 e.preventDefault();
                 
+                // Validate form
+                let isValid = true;
+                const password = document.getElementById('password').value;
+                if (password && password.length < 8) {
+                    isValid = false;
+                    document.getElementById('password').classList.add('is-invalid');
+                    // Show error message
+                    let errorMsg = document.createElement('span');
+                    errorMsg.className = 'invalid-feedback';
+                    errorMsg.textContent = 'Password must be at least 8 characters';
+                    document.getElementById('password').parentNode.appendChild(errorMsg);
+                }
+                
+                if (!isValid) {
+                    return;
+                }
+                
                 const formData = new FormData(profileForm);
                 const token = localStorage.getItem('access_token');
+                
+                // Show loading state
+                const saveBtn = document.querySelector('.btn-save');
+                const originalBtnText = saveBtn.innerHTML;
+                saveBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving...';
+                saveBtn.disabled = true;
                 
                 fetch('/api/client/update', {
                     method: 'POST',
@@ -205,7 +238,23 @@
                 .catch(error => {
                     console.error('Update error:', error);
                     window.location.href = '/dashboard/profile?message=An error occurred&type=danger';
+                })
+                .finally(() => {
+                    // Restore button state
+                    saveBtn.innerHTML = originalBtnText;
+                    saveBtn.disabled = false;
                 });
+            });
+            
+            // Handle auto-dismiss of alerts
+            const alerts = document.querySelectorAll('.alert');
+            alerts.forEach(alert => {
+                setTimeout(() => {
+                    alert.style.opacity = '0';
+                    setTimeout(() => {
+                        alert.style.display = 'none';
+                    }, 500);
+                }, 5000);
             });
         });
     </script>
