@@ -26,39 +26,76 @@
         <div class="header--wrapper">
             <div class="header--title">
                 <h2>Vicinity Map</h2>
+                <p>Interactive cemetery map - click on a plot to view details</p>
             </div>
         </div>
 
-        <div class="map-container-wrapper">
-            <div id="app-container">
-                <div id="header">Kilmihil Graveyard Map</div>
-                <div id="map-viewport">
-                    <div id="map-container">
-                        <div id="image-container">
-                            <img src="../static/assets/arial-view-of-kilmihil-graveyard-january-2019.jpg" alt="Graveyard Map" id="responsive-image">
-                        </div>
+        <div id="map-container">
+            <div id="fixed-image-container">
+                <img src="../static/assets/arial-view-of-kilmihil-graveyard-january-2019.jpg" alt="Graveyard Map" id="fixed-map-image">
+                <!-- Highlights will be added here by JavaScript -->
+            </div>
+            
+            <!-- Information Panel -->
+            <div id="map-info-panel">
+                <div class="info-section">
+                    <h3>Plot Guide</h3>
+                    <div class="info-item">
+                        <h4>Standard Plots</h4>
+                        <p>Designed for a single deceased individual. These are the most common burial options in the cemetery.</p>
                     </div>
-
-                    <button id="scissor-mode-btn">Scissor Mode</button>
-                    <div class="controls">
-                        <button class="control-btn" id="zoom-in">+</button>
-                        <button class="control-btn" id="zoom-out">-</button>
-                        <button class="control-btn" id="reset-zoom">&#10226;</button>
+                    <div class="info-item">
+                        <h4>Mausoleums</h4>
+                        <p>Larger structures that can accommodate multiple deceased family members. Offers more privacy and protection.</p>
                     </div>
-
-                    <div id="zoom-level">100%</div>
+                    <div class="info-item">
+                        <h4>Family Plots</h4>
+                        <p>Dedicated areas that can be purchased for an entire family, allowing relatives to be buried near each other.</p>
+                    </div>
+                </div>
+                
+                <div class="info-section">
+                    <h3>Services</h3>
+                    <div class="info-item">
+                        <h4>Plot Maintenance</h4>
+                        <p>Regular upkeep of gravesites including grass cutting, cleaning, and seasonal decoration services.</p>
+                    </div>
+                    <div class="info-item">
+                        <h4>Memorial Installation</h4>
+                        <p>Professional installation of headstones, markers, and other memorial structures.</p>
+                    </div>
+                </div>
+                
+                <div class="maintenance-ad">
+                    <h4>Annual Maintenance Plan</h4>
+                    <p>Ensure your loved one's resting place is properly maintained year-round with our comprehensive maintenance package.</p>
+                    <p>Services include quarterly cleaning, flower placement, and detailed photo reports.</p>
+                    <a href="/dashboard/buyaplan" class="map-btn">Learn More</a>
+                </div>
+                
+                <div class="contact-info">
+                    <h3>Cemetery Office</h3>
+                    <p><i class="fas fa-phone"></i> (123) 456-7890</p>
+                    <p><i class="fas fa-envelope"></i> contact@kilmihilcemetery.com</p>
+                    <p><i class="fas fa-clock"></i> Mon-Fri: 9am-5pm, Sat: 10am-2pm</p>
                 </div>
             </div>
+        </div>
 
-            <div id="info-panel">
-                <h3>Plot Details</h3>
+        <!-- Plot Detail Popup -->
+        <div id="plot-detail-popup" class="popup-hidden">
+            <div class="popup-content">
+                <div class="popup-header">
+                    <h3>Plot Details</h3>
+                    <button id="close-popup"><i class="fas fa-times"></i></button>
+                </div>
                 <div id="plot-info">
-                    <p>Select a plot to view details.</p>
+                    <p>Loading plot details...</p>
                 </div>
             </div>
         </div>
     </div>
-    <script src = "{{ url_for('static', path='script/vicinity_map.js') }}"></script>
+    <script src="{{ url_for('static', path='script/vicinity_map.js') }}"></script>
     <script>
         // Add the logout functionality
         document.addEventListener('DOMContentLoaded', function() {

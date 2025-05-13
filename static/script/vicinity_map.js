@@ -508,253 +508,170 @@ const polygons = [
     // end of masueleumscs
 ];
 
-let scale = 1;
-let naturalWidth, naturalHeight;
-let isScissorMode = false;
-let isDragging = false;
-let startX, startY, scrollLeft, scrollTop;
+document.addEventListener('DOMContentLoaded', function() {
+    const mapContainer = document.getElementById('fixed-image-container');
+    const img = document.getElementById('fixed-map-image');
+    const plotDetailPopup = document.getElementById('plot-detail-popup');
+    const plotInfo = document.getElementById('plot-info');
+    const closePopupBtn = document.getElementById('close-popup');
 
+    // Ensure popup is hidden initially
+    plotDetailPopup.classList.add('popup-hidden');
 
-const imageContainer = document.getElementById('image-container');
-const img = document.getElementById('responsive-image');
-const mapContainer = document.getElementById('map-container');
-const mapViewport = document.getElementById('map-viewport');
-const zoomInBtn = document.getElementById('zoom-in');
-const zoomOutBtn = document.getElementById('zoom-out');
-const resetZoomBtn = document.getElementById('reset-zoom');
-const zoomLevelDisplay = document.getElementById('zoom-level');
-const scissorModeBtn = document.getElementById('scissor-mode-btn');
-
-
-function createHighlights() {
-    polygons.forEach((polygon, index) => {
-        const highlight = document.createElement('div');
-        highlight.className = 'highlight';
-        highlight.id = `polygon-${index}`;
+    // Create highlights for each burial plot
+    function createHighlights() {
+        // Clear any existing highlights
+        const existingHighlights = document.querySelectorAll('.highlight');
+        existingHighlights.forEach(el => el.remove());
         
-       
-        const minX = Math.min(...polygon.coords.filter((_, i) => i % 2 === 0));
-        const minY = Math.min(...polygon.coords.filter((_, i) => i % 2 !== 0));
-        const maxX = Math.max(...polygon.coords.filter((_, i) => i % 2 === 0));
-        const maxY = Math.max(...polygon.coords.filter((_, i) => i % 2 !== 0));
-        
-        highlight.style.left = `${minX}px`;
-        highlight.style.top = `${minY}px`;
-        highlight.style.width = `${maxX - minX}px`;
-        highlight.style.height = `${maxY - minY}px`;
-        
-
-        const polygonPoints = [];
-        for (let i = 0; i < polygon.coords.length; i += 2) {
-            const x = polygon.coords[i] - minX;
-            const y = polygon.coords[i + 1] - minY;
-            polygonPoints.push(`${x}px ${y}px`);
+        // Wait for the image to be fully loaded and sized
+        if (!img.complete || img.naturalWidth === 0) {
+            img.addEventListener('load', createHighlights);
+            return;
         }
-        highlight.style.clipPath = `polygon(${polygonPoints.join(', ')})`;
         
-        highlight.addEventListener('click', () => {
-            fetch(`/api/slot/${index + 1}`)
-                .then(res => res.json())
-                .then(data => {
-                    const info = document.getElementById('plot-info');
-
-                    // No deceased assigned
-                    if (!data || data.length === 0) {
-                        info.innerHTML = `
-                            <h4>Slot ID: ${index + 1}</h4>
-                            <p><strong>Slot Type:</strong> Unknown</p>
-                            <p><strong>Availability:</strong> Unknown</p>
-                            <p><strong>Status:</strong> No deceased assigned.</p>
-                        `;
-                        return;
-                    }
-
-                    const slotId = index + 1;
-
-                    // Show all deceased + slot info (assuming same slot info across entries)
-                    const deceasedHtml = data.map(d => `
-                        <div class="deceased-entry">
-                            <p><strong>Deceased Name:</strong> ${d.name}</p>
-                            <p><strong>Birth Date:</strong> ${new Date(d.birth_date).toLocaleDateString()}</p>
-                            <p><strong>Death Date:</strong> ${new Date(d.death_date).toLocaleDateString()}</p>
-                            <hr>
-                        </div>
-                    `).join('');
-
-                    const slotType = data[0].slot_type || "Unknown";
-                    const availability = data[0].availability || "Unknown";
-                    const clientId = data[0].client_id || "Unassigned";
-                    const price = data[0].price !== undefined ? `₱${data[0].price.toFixed(2)}` : "N/A";
-
-                    if (availability === "available") {
-                        info.innerHTML = `
-                            <h4>Slot ID: ${slotId}</h4>
-                            <p><strong>Slot Type:</strong> ${slotType}</p>
-                            <p><strong>Availability:</strong> ${availability}</p>
-                            <p><strong>Price:</strong> ${price}</p>
-                            <a href="/dashboard/buyaplan" class="map-btn">Buy This Plan</a>
-                        `;
-                    } else {
-                        info.innerHTML = `
-                            <h4>Slot ID: ${slotId}</h4>
-                            <p><strong>Slot Type:</strong> ${slotType}</p>
-                            <p><strong>Availability:</strong> ${availability}</p>
-                            <p><strong>Client ID:</strong> ${clientId}</p>
-                            ${deceasedHtml}
-                        `;
-                    }
-                })
-                .catch(() => {
-                    document.getElementById('plot-info').innerHTML = '<p>No data assigned to this slot.</p>';
-                });
+        // Get the actual rendered dimensions of the image
+        const imgRect = img.getBoundingClientRect();
+        const imgRenderedWidth = imgRect.width;
+        const imgRenderedHeight = imgRect.height;
+        
+        // Calculate scaling factors
+        const scaleX = imgRenderedWidth / img.naturalWidth;
+        const scaleY = imgRenderedHeight / img.naturalHeight;
+        
+        // Calculate position of the image relative to the container
+        const containerRect = mapContainer.getBoundingClientRect();
+        const imgLeft = imgRect.left - containerRect.left;
+        const imgTop = imgRect.top - containerRect.top;
+        
+        // Process each polygon
+        polygons.forEach((polygon, index) => {
+            const highlight = document.createElement('div');
+            highlight.className = 'highlight';
+            highlight.id = `polygon-${index}`;
+            
+            // Calculate min/max coordinates
+            const coordsX = polygon.coords.filter((_, i) => i % 2 === 0);
+            const coordsY = polygon.coords.filter((_, i) => i % 2 !== 0);
+            
+            const minX = Math.min(...coordsX);
+            const minY = Math.min(...coordsY);
+            const maxX = Math.max(...coordsX);
+            const maxY = Math.max(...coordsY);
+            
+            // Calculate scaled and positioned coordinates
+            const scaledLeft = minX * scaleX + imgLeft;
+            const scaledTop = minY * scaleY + imgTop;
+            const scaledWidth = (maxX - minX) * scaleX;
+            const scaledHeight = (maxY - minY) * scaleY;
+            
+            // Position the highlight
+            highlight.style.left = `${scaledLeft}px`;
+            highlight.style.top = `${scaledTop}px`;
+            highlight.style.width = `${scaledWidth}px`;
+            highlight.style.height = `${scaledHeight}px`;
+            
+            // Create the polygon clip path
+            const polygonPoints = [];
+            for (let i = 0; i < polygon.coords.length; i += 2) {
+                // Calculate relative coordinates for clip path
+                const relativeX = (polygon.coords[i] - minX) * scaleX;
+                const relativeY = (polygon.coords[i + 1] - minY) * scaleY;
+                polygonPoints.push(`${relativeX}px ${relativeY}px`);
+            }
+            
+            highlight.style.clipPath = `polygon(${polygonPoints.join(', ')})`;
+            
+            // Add click event to show plot details
+            highlight.addEventListener('click', () => {
+                showPlotDetails(index + 1);
+            });
+            
+            mapContainer.appendChild(highlight);
         });
+    }
+
+    // Show plot details in popup
+    function showPlotDetails(slotId) {
+        // Show loading state
+        plotInfo.innerHTML = '<div class="loading-info"><i class="fas fa-spinner"></i><p>Loading plot details...</p></div>';
+        plotDetailPopup.classList.remove('popup-hidden');
         
-        imageContainer.appendChild(highlight);
-    });
-}
-
-
-function updateZoom() {
-    imageContainer.style.transform = `scale(${scale})`;
-    zoomLevelDisplay.textContent = `${Math.round(scale * 100)}%`;
-
-    imageContainer.style.width = `${naturalWidth * scale}px`;
-    imageContainer.style.height = `${naturalHeight * scale}px`;
-
-    if (!isScissorMode) {
-        centerView();
-    }
-}
-
-function centerView() {
-    mapContainer.scrollLeft = (imageContainer.offsetWidth - mapContainer.clientWidth) / 2;
-    mapContainer.scrollTop = (imageContainer.offsetHeight - mapContainer.clientHeight) / 2;
-}
-
-function zoom(factor, centerX, centerY) {
-    const oldScale = scale;
-    scale *= factor;
-
-    scale = Math.max(0.1, Math.min(scale, 5));
-    
-    if (scale !== oldScale) {
-
-        if (centerX !== undefined && centerY !== undefined) {
-            const containerRect = mapContainer.getBoundingClientRect();
-            const mouseX = centerX - containerRect.left;
-            const mouseY = centerY - containerRect.top;
-            
-            const scrollX = mouseX + mapContainer.scrollLeft;
-            const scrollY = mouseY + mapContainer.scrollTop;
-            
-            updateZoom();
-
-            mapContainer.scrollLeft = scrollX * (scale / oldScale) - mouseX;
-            mapContainer.scrollTop = scrollY * (scale / oldScale) - mouseY;
-        } else {
-            updateZoom();
-        }
-    }
-}
-
-function resetZoom() {
-    scale = 1;
-    updateZoom();
-    centerView();
-}
-
-function toggleScissorMode() {
-    isScissorMode = !isScissorMode;
-    
-    if (isScissorMode) {
-        scissorModeBtn.textContent = 'Exit Scissor Mode';
-        mapViewport.classList.add('scissor-mode-active');
-        mapContainer.style.cursor = 'grab';
-    } else {
-        scissorModeBtn.textContent = 'Scissor Mode';
-        mapViewport.classList.remove('scissor-mode-active');
-        mapContainer.style.cursor = '';
-        centerView();
-    }
-}
-
-function init() {
-
-    img.onload = function() {
-        naturalWidth = img.naturalWidth;
-        naturalHeight = img.naturalHeight;
-
-        imageContainer.style.width = `${naturalWidth}px`;
-        imageContainer.style.height = `${naturalHeight}px`;
-        
-        createHighlights();
-        resetZoom();
-
-        zoomInBtn.addEventListener('click', () => zoom(1.2));
-        zoomOutBtn.addEventListener('click', () => zoom(0.8));
-        resetZoomBtn.addEventListener('click', resetZoom);
-
-        document.addEventListener('keydown', (e) => {
-            if (e.ctrlKey) {
-                if (e.key === '+' || e.key === '=') {
-                    e.preventDefault();
-                    zoom(1.2);
-                } else if (e.key === '-') {
-                    e.preventDefault();
-                    zoom(0.8);
-                } else if (e.key === '0') {
-                    e.preventDefault();
-                    resetZoom();
+        // Fetch plot data
+        fetch(`/api/slot/${slotId}`)
+            .then(res => res.json())
+            .then(data => {
+                // No deceased assigned
+                if (!data || data.length === 0) {
+                    plotInfo.innerHTML = `
+                        <h4>Slot ID: ${slotId}</h4>
+                        <p><strong>Slot Type:</strong> Unknown</p>
+                        <p><strong>Availability:</strong> Unknown</p>
+                        <p><strong>Status:</strong> No deceased assigned.</p>
+                    `;
+                    return;
                 }
-            }
-        });
 
-        mapContainer.addEventListener('wheel', (e) => {
-            e.preventDefault();
-            zoom(e.deltaY > 0 ? 0.9 : 1.1, e.clientX, e.clientY);
-        });
+                // Show all deceased + slot info (assuming same slot info across entries)
+                const deceasedHtml = data.map(d => `
+                    <div class="deceased-entry">
+                        <p><strong>Deceased Name:</strong> ${d.name}</p>
+                        <p><strong>Birth Date:</strong> ${new Date(d.birth_date).toLocaleDateString()}</p>
+                        <p><strong>Death Date:</strong> ${new Date(d.death_date).toLocaleDateString()}</p>
+                        <hr>
+                    </div>
+                `).join('');
 
-        scissorModeBtn.addEventListener('click', toggleScissorMode);
+                const slotType = data[0].slot_type || "Unknown";
+                const availability = data[0].availability || "Unknown";
+                const clientId = data[0].client_id || "Unassigned";
+                const price = data[0].price !== undefined ? `₱${data[0].price.toFixed(2)}` : "N/A";
 
-        mapContainer.addEventListener('mousedown', (e) => {
-            if (isScissorMode && e.button === 0) { 
-                isDragging = true;
-                startX = e.pageX - mapContainer.offsetLeft;
-                startY = e.pageY - mapContainer.offsetTop;
-                scrollLeft = mapContainer.scrollLeft;
-                scrollTop = mapContainer.scrollTop;
-                mapContainer.style.cursor = 'grabbing';
-                e.preventDefault();
-            }
-        });
-        
-        document.addEventListener('mousemove', (e) => {
-            if (!isDragging || !isScissorMode) return;
-            const x = e.pageX - mapContainer.offsetLeft;
-            const y = e.pageY - mapContainer.offsetTop;
-            const walkX = (x - startX) * 2;
-            const walkY = (y - startY) * 2;
-            mapContainer.scrollLeft = scrollLeft - walkX;
-            mapContainer.scrollTop = scrollTop - walkY;
-        });
-        
-        document.addEventListener('mouseup', () => {
-            if (isScissorMode) {
-                isDragging = false;
-                mapContainer.style.cursor = 'grab';
-            }
-        });
-        
-        window.addEventListener('resize', () => {
-            if (!isScissorMode) {
-                centerView();
-            }
-        });
-    };
-
-    if (img.complete && img.naturalWidth !== 0) {
-        img.onload();
+                if (availability === "available") {
+                    plotInfo.innerHTML = `
+                        <h4>Slot ID: ${slotId}</h4>
+                        <p><strong>Slot Type:</strong> ${slotType}</p>
+                        <p><strong>Availability:</strong> ${availability}</p>
+                        <p><strong>Price:</strong> ${price}</p>
+                        <a href="/dashboard/buyaplan" class="map-btn">Buy This Plan</a>
+                    `;
+                } else {
+                    plotInfo.innerHTML = `
+                        <h4>Slot ID: ${slotId}</h4>
+                        <p><strong>Slot Type:</strong> ${slotType}</p>
+                        <p><strong>Availability:</strong> ${availability}</p>
+                        <p><strong>Client ID:</strong> ${clientId}</p>
+                        ${deceasedHtml}
+                    `;
+                }
+            })
+            .catch(() => {
+                plotInfo.innerHTML = '<p>Error loading plot data. Please try again.</p>';
+            });
     }
-}
 
-init();
+    // Close popup when clicking the close button
+    closePopupBtn.addEventListener('click', () => {
+        plotDetailPopup.classList.add('popup-hidden');
+    });
+
+    // Close popup when clicking outside content
+    plotDetailPopup.addEventListener('click', (e) => {
+        if (e.target === plotDetailPopup) {
+            plotDetailPopup.classList.add('popup-hidden');
+        }
+    });
+
+    // Handle window resize to reposition highlights
+    window.addEventListener('resize', () => {
+        setTimeout(createHighlights, 200); // Small delay to ensure image has resized
+    });
+
+    // Initial creation of highlights
+    if (img.complete && img.naturalWidth > 0) {
+        // Small delay to ensure image is fully rendered with proper dimensions
+        setTimeout(createHighlights, 200);
+    } else {
+        img.onload = () => setTimeout(createHighlights, 200);
+    }
+});
