@@ -234,6 +234,21 @@ document.addEventListener('DOMContentLoaded', function() {
         }).format(amount);
     }
 
+    // Function to check if a contract is overdue (more than 30 days since last payment)
+    function isContractOverdue(contract) {
+        if (contract.is_paid) return false;
+        
+        // If no payment has been made yet, use order_date
+        const lastPaymentDate = contract.latest_payment_date ? new Date(contract.latest_payment_date) : new Date(contract.order_date);
+        const today = new Date();
+        
+        // Calculate days since last payment
+        const daysSinceLastPayment = Math.floor((today - lastPaymentDate) / (1000 * 60 * 60 * 24));
+        
+        // Overdue if more than 30 days
+        return daysSinceLastPayment > 30;
+    }
+
     // Fetch and display active plans
     async function loadActivePlans() {
         const container = document.getElementById('active-plans-content');
@@ -271,10 +286,15 @@ document.addEventListener('DOMContentLoaded', function() {
             let planHTML = '';
             contracts.slice(0, 3).forEach(contract => {
                 const slotType = contract.slot_type === 'plot' ? 'Burial Plot' : 'Mausoleum';
+                
+                // Check if contract is overdue
+                const isOverdue = isContractOverdue(contract);
+                
+                // Set status based on payment status and overdue check
                 const statusClass = contract.is_paid ? 'status-active' : 
-                                   !contract.is_paid_on_time ? 'status-overdue' : 'status-pending';
+                                   isOverdue ? 'status-overdue' : 'status-pending';
                 const statusText = contract.is_paid ? 'Paid' : 
-                                  !contract.is_paid_on_time ? 'Overdue' : 'Pending';
+                                  isOverdue ? 'Overdue' : 'Pending';
                 
                 planHTML += `
                     <div class="plan-item">
@@ -333,11 +353,15 @@ document.addEventListener('DOMContentLoaded', function() {
             let paymentsHTML = '';
             outstandingContracts.slice(0, 2).forEach(contract => {
                 const nextDueDate = calculateNextDueDate(contract.latest_payment_date || contract.order_date, contract.years_to_pay);
+                const isOverdue = isContractOverdue(contract);
                 
                 paymentsHTML += `
-                    <div class="payment-item">
+                    <div class="payment-item ${isOverdue ? 'overdue' : ''}">
                         <div class="payment-info">
-                            <div class="payment-title">Monthly Installment</div>
+                            <div class="payment-title">
+                                Monthly Installment
+                                ${isOverdue ? '<span class="payment-overdue-tag">OVERDUE</span>' : ''}
+                            </div>
                             <div class="payment-detail">Due on ${formatDate(nextDueDate)}</div>
                         </div>
                         <div class="payment-amount">${formatCurrency(contract.monthly_amortization)}</div>
@@ -391,29 +415,45 @@ document.addEventListener('DOMContentLoaded', function() {
             
             let alertsHTML = '';
             alertContracts.forEach(contract => {
-                const nextDueDate = calculateNextDueDate(contract.latest_payment_date || contract.order_date, contract.years_to_pay);
-                const today = new Date();
-                const daysUntilDue = Math.ceil((nextDueDate - today) / (1000 * 60 * 60 * 24));
+                const isOverdue = isContractOverdue(contract);
                 
+                // Calculate days since last payment for overdue contracts
                 let alertType = '';
                 let alertTitle = '';
                 let alertDetail = '';
                 let isUrgent = false;
                 
-                if (daysUntilDue < 0) {
+                if (isOverdue) {
+                    // If overdue (more than 30 days)
+                    const lastPaymentDate = contract.latest_payment_date ? new Date(contract.latest_payment_date) : new Date(contract.order_date);
+                    const today = new Date();
+                    const daysSinceLastPayment = Math.floor((today - lastPaymentDate) / (1000 * 60 * 60 * 24));
+                    
                     alertType = 'exclamation-triangle';
                     alertTitle = 'Payment Overdue';
-                    alertDetail = `Your payment was due ${Math.abs(daysUntilDue)} days ago`;
+                    alertDetail = `Your payment is overdue by ${daysSinceLastPayment - 30} days`;
                     isUrgent = true;
-                } else if (daysUntilDue <= 7) {
-                    alertType = 'exclamation-circle';
-                    alertTitle = 'Payment Due Soon';
-                    alertDetail = `Your payment is due in ${daysUntilDue} days`;
-                    isUrgent = daysUntilDue <= 3;
-                } else if (daysUntilDue <= 14) {
-                    alertType = 'info-circle';
-                    alertTitle = 'Upcoming Payment';
-                    alertDetail = `Your payment is due in ${daysUntilDue} days`;
+                } else {
+                    // For upcoming payments based on next due date
+                    const nextDueDate = calculateNextDueDate(contract.latest_payment_date || contract.order_date, contract.years_to_pay);
+                    const today = new Date();
+                    const daysUntilDue = Math.ceil((nextDueDate - today) / (1000 * 60 * 60 * 24));
+                    
+                    if (daysUntilDue < 0) {
+                        alertType = 'exclamation-circle';
+                        alertTitle = 'Payment Due Now';
+                        alertDetail = `Your payment was due ${Math.abs(daysUntilDue)} days ago`;
+                        isUrgent = true;
+                    } else if (daysUntilDue <= 7) {
+                        alertType = 'exclamation-circle';
+                        alertTitle = 'Payment Due Soon';
+                        alertDetail = `Your payment is due in ${daysUntilDue} days`;
+                        isUrgent = daysUntilDue <= 3;
+                    } else if (daysUntilDue <= 14) {
+                        alertType = 'info-circle';
+                        alertTitle = 'Upcoming Payment';
+                        alertDetail = `Your payment is due in ${daysUntilDue} days`;
+                    }
                 }
                 
                 if (alertType) {

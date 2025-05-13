@@ -699,8 +699,8 @@ def create_contract(
             final_price=final_price,
 
             is_paid=False,
-            is_paid_on_time=False,
-            latest_payment_date=None
+            is_paid_on_time=True,  # Initially set to true until first payment is due
+            latest_payment_date=datetime.now()  # Set initial payment date to contract creation date
         )
 
         db.add(contract)
@@ -775,10 +775,17 @@ def process_payment(
         )
 
     try:
-        # Simulate payment
+        # Calculate if payment is on time (within 30 days of last payment or order date)
+        current_time = datetime.now()
+        last_payment_date = contract.latest_payment_date or contract.order_date
+        days_since_last_payment = (current_time - last_payment_date).days
+        
+        # Update payment status in the contract
         contract.years_to_pay -= 1
-        contract.latest_payment_date = datetime.now()
-        contract.is_paid_on_time = True
+        contract.latest_payment_date = current_time
+        
+        # Payment is on time if it's within 30 days of the last payment
+        contract.is_paid_on_time = days_since_last_payment <= 30
 
         if contract.years_to_pay <= 0:
             contract.is_paid = True
@@ -789,7 +796,9 @@ def process_payment(
         return {
             "message": "Payment processed successfully",
             "remaining_years": contract.years_to_pay,
-            "is_fully_paid": contract.is_paid
+            "is_fully_paid": contract.is_paid,
+            "is_paid_on_time": contract.is_paid_on_time,
+            "days_since_last_payment": days_since_last_payment
         }
 
     except Exception as e:
