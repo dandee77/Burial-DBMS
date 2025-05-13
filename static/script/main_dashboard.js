@@ -1,4 +1,26 @@
 document.addEventListener('DOMContentLoaded', function() {
+    // Mobile sidebar toggle functionality
+    const menuBtn = document.getElementById('menu-btn');
+    const sidebar = document.querySelector('.sidebar');
+    
+    if (menuBtn && sidebar) {
+        menuBtn.addEventListener('click', function(e) {
+            e.stopPropagation(); // Prevent click from bubbling
+            sidebar.classList.toggle('active');
+        });
+        
+        // Auto-hide sidebar when clicking outside on mobile
+        document.addEventListener('click', function(e) {
+            // Only proceed if sidebar is active and we're on mobile
+            if (sidebar.classList.contains('active') && window.innerWidth <= 768) {
+                // Check that the click is not on or inside the sidebar and not on the menu button
+                if (!sidebar.contains(e.target) && e.target !== menuBtn) {
+                    sidebar.classList.remove('active');
+                }
+            }
+        });
+    }
+
     // Helper function to handle API requests with authentication
     async function fetchWithAuth(url, options = {}) {
         // Get token from localStorage

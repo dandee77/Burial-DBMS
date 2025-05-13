@@ -21,7 +21,7 @@ body {
     padding: 0 1.7rem;
     color: #fff;
     overflow-y: auto;
-    transition: all 0.5s linear;
+    transition: all 0.3s ease;
     background: #1e2837;
     font-weight: normal;
     z-index: 100;
@@ -102,10 +102,89 @@ body {
     padding: 1rem;
     background: #ebe9e9;
     min-height: 100vh;
+    transition: margin-left 0.3s ease;
 }
 
-/* Adjust for sidebar hover */
-/* .sidebar:hover ~ .main--content {
-    margin-left: 280px;
-    width: calc(100% - 280px);
-} */
+/* Mobile menu button */
+.menu-btn {
+    display: none;
+    background: none;
+    border: none;
+    font-size: 24px;
+    color: #1e2837;
+    cursor: pointer;
+    margin-right: 15px;
+    margin-bottom: 10px;
+}
+
+/* Responsive styles */
+@media (max-width: 1024px) {
+    .sidebar {
+        width: 70px;
+        padding: 0 0.8rem;
+    }
+    
+    .menu li a span {
+        display: none;
+    }
+    
+    .menu li a {
+        justify-content: center;
+    }
+    
+    .menu li i {
+        margin-right: 0;
+    }
+    
+    .logo::before {
+        content: "DBMS";
+        font-size: 14px;
+    }
+    
+    .main--content {
+        margin-left: 70px;
+        width: calc(100% - 70px);
+    }
+}
+
+@media (max-width: 768px) {
+    .sidebar {
+        width: 0;
+        padding: 0;
+        overflow: hidden;
+        background: transparent;
+    }
+    
+    .main--content {
+        margin-left: 0;
+        width: 100%;
+    }
+    
+    .menu-btn {
+        display: block;
+    }
+    
+    .sidebar.active {
+        width: 260px;
+        padding: 0 1.7rem;
+        background: #1e2837;
+        box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
+    }
+    
+    .sidebar.active .logo::before {
+        content: "Burial DBMS";
+        font-size: 20px;
+    }
+    
+    .sidebar.active .menu li a {
+        justify-content: flex-start;
+    }
+    
+    .sidebar.active .menu li a span {
+        display: inline-block;
+    }
+    
+    .sidebar.active .menu li i {
+        margin-right: 1.5rem;
+    }
+}

@@ -24,6 +24,8 @@
     </div>
 
     <div class="profile-container">
+        <button class="menu-btn" id="menu-btn"><i class="fas fa-bars"></i></button>
+        
         <h1 class="page-title">My Profile</h1>
         
         {% if message %}
@@ -130,6 +132,28 @@
     
     <script>
         document.addEventListener('DOMContentLoaded', function() {
+            // Mobile sidebar toggle functionality
+            const menuBtn = document.getElementById('menu-btn');
+            const sidebar = document.querySelector('.sidebar');
+            
+            if (menuBtn && sidebar) {
+                menuBtn.addEventListener('click', function(e) {
+                    e.stopPropagation(); // Prevent click from bubbling
+                    sidebar.classList.toggle('active');
+                });
+                
+                // Auto-hide sidebar when clicking outside on mobile
+                document.addEventListener('click', function(e) {
+                    // Only proceed if sidebar is active and we're on mobile
+                    if (sidebar.classList.contains('active') && window.innerWidth <= 768) {
+                        // Check that the click is not on or inside the sidebar and not on the menu button
+                        if (!sidebar.contains(e.target) && e.target !== menuBtn) {
+                            sidebar.classList.remove('active');
+                        }
+                    }
+                });
+            }
+            
             const viewMode = document.getElementById('view-mode');
             const editMode = document.getElementById('edit-mode');
             const editBtn = document.getElementById('edit-profile-btn');

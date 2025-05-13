@@ -21,6 +21,7 @@ import secrets
 from typing import List
 from pydantic import BaseModel
 from typing import Any
+from sqlalchemy import func
 
 # Security settings
 SECRET_KEY = secrets.token_urlsafe(32)
@@ -35,6 +36,8 @@ oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 
 # TODO: REMOVE NGROK WARNING
 # TODO: LEARN HOW TO TRANSITION FROM SQLITE TO MYSQL
+# TODO: CLIENT PROFILE "EDIT PROFILE" BUTTON RESPONSIVENESS ON MOBILE
+# TODO: MAKE LANDING PAGE RESPONSIVE
 load_dotenv()
 
 #TODO: FIX LOGIN AND SIGNUP
@@ -1146,3 +1149,174 @@ def admin_logout():
     response = JSONResponse(content={"message": "Logged out successfully"})
     response.delete_cookie(key="admin_token")
     return response
+
+# ---------------------
+# ADMIN API - ANALYTICS
+# ---------------------
+@app.get("/api/admin/analytics/summary")
+async def admin_analytics_summary(
+    request: Request,
+    db: Session = Depends(get_db),
+    is_admin: bool = Depends(verify_admin_auth)
+):
+    try:
+        # Get total clients
+        total_clients = db.query(Client).count()
+        
+        # Get total slots
+        total_slots = db.query(Slot).count()
+        
+        # Get available and occupied slots
+        available_slots = db.query(Slot).filter(Slot.availability == "available").count()
+        occupied_slots = db.query(Slot).filter(Slot.availability == "occupied").count()
+        
+        # Get total contracts
+        total_contracts = db.query(Contract).count()
+        
+        # Calculate total revenue
+        total_revenue = db.query(func.sum(Contract.final_price)).scalar() or 0
+        
+        # Get overdue contracts
+        current_date = datetime.now()
+        thirty_days_ago = current_date - timedelta(days=30)
+        
+        overdue_contracts = db.query(Contract).filter(
+            Contract.is_paid == False,
+            Contract.years_to_pay > 0,
+            (Contract.latest_payment_date == None) | (Contract.latest_payment_date <= thirty_days_ago)
+        ).count()
+        
+        # Get contracts with payments on time
+        on_time_payments = db.query(Contract).filter(
+            Contract.is_paid_on_time == True,
+            Contract.latest_payment_date != None
+        ).count()
+        
+        return {
+            "total_clients": total_clients,
+            "total_slots": total_slots,
+            "available_slots": available_slots,
+            "occupied_slots": occupied_slots,
+            "total_contracts": total_contracts,
+            "total_revenue": total_revenue,
+            "overdue_contracts": overdue_contracts,
+            "on_time_payments": on_time_payments
+        }
+    except Exception as e:
+        logger.error(f"Analytics summary error: {str(e)}")
+        raise HTTPException(
+            status_code=500,
+            detail="Failed to fetch analytics data"
+        )
+
+@app.get("/api/admin/analytics/revenue-by-month")
+async def admin_revenue_by_month(
+    request: Request,
+    db: Session = Depends(get_db),
+    is_admin: bool = Depends(verify_admin_auth)
+):
+    try:
+        # Get current year
+        current_year = datetime.now().year
+        
+        # Extract months from contract order dates and sum up revenue
+        monthly_revenue = []
+        
+        for month in range(1, 13):
+            start_date = datetime(current_year, month, 1)
+            if month == 12:
+                end_date = datetime(current_year + 1, 1, 1) - timedelta(days=1)
+            else:
+                end_date = datetime(current_year, month + 1, 1) - timedelta(days=1)
+            
+            # Sum contract values for the month
+            month_revenue = db.query(func.sum(Contract.final_price)).filter(
+                Contract.order_date >= start_date,
+                Contract.order_date <= end_date
+            ).scalar() or 0
+            
+            monthly_revenue.append({
+                "month": start_date.strftime("%b"),
+                "revenue": float(month_revenue)
+            })
+        
+        return monthly_revenue
+    except Exception as e:
+        logger.error(f"Revenue by month error: {str(e)}")
+        raise HTTPException(
+            status_code=500,
+            detail="Failed to fetch revenue data"
+        )
+
+@app.get("/api/admin/analytics/recent-contracts")
+async def admin_recent_contracts(
+    request: Request,
+    db: Session = Depends(get_db),
+    is_admin: bool = Depends(verify_admin_auth)
+):
+    try:
+        # Get 5 most recent contracts
+        recent_contracts = db.query(Contract).order_by(Contract.order_date.desc()).limit(5).all()
+        
+        result = []
+        for contract in recent_contracts:
+            # Get client name
+            client = db.query(Client).filter(Client.client_id == contract.client_id).first()
+            client_name = client.name if client else "Unknown"
+            
+            # Get slot type
+            slot = db.query(Slot).filter(Slot.slot_id == contract.slot_id).first()
+            slot_type = slot.slot_type if slot else "Unknown"
+            
+            result.append({
+                "order_id": contract.order_id,
+                "client_name": client_name,
+                "slot_id": contract.slot_id,
+                "slot_type": slot_type,
+                "order_date": contract.order_date.strftime("%Y-%m-%d"),
+                "amount": float(contract.final_price),
+                "is_paid": contract.is_paid
+            })
+        
+        return result
+    except Exception as e:
+        logger.error(f"Recent contracts error: {str(e)}")
+        raise HTTPException(
+            status_code=500,
+            detail="Failed to fetch recent contracts"
+        )
+
+@app.get("/api/admin/analytics/plot-distribution")
+async def admin_plot_distribution(
+    request: Request,
+    db: Session = Depends(get_db),
+    is_admin: bool = Depends(verify_admin_auth)
+):
+    try:
+        # Count slots by type
+        plot_count = db.query(Slot).filter(Slot.slot_type == "plot").count()
+        mausoleum_count = db.query(Slot).filter(Slot.slot_type == "mausoleum").count()
+        
+        # Get availability by type
+        available_plots = db.query(Slot).filter(
+            Slot.slot_type == "plot",
+            Slot.availability == "available"
+        ).count()
+        
+        available_mausoleums = db.query(Slot).filter(
+            Slot.slot_type == "mausoleum",
+            Slot.availability == "available"
+        ).count()
+        
+        return {
+            "plot_distribution": [
+                {"type": "Plot", "total": plot_count, "available": available_plots},
+                {"type": "Mausoleum", "total": mausoleum_count, "available": available_mausoleums}
+            ]
+        }
+    except Exception as e:
+        logger.error(f"Plot distribution error: {str(e)}")
+        raise HTTPException(
+            status_code=500,
+            detail="Failed to fetch plot distribution data"
+        )

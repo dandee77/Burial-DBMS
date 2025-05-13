@@ -207,12 +207,7 @@ body {
     }
     
     .admin-title {
-        font-size: 12px;
-        writing-mode: vertical-rl;
-        text-orientation: upright;
-        letter-spacing: -2px;
-        transform: rotate(180deg);
-        padding: 0;
+        display: none; /* Hide completely instead of vertical orientation */
     }
 }
 
@@ -232,6 +227,28 @@ body {
     
     .analytics-container {
         grid-template-columns: 1fr;
+    }
+    
+    /* Show text when sidebar is active */
+    .sidebar.active {
+        width: 260px;
+    }
+    
+    .sidebar.active .admin-title {
+        display: block;
+        font-size: 16px;
+        writing-mode: initial;
+        text-orientation: initial;
+        transform: none;
+        letter-spacing: 1px;
+    }
+    
+    .sidebar.active .menu li a span {
+        display: inline-block;
+    }
+    
+    .sidebar.active .menu li i {
+        margin-right: 15px;
     }
 }
 
