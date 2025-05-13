@@ -86,6 +86,7 @@ form {
 
 .input-box input:focus ~ label,
 .input-box input:valid ~ label,
+.input-box input:not(:placeholder-shown) ~ label,
 .input-box select:focus ~ label {
     top: -10px;
     font-size: 0.8em;
