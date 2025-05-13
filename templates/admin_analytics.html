@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - Analytics</title>
+    <link rel="stylesheet" href="{{ url_for('static', path='css/admin_dashboard.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <div class="sidebar">
+        <div class="logo">
+            <span class="admin-title">ADMINISTRATOR</span>
+        </div>
+        <ul class="menu">
+            <li class="active"><a href="/admin/dashboard"><i class="fas fa-chart-line"></i><span>Analytics</span></a></li>
+            <li><a href="#"><i class="fas fa-users"></i><span>Clients</span></a></li>
+            <li><a href="#"><i class="fas fa-map-marked-alt"></i><span>Plots</span></a></li>
+            <li><a href="#"><i class="fas fa-file-contract"></i><span>Contracts</span></a></li>
+            <li><a href="#"><i class="fas fa-cog"></i><span>Settings</span></a></li>
+            <li class="logout"><a href="#" id="logout-btn"><i class="fas fa-sign-out-alt"></i><span>Logout</span></a></li>
+        </ul>
+    </div>
+
+    <div class="main--content">
+        <button class="menu-btn" id="menu-btn"><i class="fas fa-bars"></i></button>
+        
+        <div class="header">
+            <div class="title">
+                <h1>Analytics Dashboard</h1>
+                <p>Welcome to the administration panel</p>
+            </div>
+        </div>
+
+        <div class="analytics-container">
+            <div class="analytics-card">
+                <h3>Total Clients</h3>
+                <div class="analytics-placeholder">
+                    <span>Analytics will be implemented soon</span>
+                </div>
+            </div>
+            
+            <div class="analytics-card">
+                <h3>Revenue</h3>
+                <div class="analytics-placeholder">
+                    <span>Analytics will be implemented soon</span>
+                </div>
+            </div>
+            
+            <div class="analytics-card">
+                <h3>Plot Availability</h3>
+                <div class="analytics-placeholder">
+                    <span>Analytics will be implemented soon</span>
+                </div>
+            </div>
+            
+            <div class="analytics-card">
+                <h3>Recent Contracts</h3>
+                <div class="analytics-placeholder">
+                    <span>Analytics will be implemented soon</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Mobile menu toggle
+            const menuBtn = document.getElementById('menu-btn');
+            const sidebar = document.querySelector('.sidebar');
+            
+            if (menuBtn) {
+                menuBtn.addEventListener('click', function() {
+                    sidebar.classList.toggle('active');
+                });
+            }
+            
+            // Logout functionality
+            const logoutBtn = document.getElementById('logout-btn');
+            
+            if (logoutBtn) {
+                logoutBtn.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    
+                    // Clear any admin session
+                    localStorage.removeItem('admin_authenticated');
+                    
+                    // Redirect to admin login
+                    window.location.href = '/admin';
+                });
+            }
+        });
+    </script>
+</body>
+</html> 

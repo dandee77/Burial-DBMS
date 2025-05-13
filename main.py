@@ -1062,3 +1062,87 @@ def message_us(
         "message_us.html",
         {"request": request, "client_id": current_user_id}
     )
+
+# ---------------------
+# ADMIN ROUTES
+# ---------------------
+ADMIN_PIN = "1234"  # In a production app, this should be stored securely
+
+@app.get("/admin", response_class=HTMLResponse)
+def admin_login(request: Request):
+    return templates.TemplateResponse("admin_login.html", {"request": request})
+
+@app.post("/admin/verify-pin")
+async def verify_admin_pin(request: Request):
+    try:
+        data = await request.json()
+        pin = data.get("pin")
+        
+        if pin == ADMIN_PIN:
+            # Create a simple admin token
+            admin_token = create_access_token({"sub": "admin", "role": "admin"})
+            
+            response = JSONResponse(
+                content={"success": True, "message": "Authentication successful"}
+            )
+            
+            # Set secure cookie with admin token
+            response.set_cookie(
+                key="admin_token",
+                value=admin_token,
+                httponly=True,
+                secure=True,
+                samesite="lax",
+                max_age=3600  # 1 hour
+            )
+            
+            return response
+        else:
+            return JSONResponse(
+                status_code=401,
+                content={"success": False, "message": "Invalid PIN"}
+            )
+            
+    except Exception as e:
+        logger.error(f"Admin PIN verification error: {str(e)}")
+        return JSONResponse(
+            status_code=500,
+            content={"success": False, "message": "An error occurred during authentication"}
+        )
+
+# Middleware to verify admin authentication
+async def verify_admin_auth(request: Request):
+    credentials_exception = HTTPException(
+        status_code=401,
+        detail="Admin authentication required",
+    )
+    
+    # Try to get token from cookie
+    token = request.cookies.get("admin_token")
+    
+    if not token:
+        raise credentials_exception
+        
+    try:
+        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+        role = payload.get("role")
+        
+        if role != "admin":
+            raise credentials_exception
+            
+        return True
+    except (JWTError, ValueError):
+        raise credentials_exception
+
+@app.get("/admin/dashboard", response_class=HTMLResponse)
+async def admin_dashboard(
+    request: Request,
+    is_admin: bool = Depends(verify_admin_auth)
+):
+    return templates.TemplateResponse("admin_analytics.html", {"request": request})
+
+@app.post("/admin/logout")
+def admin_logout():
+    response = JSONResponse(content={"message": "Logged out successfully"})
+    response.delete_cookie(key="admin_token")
+    return response
