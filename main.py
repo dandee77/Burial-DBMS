@@ -1320,3 +1320,111 @@ async def admin_plot_distribution(
             status_code=500,
             detail="Failed to fetch plot distribution data"
         )
+
+# Admin Client management routes
+@app.get("/admin/clients")
+async def admin_clients_page(
+    request: Request,
+    is_admin: bool = Depends(verify_admin_auth)
+):
+    return templates.TemplateResponse("admin_clients.html", {"request": request})
+
+# Admin API for clients
+@app.get("/api/admin/clients")
+async def admin_get_clients(
+    request: Request,
+    db: Session = Depends(get_db),
+    is_admin: bool = Depends(verify_admin_auth)
+):
+    # Get all clients with contract count
+    clients = db.query(Client).all()
+    
+    result = []
+    for client in clients:
+        # Count contracts for this client
+        contract_count = db.query(Contract).filter(Contract.client_id == client.client_id).count()
+        
+        # Create a client object with contract count
+        client_data = {
+            "client_id": client.client_id,
+            "name": client.name,
+            "email": client.email,
+            "phone": client.contact_number,
+            "address": client.address,
+            "registration_date": datetime.now().isoformat(), # Placeholder since actual field doesn't exist
+            "contract_count": contract_count
+        }
+        result.append(client_data)
+    
+    return result
+
+@app.get("/api/admin/clients/{client_id}/contracts")
+async def admin_get_client_contracts(
+    client_id: int,
+    request: Request,
+    db: Session = Depends(get_db),
+    is_admin: bool = Depends(verify_admin_auth)
+):
+    # Verify client exists
+    client = db.query(Client).filter(Client.client_id == client_id).first()
+    if not client:
+        raise HTTPException(status_code=404, detail="Client not found")
+    
+    # Get all contracts for this client
+    contracts = db.query(Contract).filter(Contract.client_id == client_id).all()
+    
+    result = []
+    for contract in contracts:
+        # Get slot information
+        slot = db.query(Slot).filter(Slot.slot_id == contract.slot_id).first()
+        slot_type = slot.slot_type if slot else "Unknown"
+        
+        # Create contract object
+        contract_data = {
+            "contract_id": contract.order_id,  # Using order_id instead of contract_id
+            "slot_id": contract.slot_id,
+            "slot_type": slot_type,
+            "order_date": contract.order_date,
+            "amount": contract.final_price,  # Using final_price instead of amount
+            "is_paid": contract.is_paid
+        }
+        result.append(contract_data)
+    
+    return result
+
+@app.delete("/api/admin/clients/{client_id}/delete")
+async def admin_delete_client(
+    client_id: int,
+    request: Request,
+    db: Session = Depends(get_db),
+    is_admin: bool = Depends(verify_admin_auth)
+):
+    # Verify client exists
+    client = db.query(Client).filter(Client.client_id == client_id).first()
+    if not client:
+        raise HTTPException(status_code=404, detail="Client not found")
+    
+    try:
+        # Get all contracts for this client
+        contracts = db.query(Contract).filter(Contract.client_id == client_id).all()
+        
+        # Delete all client's contracts first
+        for contract in contracts:
+            # If the contract has a slot, update the slot's status to available
+            if contract.slot_id:
+                slot = db.query(Slot).filter(Slot.slot_id == contract.slot_id).first()
+                if slot:
+                    slot.is_available = True
+                    db.add(slot)
+            
+            # Delete the contract
+            db.delete(contract)
+        
+        # Delete the client
+        db.delete(client)
+        db.commit()
+        
+        return {"success": True, "message": "Client and all associated contracts deleted successfully"}
+    except Exception as e:
+        db.rollback()
+        raise HTTPException(status_code=500, detail=f"Error deleting client: {str(e)}")

@@ -105,7 +105,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 labels: ['On Time', 'Overdue'],
                 datasets: [{
                     data: [data.on_time_payments, data.overdue_contracts],
-                    backgroundColor: ['#2ecc71', '#e74c3c'],
+                    backgroundColor: ['#27ae60', '#c0392b'],
                     borderWidth: 0
                 }]
             },
@@ -144,8 +144,8 @@ document.addEventListener('DOMContentLoaded', function() {
                     datasets: [{
                         label: 'Revenue',
                         data: data.map(item => item.revenue),
-                        backgroundColor: 'rgba(52, 152, 219, 0.6)',
-                        borderColor: 'rgba(52, 152, 219, 1)',
+                        backgroundColor: 'rgba(41, 128, 185, 0.6)',
+                        borderColor: '#2980b9',
                         borderWidth: 1
                     }]
                 },
@@ -199,17 +199,17 @@ document.addEventListener('DOMContentLoaded', function() {
                     labels: plotData.map(item => item.type),
                     datasets: [
                         {
-                            label: 'Available',
-                            data: plotData.map(item => item.available),
-                            backgroundColor: 'rgba(46, 204, 113, 0.6)',
-                            borderColor: 'rgba(46, 204, 113, 1)',
+                            label: 'Total',
+                            data: plotData.map(item => item.total),
+                            backgroundColor: 'rgba(41, 128, 185, 0.6)',
+                            borderColor: '#2980b9',
                             borderWidth: 1
                         },
                         {
-                            label: 'Occupied',
-                            data: plotData.map(item => item.total - item.available),
-                            backgroundColor: 'rgba(231, 76, 60, 0.6)',
-                            borderColor: 'rgba(231, 76, 60, 1)',
+                            label: 'Available',
+                            data: plotData.map(item => item.available),
+                            backgroundColor: 'rgba(39, 174, 96, 0.6)',
+                            borderColor: '#27ae60',
                             borderWidth: 1
                         }
                     ]

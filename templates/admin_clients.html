@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - Clients</title>
+    <link rel="stylesheet" href="{{ url_for('static', path='css/admin_dashboard.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', path='css/admin_clients.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', path='css/admin_theme.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <div class="sidebar">
+        <div class="logo">
+            <span class="admin-title">ADMINISTRATOR</span>
+        </div>
+        <ul class="menu">
+            <li><a href="/admin/dashboard"><i class="fas fa-chart-line"></i><span>Analytics</span></a></li>
+            <li class="active"><a href="/admin/clients"><i class="fas fa-users"></i><span>Clients</span></a></li>
+            <li><a href="#"><i class="fas fa-map-marked-alt"></i><span>Plots</span></a></li>
+            <li><a href="#"><i class="fas fa-file-contract"></i><span>Contracts</span></a></li>
+            <li><a href="#"><i class="fas fa-cog"></i><span>Settings</span></a></li>
+            <li class="logout"><a href="#" id="logout-btn"><i class="fas fa-sign-out-alt"></i><span>Logout</span></a></li>
+        </ul>
+    </div>
+
+    <div class="main--content">
+        <button class="menu-btn" id="menu-btn"><i class="fas fa-bars"></i></button>
+        
+        <div class="header">
+            <div class="title">
+                <h1>Client Management</h1>
+                <p>View and manage all cemetery clients</p>
+            </div>
+        </div>
+
+        <!-- Search and Controls -->
+        <div class="client-controls">
+            <div class="search-container">
+                <input type="text" id="searchInput" placeholder="Search by name...">
+                <button id="searchButton"><i class="fas fa-search"></i></button>
+            </div>
+            <div class="filter-container">
+                <select id="statusFilter">
+                    <option value="all">All Clients</option>
+                    <option value="active">Active Contracts</option>
+                    <option value="no-contract">No Contracts</option>
+                </select>
+            </div>
+        </div>
+
+        <!-- Clients Table -->
+        <div class="table-card">
+            <div class="table-header">
+                <h3>Client Directory</h3>
+                <span id="clientCount" class="count-badge">0 clients</span>
+            </div>
+            
+            <div class="table-container">
+                <table class="data-table" id="clients-table">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Name</th>
+                            <th>Email</th>
+                            <th>Phone</th>
+                            <th>Contracts</th>
+                            <th>Registration</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="clientTableBody">
+                        <tr>
+                            <td colspan="7" class="loading-spinner">
+                                <div class="spinner"></div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            
+            <!-- Pagination Controls -->
+            <div class="pagination">
+                <button id="prevPage" class="pagination-btn" disabled>
+                    <i class="fas fa-chevron-left"></i> Previous
+                </button>
+                <div class="page-info">
+                    Page <span id="currentPage">1</span> of <span id="totalPages">1</span>
+                </div>
+                <button id="nextPage" class="pagination-btn" disabled>
+                    Next <i class="fas fa-chevron-right"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Client Details Modal -->
+    <div id="clientDetailsModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Client Details</h3>
+                <span class="close-modal">&times;</span>
+            </div>
+            <div class="modal-body">
+                <div class="client-info">
+                    <div class="client-avatar">
+                        <i class="fas fa-user-circle"></i>
+                    </div>
+                    <div class="info-container">
+                        <div class="info-row">
+                            <div class="info-label">Client ID:</div>
+                            <div class="info-value" id="modal-client-id"></div>
+                        </div>
+                        <div class="info-row">
+                            <div class="info-label">Full Name:</div>
+                            <div class="info-value" id="modal-name"></div>
+                        </div>
+                        <div class="info-row">
+                            <div class="info-label">Email:</div>
+                            <div class="info-value" id="modal-email"></div>
+                        </div>
+                        <div class="info-row">
+                            <div class="info-label">Phone:</div>
+                            <div class="info-value" id="modal-phone"></div>
+                        </div>
+                        <div class="info-row">
+                            <div class="info-label">Address:</div>
+                            <div class="info-value" id="modal-address"></div>
+                        </div>
+                        <div class="info-row">
+                            <div class="info-label">Registration Date:</div>
+                            <div class="info-value" id="modal-registration"></div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="client-contracts">
+                    <h4>Client Contracts</h4>
+                    <div id="contracts-container">
+                        <table class="contracts-table">
+                            <thead>
+                                <tr>
+                                    <th>Contract ID</th>
+                                    <th>Plot</th>
+                                    <th>Order Date</th>
+                                    <th>Amount</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody id="contractsTableBody">
+                                <!-- Contracts will be inserted here -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button id="deleteClientBtn" class="btn-delete">
+                    <i class="fas fa-trash-alt"></i> Delete Client
+                </button>
+                <button id="closeModalBtn" class="btn-close">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Confirmation Modal -->
+    <div id="confirmationModal" class="modal">
+        <div class="modal-content confirmation-content">
+            <div class="modal-header">
+                <h3>Confirm Deletion</h3>
+                <span class="close-modal">&times;</span>
+            </div>
+            <div class="modal-body">
+                <p>Are you sure you want to delete this client? This action cannot be undone.</p>
+                <p><strong>Client:</strong> <span id="confirm-client-name"></span></p>
+                <p class="warning-text">All associated contracts and records will also be deleted.</p>
+            </div>
+            <div class="modal-footer">
+                <button id="confirmDeleteBtn" class="btn-delete">
+                    Confirm Delete
+                </button>
+                <button id="cancelDeleteBtn" class="btn-close">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="{{ url_for('static', path='script/admin_clients.js') }}"></script>
+</body>
+</html> 

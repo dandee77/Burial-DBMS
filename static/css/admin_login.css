@@ -6,22 +6,28 @@
 }
 
 body {
-    background-color: #f5f5f5;
+    background-color: var(--neutral-light, #ecf0f1);
     display: flex;
     justify-content: center;
     align-items: center;
     min-height: 100vh;
-    background-image: linear-gradient(to bottom right, #f5f5f5, #e0e0e0);
+    background-image: linear-gradient(to bottom right, #ecf0f1, #bdc3c7);
 }
 
 .login-container {
-    background-color: #fff;
+    background-color: var(--neutral-white, #ffffff);
     border-radius: 12px;
-    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.1);
+    box-shadow: var(--card-shadow, 0 4px 6px rgba(0, 0, 0, 0.1));
     width: 100%;
     max-width: 420px;
     padding: 2.5rem;
     text-align: center;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.login-container:hover {
+    box-shadow: var(--hover-shadow, 0 6px 10px rgba(0, 0, 0, 0.15));
+    transform: translateY(-5px);
 }
 
 .login-header {
@@ -33,13 +39,13 @@ body {
 .admin-title {
     font-size: 24px;
     font-weight: 700;
-    color: #263238;
+    color: var(--primary-dark, #1e3a58);
     letter-spacing: 1px;
     text-transform: uppercase;
 }
 
 .login-title {
-    color: #1e2837;
+    color: var(--neutral-dark, #2c3e50);
     margin-bottom: 1.5rem;
     font-size: 1.8rem;
 }
@@ -64,18 +70,18 @@ body {
 }
 
 .pin-digit:focus {
-    border-color: #263238;
+    border-color: var(--primary-light, #2980b9);
     outline: none;
-    box-shadow: 0 0 0 3px rgba(38, 50, 56, 0.1);
+    box-shadow: 0 0 0 3px rgba(41, 128, 185, 0.2);
 }
 
 .error-message {
-    color: #e74c3c;
+    color: var(--accent-red, #c0392b);
     margin-bottom: 1.2rem;
     font-size: 14px;
     display: none;
     padding: 10px;
-    background-color: rgba(231, 76, 60, 0.1);
+    background-color: var(--status-danger-bg, rgba(192, 57, 43, 0.15));
     border-radius: 6px;
 }
 
@@ -95,7 +101,7 @@ body {
     cursor: pointer;
     transition: all 0.2s ease;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-    color: #263238;
+    color: var(--neutral-dark, #2c3e50);
     font-weight: 500;
 }
 
@@ -112,36 +118,36 @@ body {
 
 .keypad-btn.clear {
     grid-column: 1;
-    background-color: #ff5252;
+    background-color: var(--accent-red, #c0392b);
     color: white;
 }
 
 .keypad-btn.clear:hover {
-    background-color: #f44336;
+    background-color: #e74c3c;
 }
 
 .keypad-btn.submit {
     grid-column: 3;
-    background-color: #263238;
+    background-color: var(--primary-light, #2980b9);
     color: white;
 }
 
 .keypad-btn.submit:hover {
-    background-color: #1a2327;
+    background-color: var(--primary-hover, #3498db);
 }
 
 .return-link {
     margin-top: 1.5rem;
     display: inline-block;
-    color: #455a64;
+    color: var(--neutral-medium, #7f8c8d);
     text-decoration: none;
     font-size: 14px;
-    transition: color 0.2s ease;
+    transition: all 0.2s ease;
     padding: 6px 12px;
     border-radius: 6px;
 }
 
 .return-link:hover {
-    color: #263238;
-    background-color: #f5f5f5;
+    color: var(--primary-light, #2980b9);
+    background-color: rgba(41, 128, 185, 0.1);
 } 

@@ -6,6 +6,7 @@
     <title>Admin Dashboard - Analytics</title>
     <link rel="stylesheet" href="{{ url_for('static', path='css/admin_dashboard.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', path='css/admin_analytics.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', path='css/admin_theme.css') }}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <!-- Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js@3.9.1/dist/chart.min.js"></script>
@@ -17,7 +18,7 @@
         </div>
         <ul class="menu">
             <li class="active"><a href="/admin/dashboard"><i class="fas fa-chart-line"></i><span>Analytics</span></a></li>
-            <li><a href="#"><i class="fas fa-users"></i><span>Clients</span></a></li>
+            <li><a href="/admin/clients"><i class="fas fa-users"></i><span>Clients</span></a></li>
             <li><a href="#"><i class="fas fa-map-marked-alt"></i><span>Plots</span></a></li>
             <li><a href="#"><i class="fas fa-file-contract"></i><span>Contracts</span></a></li>
             <li><a href="#"><i class="fas fa-cog"></i><span>Settings</span></a></li>
