@@ -716,7 +716,7 @@ def create_contract(
             monthly_amortization=monthly_amortization,
             final_price=final_price,
 
-            is_paid=False,
+            is_paid=years_to_pay == 0,  # Set to True if years_to_pay is 0 (fully paid upfront)
             is_paid_on_time=True,  # Initially set to true until first payment is due
             latest_payment_date=datetime.now()  # Set initial payment date to contract creation date
         )
@@ -1488,6 +1488,11 @@ async def admin_get_contracts(
                 days_since_payment = (datetime.now() - last_payment_date).days
                 is_overdue = days_since_payment > 30
             
+            # Get total payment months from years_to_pay when the contract was created
+            total_payment_months = contract.years_to_pay
+            # Calculate payments made so far (total months - remaining months)
+            payments_made = 0 if total_payment_months <= 0 else total_payment_months - contract.years_to_pay
+            
             contract_data = {
                 "id": f"CNT-{contract.order_id}",
                 "clientId": f"CL-{contract.client_id}",
@@ -1497,8 +1502,7 @@ async def admin_get_contracts(
                 "startDate": contract.order_date.strftime("%Y-%m-%d") if contract.order_date else "Unknown",
                 "totalAmount": float(contract.final_price),
                 "paidAmount": float(contract.final_price) if contract.is_paid else 
-                              float(contract.down_payment + (contract.monthly_amortization * 
-                                   (contract.years_to_pay - contract.years_to_pay))),
+                              float(contract.down_payment + (payments_made * contract.monthly_amortization)),
                 "isActive": not contract.is_paid,
                 "isOverdue": is_overdue,
                 "lastPaymentDate": contract.latest_payment_date.strftime("%Y-%m-%d") if contract.latest_payment_date else "N/A"
@@ -1557,6 +1561,10 @@ async def admin_get_contract_details(
             days_since_payment = (datetime.now() - last_payment_date).days
             is_overdue = days_since_payment > 30
         
+        # Calculate payments made so far
+        total_payment_months = contract.years_to_pay
+        payments_made = 0 if total_payment_months <= 0 else total_payment_months - contract.years_to_pay
+        
         # Format contract details
         contract_details = {
             "id": f"CNT-{contract.order_id}",
@@ -1565,8 +1573,7 @@ async def admin_get_contract_details(
             "startDate": contract.order_date.strftime("%Y-%m-%d") if contract.order_date else "Unknown",
             "totalAmount": float(contract.final_price),
             "paidAmount": float(contract.final_price) if contract.is_paid else 
-                          float(contract.down_payment + (contract.monthly_amortization * 
-                               (contract.years_to_pay - contract.years_to_pay))),
+                          float(contract.down_payment + (payments_made * contract.monthly_amortization)),
             "downPayment": float(contract.down_payment),
             "monthlyPayment": float(contract.monthly_amortization),
             "yearsRemaining": contract.years_to_pay,
