@@ -34,6 +34,7 @@ pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 # OAuth2 scheme
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 
+# TODO:CLIENT PAGE INDEED CAN DELETE USERS BUT NOT THEIR CONTRACTS AND ALSO SLOT & DECEASED INFOMATION
 # TODO: REMOVE NGROK WARNING
 # TODO: LEARN HOW TO TRANSITION FROM SQLITE TO MYSQL
 # TODO: CLIENT PROFILE "EDIT PROFILE" BUTTON RESPONSIVENESS ON MOBILE
@@ -73,6 +74,7 @@ def get_db():
     finally:
         db.close()
 
+#TODO: SHITS DEPRECATED
 # Security utilities
 def create_access_token(data: dict):
     to_encode = data.copy()
@@ -1069,7 +1071,7 @@ def message_us(
 # ---------------------
 # ADMIN ROUTES
 # ---------------------
-ADMIN_PIN = "1234"  # In a production app, this should be stored securely
+ADMIN_PIN = getenv("ADMIN_PIN")
 
 @app.get("/admin", response_class=HTMLResponse)
 def admin_login(request: Request):
