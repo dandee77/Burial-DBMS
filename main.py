@@ -34,6 +34,7 @@ pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 # OAuth2 scheme
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 
+# TODO: MAKE IT RESPONSIVE
 # TODO: SHOW OFFERS (3, 5, 10) in vicinity map instead of just price: 0.0
 # TODO:CLIENT PAGE INDEED CAN DELETE USERS BUT NOT THEIR CONTRACTS AND ALSO SLOT & DECEASED INFOMATION
 # TODO: REMOVE NGROK WARNING
