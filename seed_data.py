@@ -113,11 +113,13 @@ def seed_full_database():
             for _ in range(num_deceased):
                 birth = generate_random_date()
                 death = birth + timedelta(days=random.randint(20000, 30000))
+                full_name = fake.name()
+                
                 deceased = Deceased(
                     deceased_id=deceased_counter,
                     slot_id=slot.slot_id,
                     client_id=client.client_id,
-                    name=fake.name(),
+                    name=full_name,
                     birth_date=birth,
                     death_date=death
                 )

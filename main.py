@@ -21,7 +21,7 @@ import secrets
 from typing import List
 from pydantic import BaseModel
 from typing import Any
-from sqlalchemy import func
+from sqlalchemy import func, text
 
 # Security settings
 SECRET_KEY = secrets.token_urlsafe(32)
@@ -466,32 +466,44 @@ def get_deceased_by_slot(
     if not slot:
         return JSONResponse(content={"message": "Slot not found"}, status_code=404)
 
-    deceased_list = db.query(Deceased).filter(Deceased.slot_id == slot_id).all()
-
-    result = []
-    for d in deceased_list:
-        result.append({
-            "slot_id": slot.slot_id,
-            "slot_type": slot.slot_type,
-            "availability": slot.availability,
-            "price": slot.price,
-            "client_id": slot.client_id,
-            "name": d.name,
-            "birth_date": d.birth_date,
-            "death_date": d.death_date,
-        })
-
-    if not result:
-        result.append({
-            "slot_id": slot.slot_id,
-            "slot_type": slot.slot_type,
-            "availability": slot.availability,
-            "price": slot.price,
-            "client_id": slot.client_id
-        })
-
-    return result
-
+    try:
+        # Use direct SQL query with all columns including name
+        deceased_data = db.execute(
+            text("SELECT deceased_id, slot_id, client_id, name, birth_date, death_date FROM Deceased WHERE slot_id = :slot_id"),
+            {"slot_id": slot_id}
+        ).fetchall()
+        
+        result = []
+        if deceased_data:
+            for d in deceased_data:
+                deceased_info = {
+                    "slot_id": slot.slot_id,
+                    "slot_type": slot.slot_type,
+                    "availability": slot.availability,
+                    "price": slot.price,
+                    "client_id": slot.client_id,
+                    "name": d[3] or f"Deceased #{d[0]}",  # Use actual name or fallback to ID if null
+                    "birth_date": d[4],
+                    "death_date": d[5]
+                }
+                result.append(deceased_info)
+        
+        if not result:
+            result.append({
+                "slot_id": slot.slot_id,
+                "slot_type": slot.slot_type,
+                "availability": slot.availability,
+                "price": slot.price,
+                "client_id": slot.client_id
+            })
+        
+        return result
+    except Exception as e:
+        logger.error(f"Error fetching deceased by slot: {str(e)}")
+        return JSONResponse(
+            status_code=500,
+            content={"success": False, "message": "Failed to load deceased information"}
+        )
 
 # ---------------------
 # API - CONTRACTS BY CLIENT ID
@@ -716,16 +728,26 @@ def create_contract(
         # Create deceased records
         deceased_ids = []
         for record in deceased_records:
-            deceased = Deceased(
-                client_id=client_id,
-                slot_id=slot_id,
-                name=record["name"],
-                birth_date=record["birth_date"],
-                death_date=record["death_date"]
+            # Use SQL query that includes the name column
+            query = text("""
+                INSERT INTO Deceased (slot_id, client_id, name, birth_date, death_date)
+                VALUES (:slot_id, :client_id, :name, :birth_date, :death_date)
+                RETURNING deceased_id
+            """)
+            
+            result = db.execute(
+                query,
+                {
+                    "slot_id": slot_id,
+                    "client_id": client_id,
+                    "name": record["name"],  # Store the actual name
+                    "birth_date": record["birth_date"],
+                    "death_date": record["death_date"]
+                }
             )
-            db.add(deceased)
-            db.flush()  # This assigns an ID without committing the transaction
-            deceased_ids.append(deceased.deceased_id)
+            
+            deceased_id = result.fetchone()[0]
+            deceased_ids.append(deceased_id)
         
         # Update slot
         slot.availability = "occupied"

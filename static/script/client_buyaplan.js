@@ -555,10 +555,13 @@ async function handleFormSubmit(e) {
     deceasedList.className = 'deceased-list';
     
     deceasedInfo.forEach((info, i) => {
+        // Use the provided name directly since this is coming from user input in the form
+        const displayName = info.name;
+        
         const deceasedItem = document.createElement('div');
         deceasedItem.className = 'deceased-item';
         deceasedItem.innerHTML = `
-            <p><strong>${i+1}. ${info.name}</strong></p>
+            <p><strong>${i+1}. ${displayName}</strong></p>
             <p>Born: ${formatDate(info.birth_date)}</p>
             <p>Died: ${formatDate(info.death_date)}</p>
         `;
