@@ -95,10 +95,10 @@ def seed_full_database():
         client = random.choice(clients) if is_occupied else None
 
         slot = Slot(
-            slot_id=i,
+            slot_id=i+1,
             slot_type=slot_type,
             availability=availability,
-            price=0.0,  # Price is set in contract
+            price= 300_000.00 if slot_type == SlotTypeEnum.plot else 10_000_000.00,  # Price is set in contract
             client_id=client.client_id if client else None,
             deceased_id=None
         )
