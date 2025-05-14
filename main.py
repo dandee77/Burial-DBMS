@@ -34,6 +34,7 @@ pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 # OAuth2 scheme
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 
+# TODO: SHOW OFFERS (3, 5, 10) in vicinity map instead of just price: 0.0
 # TODO:CLIENT PAGE INDEED CAN DELETE USERS BUT NOT THEIR CONTRACTS AND ALSO SLOT & DECEASED INFOMATION
 # TODO: REMOVE NGROK WARNING
 # TODO: LEARN HOW TO TRANSITION FROM SQLITE TO MYSQL
@@ -1430,3 +1431,135 @@ async def admin_delete_client(
     except Exception as e:
         db.rollback()
         raise HTTPException(status_code=500, detail=f"Error deleting client: {str(e)}")
+
+@app.get("/admin/contracts", response_class=HTMLResponse)
+async def admin_contracts_page(
+    request: Request,
+    is_admin: bool = Depends(verify_admin_auth)
+):
+    return templates.TemplateResponse("admin_contracts.html", {"request": request})
+
+@app.get("/api/admin/contracts")
+async def admin_get_contracts(
+    request: Request,
+    db: Session = Depends(get_db),
+    is_admin: bool = Depends(verify_admin_auth)
+):
+    try:
+        # Get all contracts with client and slot information
+        contracts = db.query(Contract).all()
+        
+        result = []
+        for contract in contracts:
+            # Get client information
+            client = db.query(Client).filter(Client.client_id == contract.client_id).first()
+            client_name = client.name if client else "Unknown"
+            
+            # Get slot information
+            slot = db.query(Slot).filter(Slot.slot_id == contract.slot_id).first()
+            slot_type = slot.slot_type if slot else "Unknown"
+            
+            # Check if contract is overdue
+            is_overdue = False
+            if not contract.is_paid:
+                last_payment_date = contract.latest_payment_date or contract.order_date
+                days_since_payment = (datetime.now() - last_payment_date).days
+                is_overdue = days_since_payment > 30
+            
+            contract_data = {
+                "id": f"CNT-{contract.order_id}",
+                "clientId": f"CL-{contract.client_id}",
+                "clientName": client_name,
+                "plotType": slot_type.capitalize() if slot_type else "Unknown",
+                "plotId": f"PLT-{contract.slot_id}",
+                "startDate": contract.order_date.strftime("%Y-%m-%d") if contract.order_date else "Unknown",
+                "totalAmount": float(contract.final_price),
+                "paidAmount": float(contract.final_price) if contract.is_paid else 
+                              float(contract.down_payment + (contract.monthly_amortization * 
+                                   (contract.years_to_pay - contract.years_to_pay))),
+                "isActive": not contract.is_paid,
+                "isOverdue": is_overdue,
+                "lastPaymentDate": contract.latest_payment_date.strftime("%Y-%m-%d") if contract.latest_payment_date else "N/A"
+            }
+            result.append(contract_data)
+        
+        return {"contracts": result}
+        
+    except Exception as e:
+        logger.error(f"Error fetching admin contracts: {str(e)}")
+        raise HTTPException(
+            status_code=500,
+            detail="Failed to fetch contracts data"
+        )
+
+@app.get("/api/admin/contracts/{contract_id}")
+async def admin_get_contract_details(
+    contract_id: int,
+    request: Request,
+    db: Session = Depends(get_db),
+    is_admin: bool = Depends(verify_admin_auth)
+):
+    try:
+        # Remove CNT- prefix if present
+        if isinstance(contract_id, str) and contract_id.startswith("CNT-"):
+            contract_id = int(contract_id[4:])
+        
+        # Get contract with all details
+        contract = db.query(Contract).filter(Contract.order_id == contract_id).first()
+        
+        if not contract:
+            raise HTTPException(status_code=404, detail="Contract not found")
+        
+        # Get client information
+        client = db.query(Client).filter(Client.client_id == contract.client_id).first()
+        client_info = {
+            "id": f"CL-{client.client_id}" if client else "Unknown",
+            "name": client.name if client else "Unknown",
+            "email": client.email if client else "Unknown",
+            "phone": client.contact_number if client and client.contact_number else "N/A",
+            "address": client.address if client and client.address else "N/A"
+        }
+        
+        # Get slot information
+        slot = db.query(Slot).filter(Slot.slot_id == contract.slot_id).first()
+        slot_info = {
+            "id": f"PLT-{slot.slot_id}" if slot else "Unknown",
+            "type": slot.slot_type.capitalize() if slot and slot.slot_type else "Unknown",
+            "price": float(slot.price) if slot else 0.0
+        }
+        
+        # Check if contract is overdue
+        is_overdue = False
+        if not contract.is_paid:
+            last_payment_date = contract.latest_payment_date or contract.order_date
+            days_since_payment = (datetime.now() - last_payment_date).days
+            is_overdue = days_since_payment > 30
+        
+        # Format contract details
+        contract_details = {
+            "id": f"CNT-{contract.order_id}",
+            "client": client_info,
+            "slot": slot_info,
+            "startDate": contract.order_date.strftime("%Y-%m-%d") if contract.order_date else "Unknown",
+            "totalAmount": float(contract.final_price),
+            "paidAmount": float(contract.final_price) if contract.is_paid else 
+                          float(contract.down_payment + (contract.monthly_amortization * 
+                               (contract.years_to_pay - contract.years_to_pay))),
+            "downPayment": float(contract.down_payment),
+            "monthlyPayment": float(contract.monthly_amortization),
+            "yearsRemaining": contract.years_to_pay,
+            "paymentMethod": contract.payment_method.value if contract.payment_method else "Unknown",
+            "isActive": not contract.is_paid,
+            "isOverdue": is_overdue,
+            "isPaid": contract.is_paid,
+            "lastPaymentDate": contract.latest_payment_date.strftime("%Y-%m-%d") if contract.latest_payment_date else "N/A"
+        }
+        
+        return contract_details
+        
+    except Exception as e:
+        logger.error(f"Error fetching contract details: {str(e)}")
+        raise HTTPException(
+            status_code=500,
+            detail="Failed to fetch contract details"
+        )

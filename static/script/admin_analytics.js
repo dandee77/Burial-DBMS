@@ -33,19 +33,8 @@ document.addEventListener('DOMContentLoaded', function() {
             // Clear any admin session
             localStorage.removeItem('admin_authenticated');
             
-            // Send logout request to server
-            fetch('/admin/logout', {
-                method: 'POST',
-                credentials: 'include'
-            })
-            .then(() => {
-                // Redirect to admin login
-                window.location.href = '/admin';
-            })
-            .catch(error => {
-                console.error('Logout error:', error);
-                window.location.href = '/admin';
-            });
+            // Redirect to admin login
+            window.location.href = '/admin';
         });
     }
     

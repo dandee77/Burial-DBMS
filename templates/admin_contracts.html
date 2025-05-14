@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - Contracts</title>
+    <!-- Preload Font Awesome to improve loading time -->
+    <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" as="style">
+    <link rel="stylesheet" href="{{ url_for('static', path='css/admin_dashboard.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', path='css/admin_contracts.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', path='css/admin_theme.css') }}">
+    <!-- Load Font Awesome with integrity and crossorigin for better caching -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" 
+          integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw==" 
+          crossorigin="anonymous" referrerpolicy="no-referrer" />
+</head>
+<body>
+    <div class="sidebar">
+        <div class="logo">
+            <span class="admin-title">ADMINISTRATOR</span>
+        </div>
+        <ul class="menu">
+            <li><a href="/admin/dashboard"><i class="fas fa-chart-line"></i><span>Analytics</span></a></li>
+            <li><a href="/admin/clients"><i class="fas fa-users"></i><span>Clients</span></a></li>
+            <li class="active"><a href="/admin/contracts"><i class="fas fa-file-contract"></i><span>Contracts</span></a></li>
+            <li class="logout"><a href="#" id="logout-btn"><i class="fas fa-sign-out-alt"></i><span>Logout</span></a></li>
+        </ul>
+    </div>
+
+    <div class="main--content">
+        <button class="menu-btn" id="menu-btn"><i class="fas fa-bars"></i></button>
+        
+        <div class="header">
+            <div class="title">
+                <h1>Contract Management</h1>
+                <p>View and manage all burial plot contracts</p>
+            </div>
+        </div>
+
+        <!-- Filter Controls -->
+        <div class="contract-controls">
+            <div class="search-container">
+                <input type="text" id="searchInput" placeholder="Search by client or ID...">
+                <button id="searchButton"><i class="fas fa-search"></i></button>
+            </div>
+            <div class="filter-container">
+                <select id="statusFilter">
+                    <option value="all">All Contracts</option>
+                    <option value="active">Active Contracts</option>
+                    <option value="paid">Fully Paid</option>
+                    <option value="overdue">Overdue Payments</option>
+                </select>
+            </div>
+        </div>
+
+        <!-- Contracts Table -->
+        <div class="table-card">
+            <div class="table-header">
+                <h3>Contracts Directory</h3>
+                <span id="contractCount" class="count-badge">0 contracts</span>
+            </div>
+            
+            <div class="table-container">
+                <table class="data-table" id="contracts-table">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Client Name</th>
+                            <th>Plot Type</th>
+                            <th>Start Date</th>
+                            <th>Amount</th>
+                            <th>Status</th>
+                            <th>Payment Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="contractTableBody">
+                        <tr>
+                            <td colspan="8" class="loading-spinner">
+                                <div class="spinner"></div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            
+            <!-- Pagination Controls -->
+            <div class="pagination">
+                <button id="prevPage" class="pagination-btn" disabled>
+                    <i class="fas fa-chevron-left"></i> Previous
+                </button>
+                <div class="page-info">
+                    Page <span id="currentPage">1</span> of <span id="totalPages">1</span>
+                </div>
+                <button id="nextPage" class="pagination-btn" disabled>
+                    Next <i class="fas fa-chevron-right"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Contract Document Modal -->
+    <div id="contractDocumentModal" class="modal">
+        <div class="modal-content document-modal">
+            <div class="modal-header">
+                <h3>Contract Document</h3>
+                <div class="modal-actions">
+                    <button id="printContractBtn" class="print-btn">
+                        <i class="fas fa-print"></i> Print
+                    </button>
+                    <span class="close-modal">&times;</span>
+                </div>
+            </div>
+            <div class="modal-body document-container">
+                <div class="document-page" id="contractDocument">
+                    <!-- Contract document content will be generated here -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="{{ url_for('static', path='script/admin_contracts.js') }}"></script>
+</body>
+</html> 

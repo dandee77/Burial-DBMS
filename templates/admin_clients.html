@@ -4,10 +4,15 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Dashboard - Clients</title>
+    <!-- Preload Font Awesome to improve loading time -->
+    <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" as="style">
     <link rel="stylesheet" href="{{ url_for('static', path='css/admin_dashboard.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', path='css/admin_clients.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', path='css/admin_theme.css') }}">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Load Font Awesome with integrity and crossorigin for better caching -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" 
+          integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw==" 
+          crossorigin="anonymous" referrerpolicy="no-referrer" />
 </head>
 <body>
     <div class="sidebar">
@@ -17,9 +22,7 @@
         <ul class="menu">
             <li><a href="/admin/dashboard"><i class="fas fa-chart-line"></i><span>Analytics</span></a></li>
             <li class="active"><a href="/admin/clients"><i class="fas fa-users"></i><span>Clients</span></a></li>
-            <li><a href="#"><i class="fas fa-map-marked-alt"></i><span>Plots</span></a></li>
-            <li><a href="#"><i class="fas fa-file-contract"></i><span>Contracts</span></a></li>
-            <li><a href="#"><i class="fas fa-cog"></i><span>Settings</span></a></li>
+            <li><a href="/admin/contracts"><i class="fas fa-file-contract"></i><span>Contracts</span></a></li>
             <li class="logout"><a href="#" id="logout-btn"><i class="fas fa-sign-out-alt"></i><span>Logout</span></a></li>
         </ul>
     </div>
