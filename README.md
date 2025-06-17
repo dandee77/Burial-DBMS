@@ -54,23 +54,6 @@ A modern cemetery management system featuring an interactive aerial map for view
 
 ---
 
-## 📂 Project Structure
-
-```
-│  main.py            # Entrypoint – boots Uvicorn + Ngrok
-│  requirements.txt   # Python dependencies
-│
-├─app/                # FastAPI application package
-│   ├─routers/        # API route definitions
-│   ├─models/         # Pydantic + ORM models
-│   └─database.py     # DB connection & seed logic
-│
-├─scripts/            # Helper & seeding scripts
-└─frontend/           # Static HTML/CSS/JS assets
-```
-
----
-
 ## 🤝 Contributing
 
 Pull requests are welcome! Feel free to open issues for bugs or feature ideas.
