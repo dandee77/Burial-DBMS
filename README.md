@@ -2,6 +2,8 @@
 
 A modern cemetery management system featuring an interactive aerial map for viewing live details of plots and mausoleums.
 
+Documentation + Demo: (https://dandee77.github.io/posts/burial_db/)
+
 ---
 
 ## 🚀 Features
