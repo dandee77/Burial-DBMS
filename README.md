@@ -1,8 +1,8 @@
 # BurialDBMS
 
-A modern cemetery management system featuring an interactive aerial map for viewing live details of plots and mausoleums.
+A full-stack cemetery management system that features an interactive aerial view of plots and mausoleums. Built with HTML, CSS, and vanilla JavaScript for the frontend, and Python with FastAPI for the backend, it includes automated database seeding and real-time plot detail viewing.
 
-Documentation + Demo: (https://dandee77.github.io/posts/burial_db/)
+Documentation + Demo: https://dandee77.github.io/posts/burial_db/
 
 ---
 
